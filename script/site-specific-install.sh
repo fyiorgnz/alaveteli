@@ -169,7 +169,7 @@ then
 EOF
 fi
 
-/etc/init.d/rsyslog restart
+service rsyslog restart
 
 newaliases
 postmap /etc/postfix/transports
