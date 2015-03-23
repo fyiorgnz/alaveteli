@@ -433,7 +433,7 @@ if ARGV.index('-v')
   Presss.logger = Logger.new($stdout)
 end
 
-Wad.setup
+Wad.setup if ENV['S3_CREDENTIALS']
 __END__
 
 ##
