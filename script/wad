@@ -413,7 +413,7 @@ class Wad
     if get
       install_bundle
     elsif install_bundle
-      put
+      put if ENV['S3_CREDENTIALS']
     else
       raise "Failed properly fetch or install bundle. Please review the logs."
     end
@@ -433,7 +433,7 @@ if ARGV.index('-v')
   Presss.logger = Logger.new($stdout)
 end
 
-Wad.setup if ENV['S3_CREDENTIALS']
+Wad.setup
 __END__
 
 ##
