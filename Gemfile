@@ -161,6 +161,10 @@ gem 'therubyracer', '~> 0.12.0'
 gem 'alaveteli_features', :path => 'gems/alaveteli_features'
 gem 'flipper-ui', '~> 0.10.2'
 
+group :production do
+  gem 'unicorn-rails', '~> 2.2.0'
+end
+
 group :test do
   gem 'webmock', '~> 3.5.1'
   gem 'coveralls', '~> 0.8.0', :require => false
