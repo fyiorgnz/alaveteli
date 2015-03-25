@@ -61,6 +61,7 @@ end
 
 group :production do
   gem 'newrelic_rpm'
+  gem 'unicorn-rails', '~> 2.2.0'
 end
 
 group :test do
