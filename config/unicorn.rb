@@ -7,5 +7,5 @@ preload_app true
 timeout 30
 
 # Listen on a Unix data socket
-listen '/data/fyi/sockets/unicorn.sock', backlog: 2048
+listen ENV['UNICORN_SOCKET_PATH'], backlog: 2048
 
