@@ -426,7 +426,7 @@ class Wad
   end
 
   def self.setup
-    new.setup
+    ENV['S3_CREDENTIALS'] ? new.setup : new.install_bundle
   end
 end
 
