@@ -1,10 +1,4 @@
 GIT
-  remote: git://github.com/alpcrimea/xapian-full.git
-  revision: 977ef601206707bb11beb4cdb22e0df5e0629993
-  specs:
-    xapian-full-alaveteli (1.2.9.5)
-
-GIT
   remote: git://github.com/globalize/globalize.git
   revision: 5fd95f2389dff13c9368fb2e08c96c8a48798c72
   ref: 5fd95f2389dff1
