@@ -69,6 +69,14 @@ module AlaveteliConfiguration
       :UTILITY_SEARCH_PATH => ["/usr/bin", "/usr/local/bin"],
       :VARNISH_HOST => '',
       :WORKING_OR_CALENDAR_DAYS => 'working',
+      :MAILER_DELIVERY_METHOD => 'sendmail',
+      :MAILER_ADDRESS => '',
+      :MAILER_PORT => 587,
+      :MAILER_DOMAIN => '',
+      :MAILER_USER_NAME =>  '',
+      :MAILER_PASSWORD => '',
+      :MAILER_AUTHENTICATION => 'plain',
+      :MAILER_ENABLE_STARTTLS_AUTO => true
     }
   end
 
