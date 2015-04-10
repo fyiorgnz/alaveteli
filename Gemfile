@@ -49,6 +49,14 @@ gem 'routing-filter', '~> 0.3.1'
 gem 'unicode', '~> 0.4.4'
 gem 'unidecoder', '~> 1.1.2'
 
+# Sidekiq for background jobs
+gem 'sidetiq', '~> 0.6.3'
+gem 'sidekiq', '~> 3.3.3'
+
+# Fog for S3 uploads
+gem 'fog', '~> 1.29.0'
+
+
 group :assets do
   gem 'bootstrap-sass', '~> 2.3.1.2'
   gem 'sass-rails', '~> 3.2.3'
