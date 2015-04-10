@@ -18,17 +18,17 @@ Alaveteli::Application.configure do
   # Disable delivery errors, bad email addresses will be ignored
   # config.action_mailer.raise_delivery_errors = false
 
-  config.action_mailer.delivery_method = AlaveteliConfiguration::mailer_delivery_method.to_sym
+  config.action_mailer.delivery_method = AlaveteliConfiguration.mailer_delivery_method.to_sym
 
-  if AlaveteliConfiguration::mailer_delivery_method.to_sym == :smtp
+  if AlaveteliConfiguration.mailer_delivery_method.to_sym == :smtp
     config.action_mailer.smtp_settings = {
-      :address => AlaveteliConfiguration::mailer_address,
-      :port => AlaveteliConfiguration.mailer_port,
-      :domain => AlaveteliConfiguration.mailer_domain,
-      :user_name => AlaveteliConfiguration.mailer_user_name,
-      :password => AlaveteliConfiguration.mailer_password,
-      :authentication => AlaveteliConfiguration.mailer_authentication,
-      :enable_starttls_auto => AlaveteliConfiguration.mailer_enable_starttls_auto
+      address: AlaveteliConfiguration.mailer_address,
+      port: AlaveteliConfiguration.mailer_port,
+      domain: AlaveteliConfiguration.mailer_domain,
+      user_name: AlaveteliConfiguration.mailer_user_name,
+      password: AlaveteliConfiguration.mailer_password,
+      authentication: AlaveteliConfiguration.mailer_authentication,
+      enable_starttls_auto: AlaveteliConfiguration.mailer_enable_starttls_auto
     }
   end
 
@@ -36,12 +36,12 @@ Alaveteli::Application.configure do
 
   if !AlaveteliConfiguration.exception_notifications_from.blank? && !AlaveteliConfiguration.exception_notifications_to.blank?
     middleware.use ExceptionNotifier,
-      :sender_address => AlaveteliConfiguration::exception_notifications_from,
-      :exception_recipients => AlaveteliConfiguration::exception_notifications_to
+                   sender_address: AlaveteliConfiguration.exception_notifications_from,
+                   exception_recipients: AlaveteliConfiguration.exception_notifications_to
   end
 
   require 'rack/ssl'
-  if AlaveteliConfiguration::force_ssl
+  if AlaveteliConfiguration.force_ssl
     config.middleware.insert_before ActionDispatch::Cookies, ::Rack::SSL
   end
 
@@ -60,5 +60,4 @@ Alaveteli::Application.configure do
 
   # Precompile additional assets (application.js, application.css, and all non-JS/CSS are already added)
   # config.assets.precompile += %w( search.js )
-
 end

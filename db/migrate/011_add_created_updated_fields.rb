@@ -5,7 +5,7 @@ class AddCreatedUpdatedFields < ActiveRecord::Migration
     add_column :info_requests, :updated_at, :datetime
 
     # Outgoing Message already has it
-    
+
     # PublicBody
     add_column :public_bodies, :created_at, :datetime
     add_column :public_bodies, :updated_at, :datetime
@@ -18,7 +18,6 @@ class AddCreatedUpdatedFields < ActiveRecord::Migration
     # Users
     add_column :users, :created_at, :datetime
     add_column :users, :updated_at, :datetime
-
   end
 
   def self.down

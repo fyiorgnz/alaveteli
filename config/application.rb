@@ -40,7 +40,7 @@ module Alaveteli
     config.action_view.sanitized_allowed_tags = 'html', 'head', 'body', 'table', 'tr', 'td', 'style'
 
     # Configure the default encoding used in templates for Ruby 1.9.
-    config.encoding = "utf-8"
+    config.encoding = 'utf-8'
 
     # Configure sensitive parameters which will be filtered from the log file.
     config.filter_parameters += [:password]
@@ -57,34 +57,34 @@ module Alaveteli
     # Note that having set a zone, the Active Record
     # time_zone_aware_attributes flag is on, so times from models
     # will be in this time zone
-    config.time_zone = ::AlaveteliConfiguration::time_zone
+    config.time_zone = ::AlaveteliConfiguration.time_zone
 
     # Set the cache to use a memcached backend
-    config.cache_store = :mem_cache_store, { :namespace => AlaveteliConfiguration::domain }
+    config.cache_store = :mem_cache_store, { namespace: AlaveteliConfiguration.domain }
     config.action_dispatch.rack_cache = nil
 
     config.after_initialize do |app|
-       # Add a catch-all route to force routing errors to be handled by the application,
-       # rather than by middleware.
-       app.routes.append{ match '*path', :to => 'general#not_found' }
+      # Add a catch-all route to force routing errors to be handled by the application,
+      # rather than by middleware.
+      app.routes.append { match '*path', to: 'general#not_found' }
     end
 
-    config.autoload_paths << "#{Rails.root.to_s}/lib/mail_handler"
-    config.autoload_paths << "#{Rails.root.to_s}/lib/attachment_to_html"
-    config.autoload_paths << "#{Rails.root.to_s}/lib/health_checks"
+    config.autoload_paths << "#{Rails.root}/lib/mail_handler"
+    config.autoload_paths << "#{Rails.root}/lib/attachment_to_html"
+    config.autoload_paths << "#{Rails.root}/lib/health_checks"
 
     # See Rails::Configuration for more options
-    ENV['RECAPTCHA_PUBLIC_KEY'] = ::AlaveteliConfiguration::recaptcha_public_key
-    ENV['RECAPTCHA_PRIVATE_KEY'] = ::AlaveteliConfiguration::recaptcha_private_key
+    ENV['RECAPTCHA_PUBLIC_KEY'] = ::AlaveteliConfiguration.recaptcha_public_key
+    ENV['RECAPTCHA_PRIVATE_KEY'] = ::AlaveteliConfiguration.recaptcha_private_key
 
     # Insert a bit of middleware code to prevent uneeded cookie setting.
     require "#{Rails.root}/lib/whatdotheyknow/strip_empty_sessions"
-    config.middleware.insert_before ::ActionDispatch::Cookies, WhatDoTheyKnow::StripEmptySessions, :key => '_wdtk_cookie_session', :path => "/", :httponly => true
+    config.middleware.insert_before ::ActionDispatch::Cookies, WhatDoTheyKnow::StripEmptySessions, key: '_wdtk_cookie_session', path: '/', httponly: true
 
     # Allow the generation of full URLs in emails
-    config.action_mailer.default_url_options = { :host => AlaveteliConfiguration::domain }
-    if AlaveteliConfiguration::force_ssl
-      config.action_mailer.default_url_options[:protocol] = "https"
+    config.action_mailer.default_url_options = { host: AlaveteliConfiguration.domain }
+    if AlaveteliConfiguration.force_ssl
+      config.action_mailer.default_url_options[:protocol] = 'https'
     end
 
     # Enable the asset pipeline
@@ -120,10 +120,9 @@ module Alaveteli
                                  'responsive/application-lte-ie7.css',
                                  'responsive/application-ie8.css']
 
-     config.sass.load_paths += [
-       "#{Gem.loaded_specs['foundation-rails'].full_gem_path}/vendor/assets/stylesheets/foundation/components",
-       "#{Gem.loaded_specs['foundation-rails'].full_gem_path}/vendor/assets/stylesheets/foundation/"
-     ]
-
+    config.sass.load_paths += [
+      "#{Gem.loaded_specs['foundation-rails'].full_gem_path}/vendor/assets/stylesheets/foundation/components",
+      "#{Gem.loaded_specs['foundation-rails'].full_gem_path}/vendor/assets/stylesheets/foundation/"
+    ]
   end
 end

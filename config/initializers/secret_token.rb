@@ -9,4 +9,4 @@
 # Rails 2 to Rails 3 version of Alaveteli are invalidated.
 # See http://blog.carbonfive.com/2011/03/19/rails-3-upgrade-tip-invalidate-session-cookies/
 
-Alaveteli::Application.config.secret_token = "3" + AlaveteliConfiguration::cookie_store_session_secret
+Alaveteli::Application.config.secret_token = '3' + AlaveteliConfiguration.cookie_store_session_secret

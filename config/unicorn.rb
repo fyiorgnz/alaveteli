@@ -8,4 +8,3 @@ timeout 30
 
 # Listen on a Unix data socket
 listen ENV['UNICORN_SOCKET_PATH'], backlog: 2048
-

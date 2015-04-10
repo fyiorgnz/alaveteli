@@ -16,14 +16,13 @@ set :use_sudo, false
 set :rails_env, configuration['rails_env']
 set :daemon_name, configuration.fetch('daemon_name', 'alaveteli')
 
-server configuration['server'], :app, :web, :db, :primary => true
+server configuration['server'], :app, :web, :db, primary: true
 
 namespace :themes do
   task :install do
     run "cd #{latest_release} && bundle exec rake themes:install RAILS_ENV=#{rails_env}"
   end
 end
-
 
 # Not in the rake namespace because we're also specifying app-specific arguments here
 namespace :xapian do
@@ -34,10 +33,9 @@ namespace :xapian do
 end
 
 namespace :deploy do
-
   [:start, :stop, :restart].each do |t|
     desc "#{t.to_s.capitalize} Alaveteli service defined in /etc/init.d/"
-    task t, :roles => :app, :except => { :no_release => true } do
+    task t, roles: :app, except: { no_release: true } do
       run "service #{ daemon_name } #{ t }"
     end
   end
@@ -57,11 +55,11 @@ namespace :deploy do
       "#{release_path}/cache" => "#{shared_path}/cache",
       "#{release_path}/log" => "#{shared_path}/log",
       "#{release_path}/tmp/pids" => "#{shared_path}/tmp/pids",
-      "#{release_path}/lib/acts_as_xapian/xapiandbs" => "#{shared_path}/xapiandbs",
+      "#{release_path}/lib/acts_as_xapian/xapiandbs" => "#{shared_path}/xapiandbs"
     }
 
     # "ln -sf <a> <b>" creates a symbolic link but deletes <b> if it already exists
-    run links.map {|a| "ln -sf #{a.last} #{a.first}"}.join(";")
+    run links.map { |a| "ln -sf #{a.last} #{a.first}" }.join(';')
   end
 
   after 'deploy:setup' do
@@ -79,4 +77,3 @@ before 'deploy:assets:precompile', 'themes:install'
 # Put up a maintenance notice if doing a migration which could take a while
 before 'deploy:migrate', 'deploy:web:disable'
 after 'deploy:migrate', 'deploy:web:enable'
-

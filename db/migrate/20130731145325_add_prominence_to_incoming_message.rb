@@ -1,5 +1,5 @@
 class AddProminenceToIncomingMessage < ActiveRecord::Migration
   def change
-      add_column :incoming_messages, :prominence, :string, :null => false, :default => 'normal'
+    add_column :incoming_messages, :prominence, :string, null: false, default: 'normal'
   end
 end

@@ -16,10 +16,10 @@ current_xapiandbs_path = Rails.root.join('lib',
                                          'acts_as_xapian',
                                          'xapiandbs')
 
-if File.exists? old_xapiandbs_path
-    unless File.exists? current_xapiandbs_path
-        File.rename old_xapiandbs_path, current_xapiandbs_path
-    end
+if File.exist? old_xapiandbs_path
+  unless File.exist? current_xapiandbs_path
+    File.rename old_xapiandbs_path, current_xapiandbs_path
+  end
 end
 
 require 'acts_as_xapian/acts_as_xapian'

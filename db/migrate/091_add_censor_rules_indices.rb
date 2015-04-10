@@ -6,6 +6,6 @@ class AddCensorRulesIndices < ActiveRecord::Migration
   end
 
   def self.down
-    raise "no down"
+    fail 'no down'
   end
 end

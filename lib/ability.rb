@@ -4,13 +4,8 @@ module Ability
   end
 
   def self.can_view_with_prominence?(prominence, info_request, user)
-      if prominence == 'hidden'
-          return User.view_hidden?(user)
-      end
-      if prominence == 'requester_only'
-          return info_request.is_owning_user?(user)
-      end
-      return true
+    return User.view_hidden?(user) if prominence == 'hidden'
+    return info_request.is_owning_user?(user) if prominence == 'requester_only'
+    true
   end
-
 end

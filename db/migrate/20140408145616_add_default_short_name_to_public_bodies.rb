@@ -1,5 +1,4 @@
 class AddDefaultShortNameToPublicBodies < ActiveRecord::Migration
-
   def up
     change_column_default(:public_bodies, :short_name, '')
   end
@@ -7,5 +6,4 @@ class AddDefaultShortNameToPublicBodies < ActiveRecord::Migration
   def down
     change_column_default(:public_bodies, :short_name, nil)
   end
-
 end

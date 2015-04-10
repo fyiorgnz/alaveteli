@@ -1,1 +1,1 @@
-# Placeholder to be overriden by themes if necessary
+#  Placeholder to be overriden by themes if necessary

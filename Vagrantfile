@@ -57,7 +57,7 @@
 #
 # Customization Options
 # =====================
-ALAVETELI_FQDN = ENV['ALAVETELI_VAGRANT_FQDN'] || "alaveteli.10.10.10.30.xip.io"
+ALAVETELI_FQDN = ENV['ALAVETELI_VAGRANT_FQDN'] || 'alaveteli.10.10.10.30.xip.io'
 ALAVETELI_MEMORY = ENV['ALAVETELI_VAGRANT_MEMORY'] || 1536
 ALAVETELI_THEMES_DIR = ENV['ALAVETELI_THEMES_DIR'] || '../alaveteli-themes'
 ALAVETELI_OS = ENV['ALAVETELI_VAGRANT_OS'] || 'precise64'
@@ -76,27 +76,27 @@ def box_url
   SUPPORTED_OPERATING_SYSTEMS[ALAVETELI_OS]
 end
 
-VAGRANTFILE_API_VERSION = "2"
+VAGRANTFILE_API_VERSION = '2'
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.box = box
   config.vm.box_url = box_url
-  config.vm.network :private_network, :ip => "10.10.10.30"
+  config.vm.network :private_network, ip: '10.10.10.30'
 
-  config.vm.synced_folder ".", "/home/vagrant/alaveteli", :owner => "vagrant", :group => "vagrant"
+  config.vm.synced_folder '.', '/home/vagrant/alaveteli', owner: 'vagrant', group: 'vagrant'
 
   if File.directory?(ALAVETELI_THEMES_DIR)
     config.vm.synced_folder ALAVETELI_THEMES_DIR,
-                            "/home/vagrant/alaveteli-themes",
-                            :owner => "vagrant",
-                            :group => "vagrant"
+                            '/home/vagrant/alaveteli-themes',
+                            owner: 'vagrant',
+                            group: 'vagrant'
   end
 
   config.ssh.forward_agent = true
 
   # The bundle install fails unless you have quite a large amount of
   # memory; insist on 1.5GiB:
-  config.vm.provider "virtualbox" do |vb|
+  config.vm.provider 'virtualbox' do |vb|
     host = RbConfig::CONFIG['host_os']
     # Give VM access to all cpu cores on the host
     if host =~ /darwin/
@@ -107,17 +107,17 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       cpus = 1
     end
 
-    vb.customize ["modifyvm", :id, "--memory", ALAVETELI_MEMORY]
-    vb.customize ["modifyvm", :id, "--cpus", cpus]
+    vb.customize ['modifyvm', :id, '--memory', ALAVETELI_MEMORY]
+    vb.customize ['modifyvm', :id, '--cpus', cpus]
   end
 
   # Fetch and run the install script:
-  config.vm.provision :shell, :inline => "apt-get -y install curl"
-  config.vm.provision :shell, :inline => "curl -O https://raw.githubusercontent.com/mysociety/commonlib/master/bin/install-site.sh"
-  config.vm.provision :shell, :inline => "chmod a+rx install-site.sh"
-  config.vm.provision :shell, :inline => "./install-site.sh " \
-                                             "--dev " \
-                                             "alaveteli " \
-                                             "vagrant " \
+  config.vm.provision :shell, inline: 'apt-get -y install curl'
+  config.vm.provision :shell, inline: 'curl -O https://raw.githubusercontent.com/mysociety/commonlib/master/bin/install-site.sh'
+  config.vm.provision :shell, inline: 'chmod a+rx install-site.sh'
+  config.vm.provision :shell, inline: './install-site.sh ' \
+                                             '--dev ' \
+                                             'alaveteli ' \
+                                             'vagrant ' \
                                              "#{ ALAVETELI_FQDN }"
 end
