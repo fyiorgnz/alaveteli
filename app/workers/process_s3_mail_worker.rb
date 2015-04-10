@@ -2,7 +2,7 @@ class ProcessS3MailWorker
   include Sidekiq::Worker
   include Sidetiq::Schedulable
 
-  recurrence { minutely(15) }
+  recurrence { minutely(30) }
 
   def perform
     connection = Fog::Storage.new({
@@ -18,19 +18,12 @@ class ProcessS3MailWorker
     incoming_bucket.files.each do |file|
       puts "got #{file.key}"
 
-      body = file.body
-      message = Mail.new body
+      body, key = file.body, file.key
+      RequestMailer.receive(body)
 
-      if message.to.any? { |m| m =~ /^fyi-request/ }
-        puts 'DRY RUN'
-        puts message.from
-        # RequestMailer.receive(body)
-      end
+      processed_bucket.files.create key: key, body: body
 
-      processed_bucket.create key: file.key, body: body
-
-      # commented out for dry run
-      # file.destroy
+      file.destroy
     end
 
   end
