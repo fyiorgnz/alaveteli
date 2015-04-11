@@ -50,12 +50,12 @@ gem 'unicode', '~> 0.4.4'
 gem 'unidecoder', '~> 1.1.2'
 
 # Sidekiq for background jobs
-gem 'sidetiq', '~> 0.6.3'
+gem 'clockwork', '~> 1.1.0'
 gem 'sidekiq', '~> 3.3.3'
+gem 'sinatra', '>= 1.3.0', require: false # Sidekiq::Web
 
 # Fog for S3 uploads
 gem 'fog', '~> 1.29.0'
-
 
 group :assets do
   gem 'bootstrap-sass', '~> 2.3.1.2'

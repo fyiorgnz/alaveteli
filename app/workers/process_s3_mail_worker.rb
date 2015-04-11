@@ -1,8 +1,5 @@
 class ProcessS3MailWorker
   include Sidekiq::Worker
-  include Sidetiq::Schedulable
-
-  recurrence { minutely(30) }
 
   def perform
     connection = Fog::Storage.new({
