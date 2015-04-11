@@ -1,5 +1,5 @@
-require 'config/boot'
-require 'config/environment'
+require_relative 'boot'
+require_relative 'environment'
 
 every(15.minutes, 'update_xapian_index') { UpdateXapianIndexWorker.perform_async }
 
