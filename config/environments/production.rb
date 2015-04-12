@@ -40,9 +40,9 @@ Alaveteli::Application.configure do
       :exception_recipients => AlaveteliConfiguration::exception_notifications_to
   end
 
-  require 'rack/ssl'
   if AlaveteliConfiguration::force_ssl
-    config.middleware.insert_before ActionDispatch::Cookies, ::Rack::SSL
+    config.force_ssl = true
+    config.ssl_options = { exclude: proc { |env| env['User-Agent'] == 'ELB-HealthChecker/1.0' } }
   end
 
   # Compress JavaScripts and CSS
