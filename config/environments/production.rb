@@ -42,7 +42,7 @@ Alaveteli::Application.configure do
 
   if AlaveteliConfiguration::force_ssl
     config.force_ssl = true
-    config.ssl_options = { exclude: proc { |env| env['User-Agent'] == 'ELB-HealthChecker/1.0' } }
+    config.ssl_options = { exclude: proc { |env| env['HTTP_USER_AGENT'] == 'ELB-HealthChecker/1.0' } }
   end
 
   # Compress JavaScripts and CSS
