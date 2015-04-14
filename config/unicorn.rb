@@ -27,9 +27,6 @@ after_fork do |server, worker|
   end
 
   defined?(ActiveRecord::Base) and
-    ActiveRecord::Base.establish_connection(
-      Rails.application.config.database_configuration[Rails.env]
-    )
-
+    ActiveRecord::Base.establish_connection
 end
 
