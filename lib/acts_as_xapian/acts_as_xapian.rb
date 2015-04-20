@@ -511,22 +511,22 @@ module ActsAsXapian
           end
 
           if opts[:regex]
-            stems.map! { |w| /\b(#{ w })\w*\b/iu }
-            words.map! { |w| /\b(#{ w })\b/iu }
+            stems.map! { |w| /\b(#{ correctly_encode(w) })\w*\b/iu }
+            words.map! { |w| /\b(#{ correctly_encode(w) })\b/iu } if words.any?
           end
 
-          if RUBY_VERSION.to_f >= 1.9
-              (stems + words).map! do |term|
-                  term.is_a?(String) ? term.force_encoding('UTF-8') : term
-              end
-          else
-              stems + words
-          end
+          stems + words
         end
 
         # Text for lines in log file
         def log_description
             "Search: " + self.query_string
+        end
+
+        private
+
+        def correctly_encode(w)
+          RUBY_VERSION.to_f >= 1.9 ? w.force_encoding('UTF-8') : w
         end
 
     end
