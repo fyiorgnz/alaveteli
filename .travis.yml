@@ -1,10 +1,4 @@
 language: ruby
-branches:
-  only:
-    - master
-    - rails-3-develop
-    - develop
-    - services-refactor
 rvm:
   - 1.8.7-p374
   - 1.9.3
