@@ -111,17 +111,8 @@ then
     bundle_install_options="$bundle_install_options"
 fi
 
-# Use script/wad to install bundle when on Travis
-if [ "$TRAVIS" = "true" ]
-then
-    script/wad
-fi
-
-if [ ! "$TRAVIS" = "true" ]
-then
-    echo "Running bundle install with options: $bundle_install_options"
-    bundle install $bundle_install_options
-fi
+echo "Running bundle install with options: $bundle_install_options"
+bundle install $bundle_install_options
 
 bundle exec rake submodules:check
 
