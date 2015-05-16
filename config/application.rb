@@ -1,3 +1,4 @@
+# -*- encoding : utf-8 -*-
 require File.expand_path('../boot', __FILE__)
 
 require 'rails/all'
@@ -60,7 +61,8 @@ module Alaveteli
     config.time_zone = ::AlaveteliConfiguration::time_zone
 
     # Set the cache to use a memcached backend
-    config.cache_store = :mem_cache_store, { :namespace => AlaveteliConfiguration::domain }
+    config.cache_store = :mem_cache_store,
+                        { :namespace => "#{AlaveteliConfiguration::domain}_#{RUBY_VERSION}" }
     config.action_dispatch.rack_cache = nil
 
     config.after_initialize do |app|
@@ -116,6 +118,7 @@ module Alaveteli
                                  'ie6.css',
                                  'ie7.css',
                                  'bootstrap-dropdown.js',
+                                 'widget.css',
                                  'responsive/print.css',
                                  'responsive/application-lte-ie7.css',
                                  'responsive/application-ie8.css']

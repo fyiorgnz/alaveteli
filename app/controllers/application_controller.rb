@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+# -*- encoding : utf-8 -*-
 # controllers/application.rb:
 # Parent class of all controllers in FOI site. Filters added to this controller
 # apply to all controllers in the application. Likewise, all the methods added
@@ -132,7 +132,6 @@ class ApplicationController < ActionController::Base
     def validate_session_timestamp
         if session[:user_id] && session.key?(:ttl) && session[:ttl] < SESSION_TTL.ago
             clear_session_credentials
-            redirect_to signin_path
         end
     end
 

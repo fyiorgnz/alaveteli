@@ -1,4 +1,4 @@
-# coding: utf-8
+# -*- encoding : utf-8 -*-
 # == Schema Information
 #
 # Table name: incoming_messages
@@ -654,7 +654,7 @@ class IncomingMessage < ActiveRecord::Base
 
         # Save clipped version for snippets
         if self.cached_attachment_text_clipped.nil?
-            self.cached_attachment_text_clipped = text[0..MAX_ATTACHMENT_TEXT_CLIPPED]
+            self.cached_attachment_text_clipped = text.mb_chars[0..MAX_ATTACHMENT_TEXT_CLIPPED]
             self.save!
         end
 

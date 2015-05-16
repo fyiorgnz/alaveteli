@@ -1,4 +1,4 @@
-# encoding: utf-8
+# -*- encoding : utf-8 -*-
 # == Schema Information
 # Schema version: 20131024114346
 #
@@ -50,6 +50,7 @@ class InfoRequest < ActiveRecord::Base
     has_many :info_request_events, :order => 'created_at'
     has_many :user_info_request_sent_alerts
     has_many :track_things, :order => 'created_at desc'
+    has_many :widget_votes
     has_many :comments, :order => 'created_at'
     has_many :censor_rules, :order => 'created_at desc'
     has_many :mail_server_logs, :order => 'mail_server_log_done_id'
@@ -427,6 +428,7 @@ public
 
     # A new incoming email to this request
     def receive(email, raw_email_data, override_stop_new_responses = false, rejected_reason = "")
+        # Is this request allowing responses?
         if !override_stop_new_responses
             allow = nil
             reason = nil
@@ -457,9 +459,15 @@ public
                 raise "Unknown allow_new_responses_from '" + self.allow_new_responses_from + "'"
             end
 
+            # If its not allowing responses, handle the message
             if !allow
                 if self.handle_rejected_responses == 'bounce'
-                    RequestMailer.stopped_responses(self, email, raw_email_data).deliver if !is_external?
+                    if MailHandler.get_from_address(email).nil?
+                        # do nothing – can't bounce the mail as there's no
+                        # address to send it to
+                    else
+                        RequestMailer.stopped_responses(self, email, raw_email_data).deliver if !is_external?
+                    end
                 elsif self.handle_rejected_responses == 'holding_pen'
                     InfoRequest.holding_pen_request.receive(email, raw_email_data, false, reason)
                 elsif self.handle_rejected_responses == 'blackhole'
@@ -776,7 +784,14 @@ public
     end
 
     def public_response_events
-        self.info_request_events.select{|e| e.response? && e.incoming_message.all_can_view? }
+        condition = <<-SQL
+        info_request_events.event_type = ?
+        AND incoming_messages.prominence = ?
+        SQL
+
+        info_request_events.
+          joins(:incoming_message).
+            where(condition, 'response', 'normal')
     end
 
     # The last public response is the default one people might want to reply to
@@ -803,11 +818,9 @@ public
 
     # Text from the the initial request, for use in summary display
     def initial_request_text
-        if outgoing_messages.empty? # mainly for use with incomplete fixtures
-            return ""
-        end
-        excerpt = self.outgoing_messages[0].get_text_for_indexing
-        return excerpt
+        return '' if outgoing_messages.empty?
+        body_opts = { :censor_rules => applicable_censor_rules }
+        outgoing_messages.first.try(:get_text_for_indexing, true, body_opts) or ''
     end
 
     # Returns index of last event which is described or nil if none described.
@@ -927,7 +940,7 @@ public
     # Called by incoming_email - and used to be called to generate separate
     # envelope from address until we abandoned it.
     def magic_email(prefix_part)
-        raise "id required to make magic" if not self.id
+        raise "id required to create a magic email" if not self.id
         return InfoRequest.magic_email_for_id(prefix_part, self.id)
     end
 
@@ -1361,6 +1374,39 @@ public
                 order('last_event_time')
     end
 
+    def move_to_public_body(destination_public_body, opts = {})
+        old_body = public_body
+        editor = opts.fetch(:editor)
+
+        attrs = { :public_body => destination_public_body }
+
+        if destination_public_body
+          attrs.merge!({
+            :law_used => destination_public_body.law_only_short.downcase
+          })
+        end
+
+        if update_attributes(attrs)
+            log_event('move_request',
+                      :editor => editor,
+                      :public_body_url_name => public_body.url_name,
+                      :old_public_body_url_name => old_body.url_name)
+
+            reindex_request_events
+
+            public_body
+        end
+    end
+
+    # The DateTime of the last InfoRequestEvent belonging to the InfoRequest
+    # Only available if the last_event_time attribute has been set. This is
+    # currentlt only set through .find_in_state
+    #
+    # Returns a DateTime
+    def last_event_time
+        attributes['last_event_time'].try(:to_datetime)
+    end
+
     private
 
     def set_defaults
@@ -1372,8 +1418,9 @@ public
             # this should only happen on Model.exists?() call. It can be safely ignored.
             # See http://www.tatvartha.com/2011/03/activerecordmissingattributeerror-missing-attribute-a-bug-or-a-features/
         end
+
         # FOI or EIR?
-        if !self.public_body.nil? && self.public_body.eir_only?
+        if new_record? && public_body && public_body.eir_only?
             self.law_used = 'eir'
         end
     end

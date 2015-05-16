@@ -1,3 +1,4 @@
+# -*- encoding : utf-8 -*-
 # == Schema Information
 #
 # Table name: censor_rules
@@ -16,6 +17,42 @@
 #
 
 require File.expand_path(File.dirname(__FILE__) + '/../spec_helper')
+
+describe CensorRule do
+
+    describe :apply_to_text do
+
+        it 'applies the rule to the text' do
+            rule = FactoryGirl.build(:censor_rule, :text => 'secret')
+            text = 'Some secret text'
+            expect(rule.apply_to_text(text)).to eq('Some [REDACTED] text')
+        end
+
+        it 'does not mutate the input' do
+            rule = FactoryGirl.build(:censor_rule, :text => 'secret')
+            text = 'Some secret text'
+            rule.apply_to_text(text)
+            expect(text).to eq('Some secret text')
+        end
+
+        it 'returns the text if the rule is unmatched' do
+            rule = FactoryGirl.build(:censor_rule, :text => 'secret')
+            text = 'Some text'
+            expect(rule.apply_to_text(text)).to eq('Some text')
+        end
+    end
+
+    describe :apply_to_text! do
+
+        it 'mutates the input' do
+            rule = FactoryGirl.build(:censor_rule, :text => 'secret')
+            text = 'Some secret text'
+            rule.apply_to_text!(text)
+            expect(text).to eq('Some [REDACTED] text')
+        end
+
+    end
+end
 
 describe CensorRule, "substituting things" do
 

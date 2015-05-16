@@ -1,3 +1,4 @@
+# -*- encoding : utf-8 -*-
 # == Schema Information
 #
 # Table name: censor_rules
@@ -41,6 +42,11 @@ class CensorRule < ActiveRecord::Base
     scope :global, { :conditions => { :info_request_id => nil,
                                       :user_id => nil,
                                       :public_body_id => nil } }
+
+    def apply_to_text(text_to_censor)
+        return nil if text_to_censor.nil?
+        text_to_censor.gsub(to_replace, replacement)
+    end
 
     def apply_to_text!(text_to_censor)
         return nil if text_to_censor.nil?
