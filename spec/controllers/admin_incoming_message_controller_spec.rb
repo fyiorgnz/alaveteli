@@ -36,6 +36,7 @@ describe AdminIncomingMessageController, "when administering incoming messages" 
     end
 
     describe 'when redelivering an incoming message' do
+        include XapianTestHelpers
 
         before(:each) do
             basic_auth_login @request

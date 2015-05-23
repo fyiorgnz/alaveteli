@@ -442,6 +442,7 @@ describe ActsAsXapian::Search, "#words_to_highlight" do
 end
 
 describe InfoRequestEvent, " when faced with a race condition during xapian_mark_needs_index" do
+    include XapianTestHelpers
 
     before(:each) do
         load_raw_emails_data
