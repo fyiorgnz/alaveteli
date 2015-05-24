@@ -109,19 +109,12 @@ Spork.prefork do
       RoutingFilter.active = true if [:controller, :helper, :model].include? example.metadata[:type]
     end
 
-    # This section makes the garbage collector run less often to speed up tests
-    last_gc_run = Time.now
-
     config.before(:each) do
-      GC.disable
+      DeferredGarbageCollection.start
     end
 
     config.after(:each) do
-      if Time.now - last_gc_run > 4
-        GC.enable
-        GC.start
-        last_gc_run = Time.now
-      end
+      DeferredGarbageCollection.reconsider
     end
   end
 
