@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+# -*- encoding : utf-8 -*-
 # controllers/application.rb:
 # Parent class of all controllers in FOI site. Filters added to this controller
 # apply to all controllers in the application. Likewise, all the methods added
@@ -14,7 +14,8 @@ class ApplicationController < ActionController::Base
     end
     class RouteNotFound < StandardError
     end
-    protect_from_forgery
+    protect_from_forgery :if => :user?
+    skip_before_filter :verify_authenticity_token, :unless => :user?
 
     # assign our own handler method for non-local exceptions
     rescue_from Exception, :with => :render_exception
@@ -131,7 +132,6 @@ class ApplicationController < ActionController::Base
     def validate_session_timestamp
         if session[:user_id] && session.key?(:ttl) && session[:ttl] < SESSION_TTL.ago
             clear_session_credentials
-            redirect_to signin_path
         end
     end
 
@@ -206,7 +206,7 @@ class ApplicationController < ActionController::Base
     def foi_fragment_cache_part_path(param)
         path = url_for(param)
         id = param['id'] || param[:id]
-        first_three_digits = id.to_s()[0..2]
+        first_three_digits = id.to_s[0..2]
         path = path.sub("/request/", "/request/" + first_three_digits + "/")
         return path
     end
@@ -246,6 +246,16 @@ class ApplicationController < ActionController::Base
     end
 
     private
+
+    def user?
+        !session[:user_id].nil?
+    end
+
+    def form_authenticity_token
+        if user?
+            session[:_csrf_token] ||= SecureRandom.base64(32)
+        end
+    end
 
     # Check the user is logged in
     def authenticated?(reason_params)

@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+# -*- encoding : utf-8 -*-
 # == Schema Information
 # Schema version: 20131024114346
 #
@@ -32,6 +32,10 @@ require 'securerandom'
 require 'set'
 
 class PublicBody < ActiveRecord::Base
+    include AdminColumn
+
+    @non_admin_columns = %w(name last_edit_comment)
+
     strip_attributes!
 
     validates_presence_of :name, :message => N_("Name can't be blank")
@@ -64,7 +68,6 @@ class PublicBody < ActiveRecord::Base
     }
 
     translates :name, :short_name, :request_email, :url_name, :notes, :first_letter, :publication_scheme
-    accepts_nested_attributes_for :translations, :reject_if => :empty_translation_in_params?
 
     # Default fields available for importing from CSV, in the format
     # [field_name, 'short description of field (basic html allowed)']
@@ -96,6 +99,8 @@ class PublicBody < ActiveRecord::Base
     self.non_versioned_columns << 'info_requests_not_held_count' << 'info_requests_overdue'
     self.non_versioned_columns << 'info_requests_overdue_count'
 
+    include Translatable
+
     # Public: Search for Public Bodies whose name, short_name, request_email or
     # tags contain the given query
     #
@@ -124,11 +129,6 @@ class PublicBody < ActiveRecord::Base
                        uniq
     end
 
-    # Convenience methods for creating/editing translations via forms
-    def find_translation_by_locale(locale)
-        self.translations.find_by_locale(locale)
-    end
-
     # TODO: - Don't like repeating this!
     def calculate_cached_fields(t)
         PublicBody.set_first_letter(t)
@@ -138,7 +138,7 @@ class PublicBody < ActiveRecord::Base
     end
 
     # Set the first letter on a public body or translation
-    def PublicBody.set_first_letter(instance)
+    def self.set_first_letter(instance)
         unless instance.name.nil? or instance.name.empty?
             # we use a regex to ensure it works with utf-8/multi-byte
             first_letter = Unicode.upcase instance.name.scan(/^./mu)[0]
@@ -146,28 +146,6 @@ class PublicBody < ActiveRecord::Base
                 instance.first_letter = first_letter
             end
         end
-    end
-
-    def translated_versions
-        translations
-    end
-
-    def ordered_translations
-        translations.
-          select { |t| I18n.available_locales.include?(t.locale) }.
-            sort_by { |t| I18n.available_locales.index(t.locale) }
-    end
-
-    def build_all_translations
-        I18n.available_locales.each do |locale|
-            translations.build(:locale => locale) unless translations.detect{ |t| t.locale == locale }
-        end
-    end
-
-    def translated_versions=(translation_attrs)
-        warn "[DEPRECATION] PublicBody#translated_versions= will be replaced " \
-             "by PublicBody#translations_attributes= as of release 0.22"
-        self.translations_attributes = translation_attrs
     end
 
     def set_default_publication_scheme
@@ -339,23 +317,24 @@ class PublicBody < ActiveRecord::Base
 
     # Are all requests to this body under the Environmental Information Regulations?
     def eir_only?
-        return self.has_tag?('eir_only')
+        has_tag?('eir_only')
     end
+
     def law_only_short
-        if self.eir_only?
-            return "EIR"
-        else
-            return "FOI"
-        end
+        eir_only? ? 'EIR' : 'FOI'
     end
 
     # Schools are allowed more time in holidays, so we change some wordings
     def is_school?
-        return self.has_tag?('school')
+        has_tag?('school')
+    end
+
+    def site_administration?
+        has_tag?('site_administration')
     end
 
     # The "internal admin" is a special body for internal use.
-    def PublicBody.internal_admin_body
+    def self.internal_admin_body
         # Use find_by_sql to avoid the search being specific to a
         # locale, since url_name is a translated field:
         sql = "SELECT * FROM public_bodies WHERE url_name = 'internal_admin_authority'"
@@ -377,10 +356,6 @@ class PublicBody < ActiveRecord::Base
         else
             raise "Multiple public bodies (#{matching_pbs.length}) found with url_name 'internal_admin_authority'"
         end
-    end
-
-    def site_administration?
-        has_tag?('site_administration')
     end
 
     class ImportCSVDryRun < StandardError
@@ -412,7 +387,7 @@ class PublicBody < ActiveRecord::Base
                 # matching names won't work afterwards, and we'll create new bodies instead
                 # of updating them
                 bodies_by_name = {}
-                set_of_existing = Set.new()
+                set_of_existing = Set.new
                 internal_admin_body_id = PublicBody.internal_admin_body.id
                 I18n.with_locale(I18n.default_locale) do
                     bodies = (tag.nil? || tag.empty?) ? PublicBody.find(:all, :include => :translations) : PublicBody.find_by_tag(tag)
@@ -425,7 +400,7 @@ class PublicBody < ActiveRecord::Base
                     end
                 end
 
-                set_of_importing = Set.new()
+                set_of_importing = Set.new
                 # Default values in case no field list is given
                 field_names = { 'name' => 1, 'request_email' => 2 }
                 line = 0
@@ -577,17 +552,11 @@ class PublicBody < ActiveRecord::Base
         return self.request_email_domain
     end
 
-    # Returns nil if configuration variable not set
-    def override_request_email
-        e = AlaveteliConfiguration::override_all_public_body_request_emails
-        e if e != ""
-    end
-
     def request_email
-        if override_request_email
-            override_request_email
-        else
+        if AlaveteliConfiguration::override_all_public_body_request_emails.blank? || read_attribute(:request_email).blank?
             read_attribute(:request_email)
+        else
+            AlaveteliConfiguration::override_all_public_body_request_emails
         end
     end
 
@@ -598,7 +567,7 @@ class PublicBody < ActiveRecord::Base
 
     # Return the domain part of an email address, canonicalised and with common
     # extra UK Government server name parts removed.
-    def PublicBody.extract_domain_from_email(email)
+    def self.extract_domain_from_email(email)
         email =~ /@(.*)/
         if $1.nil?
             return nil
@@ -654,12 +623,6 @@ class PublicBody < ActiveRecord::Base
 
     def purge_in_cache
         self.info_requests.each {|x| x.purge_in_cache}
-    end
-
-    def for_admin_column
-        self.class.content_columns.map{|c| c unless %w(name last_edit_comment).include?(c.name)}.compact.each do |column|
-            yield(column.human_name, self.send(column.name), column.type.to_s, column.name)
-        end
     end
 
     def self.where_clause_for_stats(minimum_requests, total_column)
@@ -771,13 +734,6 @@ class PublicBody < ActiveRecord::Base
       else
           send(name)
       end
-    end
-
-    def empty_translation_in_params?(attributes)
-        attrs_with_values = attributes.select do |key, value|
-            value != '' and key.to_s != 'locale'
-        end
-        attrs_with_values.empty?
     end
 
     def request_email_if_requestable

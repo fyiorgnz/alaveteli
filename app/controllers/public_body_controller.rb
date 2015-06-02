@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+# -*- encoding : utf-8 -*-
 # app/controllers/public_body_controller.rb:
 # Show information about a public body.
 #
@@ -9,14 +9,22 @@ require 'confidence_intervals'
 require 'tempfile'
 
 class PublicBodyController < ApplicationController
+
+    MAX_RESULTS = 500
     # TODO: tidy this up with better error messages, and a more standard infrastructure for the redirect to canonical URL
     def show
         long_cache
+        @page = get_search_page_from_params
+        requests_per_page = 25
+        # Later pages are very expensive to load
+        if @page > MAX_RESULTS / requests_per_page
+            raise ActiveRecord::RecordNotFound.new("Sorry. No pages after #{MAX_RESULTS / requests_per_page}.")
+        end
         if MySociety::Format.simplify_url_part(params[:url_name], 'body') != params[:url_name]
             redirect_to :url_name =>  MySociety::Format.simplify_url_part(params[:url_name], 'body'), :status => :moved_permanently
             return
         end
-        @locale = self.locale_from_params()
+        @locale = locale_from_params
         I18n.with_locale(@locale) do
             @public_body = PublicBody.find_by_url_name_with_historic(params[:url_name])
             raise ActiveRecord::RecordNotFound.new("None found") if @public_body.nil?
@@ -32,6 +40,8 @@ class PublicBodyController < ApplicationController
 
             set_last_body(@public_body)
 
+            @number_of_visible_requests = @public_body.info_requests.visible.count
+
             top_url = frontpage_url
             @searched_to_send_request = false
             referrer = request.env['HTTP_REFERER']
@@ -45,7 +55,7 @@ class PublicBodyController < ApplicationController
             # TODO: really should just use SQL query here rather than Xapian.
             sortby = "described"
             begin
-                @xapian_requests = perform_search([InfoRequestEvent], query, sortby, 'request_collapse')
+                @xapian_requests = perform_search([InfoRequestEvent], query, sortby, 'request_collapse', requests_per_page)
                 if (@page > 1)
                     @page_desc = " (page " + @page.to_s + ")"
                 else
@@ -75,7 +85,7 @@ class PublicBodyController < ApplicationController
         @public_body = PublicBody.find_by_url_name_with_historic(params[:url_name])
         raise ActiveRecord::RecordNotFound.new("None found") if @public_body.nil?
 
-        I18n.with_locale(self.locale_from_params()) do
+        I18n.with_locale(locale_from_params) do
             if params[:submitted_view_email]
                 if verify_recaptcha
                     flash.discard(:error)
@@ -98,7 +108,7 @@ class PublicBodyController < ApplicationController
 
         @tag = params[:tag]
 
-        @locale = self.locale_from_params
+        @locale = locale_from_params
         underscore_locale = @locale.gsub '-', '_'
         underscore_default_locale = I18n.default_locale.to_s.gsub '-', '_'
 

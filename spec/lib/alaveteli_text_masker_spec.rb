@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+# -*- encoding : utf-8 -*-
 require File.expand_path(File.dirname(__FILE__) + '/../spec_helper')
 
 describe AlaveteliTextMasker do
@@ -60,7 +60,7 @@ describe AlaveteliTextMasker do
         end
 
         def pdf_replacement_test(use_ghostscript_compression)
-            config = MySociety::Config.load_default()
+            config = MySociety::Config.load_default
             previous = config['USE_GHOSTSCRIPT_COMPRESSION']
             config['USE_GHOSTSCRIPT_COMPRESSION'] = use_ghostscript_compression
             orig_pdf = load_file_fixture('tfl.pdf')
@@ -90,6 +90,23 @@ describe AlaveteliTextMasker do
             pdf = orig_pdf.dup
             apply_masks!(pdf, "application/pdf")
             pdf.should_not == ""
+        end
+
+        it 'should keep the uncensored original if uncompression of a PDF fails' do
+            orig_pdf = load_file_fixture('tfl.pdf')
+            pdf = orig_pdf.dup
+            stub!(:uncompress_pdf).and_return nil
+            apply_masks!(pdf, "application/pdf")
+            pdf.should == orig_pdf
+        end
+
+        it 'should use the uncompressed PDF text if re-compression of a compressed PDF fails' do
+            orig_pdf = load_file_fixture('tfl.pdf')
+            pdf = orig_pdf.dup
+            stub!(:uncompress_pdf).and_return "something about foi@tfl.gov.uk"
+            stub!(:compress_pdf).and_return nil
+            apply_masks!(pdf, "application/pdf")
+            pdf.should match "something about xxx@xxx.xxx.xx"
         end
 
         it "should apply hard-coded privacy rules to HTML files" do

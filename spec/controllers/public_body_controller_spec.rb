@@ -1,4 +1,4 @@
-# coding: utf-8
+# -*- encoding : utf-8 -*-
 require File.expand_path(File.dirname(__FILE__) + '/../spec_helper')
 
 require 'nokogiri'
@@ -80,6 +80,13 @@ describe PublicBodyController, "when showing a body" do
                    { :search_params => search_params }
         get :show, :url_name => 'dfh', :view => 'all'
         expect(flash[:search_params]).to eq(search_params)
+    end
+
+
+    it 'should not show high page offsets as these are extremely slow to generate' do
+        lambda {
+            get :show, { :url_name => 'dfh', :view => 'all', :page => 25 }
+        }.should raise_error(ActiveRecord::RecordNotFound)
     end
 
 end
@@ -329,7 +336,7 @@ end
 describe PublicBodyController, "when showing public body statistics" do
 
     it "should render the right template with the right data" do
-        config = MySociety::Config.load_default()
+        config = MySociety::Config.load_default
         config['MINIMUM_REQUESTS_FOR_STATISTICS'] = 1
         config['PUBLIC_BODY_STATISTICS_PAGE'] = true
         get :statistics

@@ -1,4 +1,4 @@
-# coding: utf-8
+# -*- encoding : utf-8 -*-
 # == Schema Information
 #
 # Table name: incoming_messages
@@ -38,6 +38,7 @@ require 'zip/zip'
 require 'iconv' unless String.method_defined?(:encode)
 
 class IncomingMessage < ActiveRecord::Base
+    include AdminColumn
     extend MessageProminence
     belongs_to :info_request
     validates_presence_of :info_request
@@ -654,7 +655,7 @@ class IncomingMessage < ActiveRecord::Base
 
         # Save clipped version for snippets
         if self.cached_attachment_text_clipped.nil?
-            self.cached_attachment_text_clipped = text[0..MAX_ATTACHMENT_TEXT_CLIPPED]
+            self.cached_attachment_text_clipped = text.mb_chars[0..MAX_ATTACHMENT_TEXT_CLIPPED]
             self.save!
         end
 
@@ -725,7 +726,7 @@ class IncomingMessage < ActiveRecord::Base
     end
 
     # Search all info requests for
-    def IncomingMessage.find_all_unknown_mime_types
+    def self.find_all_unknown_mime_types
         for incoming_message in IncomingMessage.find(:all)
             for attachment in incoming_message.get_attachments_for_display
                 raise "internal error incoming_message " + incoming_message.id.to_s if attachment.content_type.nil?
@@ -751,16 +752,9 @@ class IncomingMessage < ActiveRecord::Base
         return ret.keys.join(" ")
     end
     # Return space separated list of all file extensions known
-    def IncomingMessage.get_all_file_extensions
+    def self.get_all_file_extensions
         return AlaveteliFileTypes.all_extensions.join(" ")
     end
-
-    def for_admin_column
-        self.class.content_columns.each do |column|
-            yield(column.human_name, self.send(column.name), column.type.to_s, column.name)
-        end
-    end
-
 end
 
 

@@ -1,3 +1,4 @@
+# -*- encoding : utf-8 -*-
 require 'iconv' unless String.method_defined?(:encode)
 require 'charlock_holmes'
 
@@ -68,6 +69,20 @@ def convert_string_to_utf8_or_binary(s, suggested_character_encoding=nil)
     rescue EncodingNormalizationError
         result = s
         s.force_encoding 'ASCII-8BIT' if String.method_defined?(:encode)
+    end
+    result
+end
+
+def convert_string_to_utf8(s, suggested_character_encoding=nil)
+    begin
+        result = normalize_string_to_utf8 s, suggested_character_encoding
+    rescue EncodingNormalizationError
+        result = s
+        if String.method_defined?(:encode)
+            result = s.force_encoding("utf-8").encode("utf-8", :invalid => :replace,
+                                                               :undef => :replace,
+                                                               :replace => "")
+        end
     end
     result
 end

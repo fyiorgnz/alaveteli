@@ -1,3 +1,4 @@
+# -*- encoding : utf-8 -*-
 Alaveteli::Application.configure do
   # Settings specified here will take precedence over those in config/environment.rb
 
@@ -18,17 +19,17 @@ Alaveteli::Application.configure do
   # Disable delivery errors, bad email addresses will be ignored
   # config.action_mailer.raise_delivery_errors = false
 
-  config.action_mailer.delivery_method = AlaveteliConfiguration::mailer_delivery_method.to_sym
+  config.action_mailer.delivery_method = AlaveteliConfiguration.production_mailer_delivery_method.to_sym
 
-  if AlaveteliConfiguration::mailer_delivery_method.to_sym == :smtp
+  if AlaveteliConfiguration.production_mailer_delivery_method.to_sym == :smtp
     config.action_mailer.smtp_settings = {
-      :address => AlaveteliConfiguration::mailer_address,
-      :port => AlaveteliConfiguration.mailer_port,
-      :domain => AlaveteliConfiguration.mailer_domain,
-      :user_name => AlaveteliConfiguration.mailer_user_name,
-      :password => AlaveteliConfiguration.mailer_password,
-      :authentication => AlaveteliConfiguration.mailer_authentication,
-      :enable_starttls_auto => AlaveteliConfiguration.mailer_enable_starttls_auto
+      :address => AlaveteliConfiguration.smtp_mailer_address,
+      :port => AlaveteliConfiguration.smtp_mailer_port,
+      :domain => AlaveteliConfiguration.smtp_mailer_domain,
+      :user_name => AlaveteliConfiguration.smtp_mailer_user_name,
+      :password => AlaveteliConfiguration.smtp_mailer_password,
+      :authentication => AlaveteliConfiguration.smtp_mailer_authentication,
+      :enable_starttls_auto => AlaveteliConfiguration.smtp_mailer_enable_starttls_auto
     }
   end
 
@@ -40,9 +41,9 @@ Alaveteli::Application.configure do
       :exception_recipients => AlaveteliConfiguration::exception_notifications_to
   end
 
-  require 'rack/ssl'
   if AlaveteliConfiguration::force_ssl
-    config.middleware.insert_before ActionDispatch::Cookies, ::Rack::SSL
+    config.force_ssl = true
+    config.ssl_options = { exclude: proc { |env| env['HTTP_USER_AGENT'] == 'ELB-HealthChecker/1.0' } }
   end
 
   # Compress JavaScripts and CSS

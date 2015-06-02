@@ -1,3 +1,19 @@
+# rails-3-develop
+
+## Highlighted Features
+* There is experimental support for using an STMP server, rather than sendmail,
+  for outgoing mail. There is not yet any ability to retry if the SMTP server is 
+  unavailable. 
+* HTML 'widgets' advertising requests can be displayed on other sites in iframes.
+  If 'ENABLE_WIDGETS' is set to true in `general.yml` (the default is false), a link
+  to the widget code will appear in the right hand sidebar of a request page.
+* Capistrano now caches themes (Henare Degan).
+
+## Upgrade Notes
+
+* Capistrano now caches themes in `shared/themes`. Run the `deploy:setup` task
+  to create the shared directory before making a new code deploy. 
+
 # Version 0.21
 
 ## Highlighted Features
@@ -48,7 +64,13 @@
 
 * Admin route names have been standardised so if you have overridden
   templates that refer to admin routes, check the original templates to
-  see if these need to be changed.
+  see if these need to be changed. URLs in rreviously sent admin emails about
+  requested changes to authorities will need to be tweaked to work - from
+  `admin/body/new?change_request_id=n` to `admin/bodies/new?change_request_id=n`
+* CSRF protection is now used by default on forms using 'POST', and as a result, the navbar and front page
+  search forms have been converted to use 'GET' rather than 'POST'. If you override `/app/views/general/_frontpage_search_box.html.erb`, `app/views/general/header.html.erb` or `app/views/general/_responsive_topnav.html.erb`, you should update the search forms in your templates to use 'GET'. Any forms of your own
+  that use the 'POST' method should be generated in Rails or otherwise include a CSRF token. If
+  they don't, logged-in users will be logged out when they use them. 
 * If you override the `app/views/user/_signin.html.erb` or
   `app/view/user/_signup.html.erb` templates, check the tabindex order
   is still sensible - the order of the elements on the page has changed
