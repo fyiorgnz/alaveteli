@@ -32,7 +32,7 @@ module HasTagString
 
         # Parses a text version of one single tag, such as "a:b" and returns
         # the name and value, with nil for value if there isn't one.
-        def HasTagStringTag.split_tag_into_name_value(tag)
+        def self.split_tag_into_name_value(tag)
             sections = tag.split(/:/)
             name = sections[0]
             if sections[1]
@@ -152,7 +152,7 @@ module HasTagString
     ######################################################################
     # Main entry point, add has_tag_string to your model.
     module HasMethods
-        def has_tag_string()
+        def has_tag_string
             has_many :tags, :conditions => "model = '" + self.to_s + "'", :foreign_key => "model_id", :class_name => 'HasTagString::HasTagStringTag'
 
             include InstanceMethods

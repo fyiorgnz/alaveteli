@@ -75,7 +75,7 @@ class RequestController < ApplicationController
         else
             medium_cache
         end
-        @locale = self.locale_from_params()
+        @locale = locale_from_params
         I18n.with_locale(@locale) do
 
             # Look up by old style numeric identifiers
@@ -96,12 +96,12 @@ class RequestController < ApplicationController
             set_last_request(@info_request)
 
             # assign variables from request parameters
-            @collapse_quotes = params[:unfold] ? false : true
+            @collapse_quotes = !params[:unfold]
             # Don't allow status update on external requests, otherwise accept param
             if @info_request.is_external?
                 @update_status = false
             else
-                @update_status = params[:update_status] ? true : false
+                @update_status = params[:update_status]
             end
 
             assign_variables_for_show_template(@info_request)
@@ -164,7 +164,7 @@ class RequestController < ApplicationController
     def list
         medium_cache
         @view = params[:view]
-        @locale = self.locale_from_params()
+        @locale = locale_from_params
         @page = get_search_page_from_params if !@page # used in cache case, as perform_search sets @page as side effect
         @per_page = PER_PAGE
         @max_results = MAX_RESULTS
@@ -566,9 +566,9 @@ class RequestController < ApplicationController
         @info_request = InfoRequest.find(params[:id].to_i)
         set_last_request(@info_request)
 
-        @collapse_quotes = params[:unfold] ? false : true
+        @collapse_quotes = !params[:unfold]
         @is_owning_user = @info_request.is_owning_user?(authenticated_user)
-        @gone_postal = params[:gone_postal] ? true : false
+        @gone_postal = params[:gone_postal]
         if !@is_owning_user
             @gone_postal = false
         end
@@ -848,7 +848,7 @@ class RequestController < ApplicationController
 
     # FOI officers can upload a response
     def upload_response
-        @locale = self.locale_from_params()
+        @locale = locale_from_params
         I18n.with_locale(@locale) do
             @info_request = InfoRequest.find_by_url_title!(params[:url_title])
 
@@ -914,7 +914,7 @@ class RequestController < ApplicationController
     end
 
     def download_entire_request
-        @locale = self.locale_from_params()
+        @locale = locale_from_params
         I18n.with_locale(@locale) do
             @info_request = InfoRequest.find_by_url_title!(params[:url_title])
             if authenticated?(

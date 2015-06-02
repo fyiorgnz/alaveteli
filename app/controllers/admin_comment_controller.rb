@@ -16,12 +16,12 @@ class AdminCommentController < AdminController
 
         old_body = @comment.body
         old_visible = @comment.visible
-        @comment.visible = params[:comment][:visible] == "true" ? true : false
+        @comment.visible = params[:comment][:visible] == "true"
 
         if @comment.update_attributes(params[:comment])
             @comment.info_request.log_event("edit_comment",
                 { :comment_id => @comment.id,
-                  :editor => admin_current_user(),
+                  :editor => admin_current_user,
                   :old_body => old_body,
                   :body => @comment.body,
                   :old_visible => old_visible,

@@ -80,13 +80,12 @@ module AlaveteliConfiguration
             :WORKING_OR_CALENDAR_DAYS => 'working',
             :USE_BULLET_IN_DEVELOPMENT => false
           }
-    end
+  end
 
   def self.method_missing(name)
-    self.config ||= YAML.load(ERB.new(File.read(Rails.root.join 'config', 'general.yml')).result)
-    key = name.to_s.upcase
-    return super unless DEFAULTS.has_key?(key.to_sym)
-    config.fetch(key, DEFAULTS[key.to_sym])
+      self.config ||= YAML.load(ERB.new(File.read(Rails.root.join 'config', 'general.yml')).result)
+      key = name.to_s.upcase
+      return super unless DEFAULTS.has_key?(key.to_sym)
+      config.fetch(key, DEFAULTS[key.to_sym])
   end
 end
-

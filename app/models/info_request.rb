@@ -28,7 +28,10 @@
 require 'digest/sha1'
 
 class InfoRequest < ActiveRecord::Base
+    include AdminColumn
     include Rails.application.routes.url_helpers
+
+    @non_admin_columns = %w(title url_title)
 
     strip_attributes!
 
@@ -194,23 +197,12 @@ class InfoRequest < ActiveRecord::Base
     rescue MissingSourceFile, NameError
     end
 
-    # only check on create, so existing models with mixed case are allowed
-    def validate_on_create
-        if !self.title.nil? && !MySociety::Validate.uses_mixed_capitals(self.title, 10)
-            errors.add(:title, _('Please write the summary using a mixture of capital and lower case letters. This makes it easier for others to read.'))
-        end
-        if !self.title.nil? && title.size > 200
-            errors.add(:title, _('Please keep the summary short, like in the subject of an email. You can use a phrase, rather than a full sentence.'))
-        end
-        if !self.title.nil? && self.title =~ /^(FOI|Freedom of Information)\s*requests?$/i
-            errors.add(:title, _('Please describe more what the request is about in the subject. There is no need to say it is an FOI request, we add that on anyway.'))
-        end
-    end
-
     OLD_AGE_IN_DAYS = 21.days
 
     def visible_comments
-        self.comments.find(:all, :conditions => 'visible')
+        warn %q([DEPRECATION] InfoRequest#visible_comments will be replaced with
+        InfoRequest#comments.visible as of 0.23).squish
+        comments.visible
     end
 
     # If the URL name has changed, then all request: queries will break unless
@@ -346,7 +338,7 @@ public
     # only they are sent the email address with the has in it. (We don't check
     # the prefix and domain, as sometimes those change, or might be elided by
     # copying an email, and that doesn't matter)
-    def InfoRequest.find_by_incoming_email(incoming_email)
+    def self.find_by_incoming_email(incoming_email)
         id, hash = InfoRequest._extract_id_hash_from_email(incoming_email)
         if hash_from_id(id) == hash
             # Not using find(id) because we don't exception raised if nothing found
@@ -356,7 +348,7 @@ public
 
     # Return list of info requests which *might* be right given email address
     # e.g. For the id-hash email addresses, don't match the hash.
-    def InfoRequest.guess_by_incoming_email(incoming_message)
+    def self.guess_by_incoming_email(incoming_message)
         guesses = []
         # 1. Try to guess based on the email address(es)
         incoming_message.addresses.each do |address|
@@ -368,7 +360,7 @@ public
     end
 
     # Internal function used by find_by_magic_email and guess_by_incoming_email
-    def InfoRequest._extract_id_hash_from_email(incoming_email)
+    def self._extract_id_hash_from_email(incoming_email)
         # Match case insensitively, FOI officers often write Request with capital R.
         incoming_email = incoming_email.downcase
 
@@ -395,7 +387,7 @@ public
     # repeated requests, say once a quarter for time information, then might need to do that.
     # TODO: this *should* also check outgoing message joined to is an initial
     # request (rather than follow up)
-    def InfoRequest.find_existing(title, public_body_id, body)
+    def self.find_existing(title, public_body_id, body)
         return InfoRequest.find(:first, :conditions => [ "title = ? and public_body_id = ? and outgoing_messages.body = ?", title, public_body_id, body ], :include => [ :outgoing_messages ] )
     end
 
@@ -535,7 +527,7 @@ public
 
     # The "holding pen" is a special request which stores incoming emails whose
     # destination request is unknown.
-    def InfoRequest.holding_pen_request
+    def self.holding_pen_request
         ir = InfoRequest.find_by_url_title("holding_pen")
         if ir.nil?
             ir = InfoRequest.new(
@@ -550,7 +542,7 @@ public
                 :status => 'ready',
                 :message_type => 'initial_request',
                 :body => 'This is the holding pen request. It shows responses that were sent to invalid addresses, and need moving to the correct request by an adminstrator.',
-                :last_sent_at => Time.now(),
+                :last_sent_at => Time.now,
                 :what_doing => 'normal_sort'
 
             })
@@ -565,7 +557,7 @@ public
 
     # states which require administrator action (hence email administrators
     # when they are entered, and offer state change dialog to them)
-    def InfoRequest.requires_admin_states
+    def self.requires_admin_states
         return ['requires_admin', 'error_message', 'attention_requested']
     end
 
@@ -666,11 +658,11 @@ public
             if !curr_state.nil? && event.event_type == 'response'
                 if event.calculated_state != curr_state
                     event.calculated_state = curr_state
-                    event.last_described_at = Time.now()
+                    event.last_described_at = Time.now
                     event.save!
                 end
                 if event.last_described_at.nil? # TODO: actually maybe this isn't needed
-                    event.last_described_at = Time.now()
+                    event.last_described_at = Time.now
                     event.save!
                 end
                 curr_state = nil
@@ -682,7 +674,7 @@ public
                 # indexed.
                 if event.calculated_state != event.described_state
                     event.calculated_state = event.described_state
-                    event.last_described_at = Time.now()
+                    event.last_described_at = Time.now
                     event.save!
                 end
 
@@ -699,7 +691,7 @@ public
                 # case there is a preceding response that the described state should be applied to.
                 if event.calculated_state != event.described_state
                     event.calculated_state = event.described_state
-                    event.last_described_at = Time.now()
+                    event.last_described_at = Time.now
                     event.save!
                 end
             end
@@ -882,7 +874,7 @@ public
 
 
     # Display version of status
-    def InfoRequest.get_status_description(status)
+    def self.get_status_description(status)
         descriptions = {
             'waiting_classification'        => _("Awaiting classification."),
             'waiting_response'              => _("Awaiting response."),
@@ -944,7 +936,7 @@ public
         return InfoRequest.magic_email_for_id(prefix_part, self.id)
     end
 
-    def InfoRequest.magic_email_for_id(prefix_part, id)
+    def self.magic_email_for_id(prefix_part, id)
         magic_email = AlaveteliConfiguration::incoming_email_prefix
         magic_email += prefix_part + id.to_s
         magic_email += "-" + InfoRequest.hash_from_id(id)
@@ -958,7 +950,7 @@ public
         self.idhash = InfoRequest.hash_from_id(self.id)
     end
 
-    def InfoRequest.create_from_attributes(info_request_atts, outgoing_message_atts, user=nil)
+    def self.create_from_attributes(info_request_atts, outgoing_message_atts, user=nil)
         info_request = new(info_request_atts)
         default_message_params = {
             :status => 'ready',
@@ -972,12 +964,12 @@ public
         info_request
     end
 
-    def InfoRequest.hash_from_id(id)
+    def self.hash_from_id(id)
         return Digest::SHA1.hexdigest(id.to_s + AlaveteliConfiguration::incoming_email_secret)[0,8]
     end
 
     # Used to find when event last changed
-    def InfoRequest.last_event_time_clause(event_type=nil, join_table=nil, join_clause=nil)
+    def self.last_event_time_clause(event_type=nil, join_table=nil, join_clause=nil)
         event_type_clause = ''
         event_type_clause = " AND info_request_events.event_type = '#{event_type}'" if event_type
         tables = ['info_request_events']
@@ -992,20 +984,20 @@ public
           LIMIT 1)"
     end
 
-    def InfoRequest.last_public_response_clause()
+    def self.last_public_response_clause
         join_clause = "incoming_messages.id = info_request_events.incoming_message_id
                        AND incoming_messages.prominence = 'normal'"
         last_event_time_clause('response', 'incoming_messages', join_clause)
     end
 
-    def InfoRequest.old_unclassified_params(extra_params, include_last_response_time=false)
-        last_response_created_at = last_public_response_clause()
+    def self.old_unclassified_params(extra_params, include_last_response_time=false)
+        last_response_created_at = last_public_response_clause
         age = extra_params[:age_in_days] ? extra_params[:age_in_days].days : OLD_AGE_IN_DAYS
         params = { :conditions => ["awaiting_description = ?
                                     AND #{last_response_created_at} < ?
                                     AND url_title != 'holding_pen'
                                     AND user_id IS NOT NULL",
-                                    true, Time.now() - age] }
+                                    true, Time.now - age] }
         if include_last_response_time
             params[:select] = "*, #{last_response_created_at} AS last_response_time"
             params[:order] = 'last_response_time'
@@ -1013,29 +1005,21 @@ public
         return params
     end
 
-    def InfoRequest.count_old_unclassified(extra_params={})
+    def self.count_old_unclassified(extra_params={})
         params = old_unclassified_params(extra_params)
-        if extra_params[:conditions]
-            condition_string = extra_params[:conditions].shift
-            params[:conditions][0] += " AND #{condition_string}"
-            params[:conditions] += extra_params[:conditions]
-        end
+        add_conditions_from_extra_params(params, extra_params)
         count(:all, params)
     end
 
-    def InfoRequest.get_random_old_unclassified(limit, extra_params)
+    def self.get_random_old_unclassified(limit, extra_params)
         params = old_unclassified_params({})
-        if extra_params[:conditions]
-            condition_string = extra_params[:conditions].shift
-            params[:conditions][0] += " AND #{condition_string}"
-            params[:conditions] += extra_params[:conditions]
-        end
+        add_conditions_from_extra_params(params, extra_params)
         params[:limit] = limit
         params[:order] = "random()"
         find(:all, params)
     end
 
-    def InfoRequest.find_old_unclassified(extra_params={})
+    def self.find_old_unclassified(extra_params={})
         params = old_unclassified_params(extra_params, include_last_response_time=true)
         [:limit, :include, :offset].each do |extra|
             params[extra] = extra_params[extra] if extra_params[extra]
@@ -1044,15 +1028,11 @@ public
             params[:order] = extra_params[:order]
             params.delete(:select)
         end
-        if extra_params[:conditions]
-            condition_string = extra_params[:conditions].shift
-            params[:conditions][0] += " AND #{condition_string}"
-            params[:conditions] += extra_params[:conditions]
-        end
+        add_conditions_from_extra_params(params, extra_params)
         find(:all, params)
     end
 
-    def InfoRequest.download_zip_dir()
+    def self.download_zip_dir
         File.join(Rails.root, "cache", "zips", "#{Rails.env}")
     end
 
@@ -1070,7 +1050,7 @@ public
     end
 
     def request_dirs
-        first_three_digits = id.to_s()[0..2]
+        first_three_digits = id.to_s[0..2]
         File.join(first_three_digits.to_s, id.to_s)
     end
 
@@ -1079,7 +1059,7 @@ public
     end
 
     def make_zip_cache_path(user)
-        cache_file_dir = File.join(InfoRequest.download_zip_dir(),
+        cache_file_dir = File.join(InfoRequest.download_zip_dir,
                                    "download",
                                    request_dirs,
                                    last_update_hash)
@@ -1203,7 +1183,7 @@ public
     end
 
     # This is called from cron regularly.
-    def InfoRequest.stop_new_responses_on_old_requests
+    def self.stop_new_responses_on_old_requests
         # 6 months since last change to request, only allow new incoming messages from authority domains
         InfoRequest.update_all "allow_new_responses_from = 'authority_only' where updated_at < (now() - interval '6 months') and allow_new_responses_from = 'anybody' and url_title <> 'holding_pen'"
         # 1 year since last change requests, don't allow any new incoming messages
@@ -1252,7 +1232,7 @@ public
                                        :model => self.class.base_class.to_s,
                                        :model_id => self.id)
             end
-            req.save()
+            req.save
         end
     end
 
@@ -1282,13 +1262,6 @@ public
         PublicBody.set_callback(:save, :after, :purge_in_cache)
     end
 
-    def for_admin_column
-      self.class.content_columns.map{|c| c unless %w(title url_title).include?(c.name) }.compact.each do |column|
-        yield(column.human_name, self.send(column.name), column.type.to_s, column.name)
-      end
-    end
-
-
     # Get requests that have similar important terms
     def similar_requests(limit=10)
         xapian_similar = nil
@@ -1304,7 +1277,7 @@ public
         return [xapian_similar, xapian_similar_more]
     end
 
-    def InfoRequest.request_list(filters, page, per_page, max_results)
+    def self.request_list(filters, page, per_page, max_results)
         xapian_object = ActsAsXapian::Search.new([InfoRequestEvent],
                                                  InfoRequestEvent.make_query_from_params(filters),
                                                  :offset => (page - 1) * per_page,
@@ -1321,7 +1294,7 @@ public
                  :show_no_more_than => show_no_more_than }
     end
 
-    def InfoRequest.recent_requests
+    def self.recent_requests
         request_events = []
         request_events_all_successful = false
         # Get some successful requests
@@ -1368,7 +1341,7 @@ public
         return [request_events, request_events_all_successful]
     end
 
-    def InfoRequest.find_in_state(state)
+    def self.find_in_state(state)
         select("*, #{ last_event_time_clause } as last_event_time").
             where(:described_state => state).
                 order('last_event_time')
@@ -1415,7 +1388,7 @@ public
                 self.described_state = 'waiting_response'
             end
         rescue ActiveModel::MissingAttributeError
-            # this should only happen on Model.exists?() call. It can be safely ignored.
+            # this should only happen on Model.exists? call. It can be safely ignored.
             # See http://www.tatvartha.com/2011/03/activerecordmissingattributeerror-missing-attribute-a-bug-or-a-features/
         end
 
@@ -1434,6 +1407,14 @@ public
         end
         if !self.title.nil? && self.title =~ /^(FOI|Freedom of Information)\s*requests?$/i
             errors.add(:title, _('Please describe more what the request is about in the subject. There is no need to say it is an FOI request, we add that on anyway.'))
+        end
+    end
+
+    def self.add_conditions_from_extra_params(params, extra_params)
+        if extra_params[:conditions]
+            condition_string = extra_params[:conditions].shift
+            params[:conditions][0] += " AND #{condition_string}"
+            params[:conditions] += extra_params[:conditions]
         end
     end
 end
