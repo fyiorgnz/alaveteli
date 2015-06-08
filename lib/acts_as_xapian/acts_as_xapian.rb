@@ -615,7 +615,7 @@ module ActsAsXapian
     # sure that each index update is definitely saved to disk before
     # logging in the database that it has been.
     def self.update_index(flush = false, verbose = false)
-        # STDOUT.puts("start of ActsAsXapian.update_index") if verbose
+        STDOUT.puts("start of ActsAsXapian.update_index") if verbose
 
         # Before calling writable_init we have to make sure every model class has been initialized.
         # i.e. has had its class code loaded, so acts_as_xapian has been called inside it, and
