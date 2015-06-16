@@ -3,7 +3,7 @@ class UpdatePublicBodyStatsWorker
 
   def perform
     PublicBody.find_each(:batch_size => 10) do |public_body|
-      puts "Counting overdue requests for #{public_body.name}" if verbose
+      puts "Counting overdue requests for #{public_body.name}" if ENV['verbose']
 
       # Look for values of 'waiting_response_overdue' and
       # 'waiting_response_very_overdue' which aren't directly in the
