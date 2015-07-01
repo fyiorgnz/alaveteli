@@ -17,7 +17,6 @@ RUN apt-get -y install supervisor ca-certificates git postgresql-client build-es
  newrelic-sysmond
 
 # Clone develop branch
-
 RUN mkdir /opt/alaveteli
 ADD . /opt/alaveteli
 WORKDIR /opt/alaveteli
@@ -27,9 +26,11 @@ RUN rm config/database.yml
 RUN rm config/general.yml
 RUN rm config/newrelic.yml
 
-RUN cp docker/database.yml config/database.yml
-RUN cp docker/general.yml config/general.yml
-RUN cp docker/newrelic.yml config/newrelic.yml
+RUN cp script/docker/database.yml config/database.yml
+RUN cp script/docker/general.yml config/general.yml
+RUN cp script/docker/newrelic.yml config/newrelic.yml
+
+RUN mkdir cache
 
 RUN git submodule init && git submodule update
 # Due to some firewalls blocking git://
@@ -37,5 +38,4 @@ RUN git config --global url."https://".insteadOf git://
 
 RUN bundle install --without development debug test --deployment --retry=10
 
-CMD ./docker/setup.sh
-
+CMD ./script/docker/setup.sh
