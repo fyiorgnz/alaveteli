@@ -23,15 +23,12 @@ WORKDIR /opt/alaveteli
 # Add yaml configuration which take environment variables
 RUN rm config/database.yml
 RUN rm config/general.yml
-RUN rm config/newrelic.yml
 
 RUN cp script/docker/database.yml config/database.yml
 RUN cp script/docker/general.yml config/general.yml
-RUN cp script/docker/newrelic.yml config/newrelic.yml
 
 RUN mkdir -p cache
 
-RUN git submodule init && git submodule update
 # Due to some firewalls blocking git://
 RUN git config --global url."https://".insteadOf git://
 
