@@ -12,6 +12,7 @@ load "util.rb"
 
 # Application version
 ALAVETELI_VERSION = '0.21.0.40'
+ALAVETELI_GIT_COMMIT = `git log -1 --format="%H"`.strip
 
 # Add new inflection rules using the following format
 # (all these examples are active by default):
