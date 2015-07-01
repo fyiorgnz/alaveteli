@@ -191,7 +191,6 @@ class GeneralController < ApplicationController
     def version
         respond_to do |format|
             format.json { render :json => {
-                :alaveteli_git_commit => ALAVETELI_GIT_COMMIT,
                 :alaveteli_version => ALAVETELI_VERSION,
                 :ruby_version => RUBY_VERSION,
                 :visible_request_count => InfoRequest.visible.count,
