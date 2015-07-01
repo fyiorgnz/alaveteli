@@ -13,8 +13,7 @@ RUN apt-get -y install supervisor ca-certificates git postgresql-client build-es
  gettext ghostscript gnuplot-nox imagemagick unzip \
  libicu-dev libmagic-dev libmagickwand-dev libmagickcore-dev libpq-dev libxml2-dev libxslt1-dev links \
  sqlite3 lockfile-progs mutt pdftk poppler-utils \
- postgresql-client tnef unrtf uuid-dev wkhtmltopdf wv xapian-tools \
- newrelic-sysmond
+ postgresql-client tnef unrtf uuid-dev wkhtmltopdf wv xapian-tools
 
 # Clone develop branch
 RUN mkdir /opt/alaveteli
