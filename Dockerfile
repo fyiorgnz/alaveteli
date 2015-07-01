@@ -30,7 +30,7 @@ RUN cp script/docker/database.yml config/database.yml
 RUN cp script/docker/general.yml config/general.yml
 RUN cp script/docker/newrelic.yml config/newrelic.yml
 
-RUN mkdir cache
+RUN mkdir -p cache
 
 RUN git submodule init && git submodule update
 # Due to some firewalls blocking git://

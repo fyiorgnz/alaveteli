@@ -1,4 +1,5 @@
-.git
-.idea
-.vagrant
-.tx
+.git/*
+.idea/*
+.vagrant/*
+.tx/*
+cache/*
