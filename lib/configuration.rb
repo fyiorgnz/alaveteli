@@ -78,7 +78,8 @@ module AlaveteliConfiguration
       :UTILITY_SEARCH_PATH => ["/usr/bin", "/usr/local/bin"],
       :VARNISH_HOST => '',
       :WORKING_OR_CALENDAR_DAYS => 'working',
-      :USE_BULLET_IN_DEVELOPMENT => false
+      :USE_BULLET_IN_DEVELOPMENT => false,
+      :FACEBOOK_USERNAME => ''
     }
   end
 
