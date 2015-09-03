@@ -29,9 +29,6 @@ RUN cp script/docker/general.yml config/general.yml
 
 RUN mkdir -p cache
 
-# Due to some firewalls blocking git://
-RUN git config --global url."https://".insteadOf git://
-
-RUN bundle install --without development debug test --deployment --retry=10
+RUN bundle install --without development debug test --deployment --retry=10 --clean
 
 CMD ./script/docker/setup.sh
