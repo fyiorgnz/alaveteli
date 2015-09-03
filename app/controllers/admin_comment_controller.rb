@@ -7,31 +7,42 @@
 
 class AdminCommentController < AdminController
 
-    def edit
-        @comment = Comment.find(params[:id])
+  before_filter :set_comment, :only => [:edit, :update]
+
+  def edit
+  end
+
+  def update
+    old_body = @comment.body
+    old_visible = @comment.visible
+
+    if @comment.update_attributes(comment_params)
+      @comment.info_request.log_event("edit_comment",
+                                      { :comment_id => @comment.id,
+                                        :editor => admin_current_user,
+                                        :old_body => old_body,
+                                        :body => @comment.body,
+                                        :old_visible => old_visible,
+                                        :visible => @comment.visible })
+      flash[:notice] = 'Comment successfully updated.'
+      redirect_to admin_request_url(@comment.info_request)
+    else
+      render :action => 'edit'
     end
+  end
 
-    def update
-        @comment = Comment.find(params[:id])
+  private
 
-        old_body = @comment.body
-        old_visible = @comment.visible
-        @comment.visible = params[:comment][:visible] == "true"
-
-        if @comment.update_attributes(params[:comment])
-            @comment.info_request.log_event("edit_comment",
-                { :comment_id => @comment.id,
-                  :editor => admin_current_user,
-                  :old_body => old_body,
-                  :body => @comment.body,
-                  :old_visible => old_visible,
-                  :visible => @comment.visible,
-                })
-            flash[:notice] = 'Comment successfully updated.'
-            redirect_to admin_request_url(@comment.info_request)
-        else
-            render :action => 'edit'
-        end
+  def comment_params
+    if params[:comment]
+      params[:comment].slice(:body, :visible)
+    else
+      {}
     end
+  end
+
+  def set_comment
+    @comment = Comment.find(params[:id])
+  end
 
 end

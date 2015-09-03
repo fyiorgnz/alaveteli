@@ -1,18 +1,243 @@
-# rails-3-develop
+# develop
 
 ## Highlighted Features
-* There is experimental support for using an STMP server, rather than sendmail,
-  for outgoing mail. There is not yet any ability to retry if the SMTP server is 
-  unavailable. 
-* HTML 'widgets' advertising requests can be displayed on other sites in iframes.
-  If 'ENABLE_WIDGETS' is set to true in `general.yml` (the default is false), a link
-  to the widget code will appear in the right hand sidebar of a request page.
-* Capistrano now caches themes (Henare Degan).
+
+* Fixes incorrectly updating `url_name` when a banned user record is updated
+  (Gareth Rees).
+* Definition lists are now easier to read and follow, greatly improves help
+  pages (Martin Wright).
+* The sorting on PublicBodyController#list now uses `COLLATE` to sort in the
+  correct order for a locale if a collation is available for the language. See
+  http://alaveteli.org/docs/developers/i18n/#internationalised-sorting for
+  adding collations. This requires PostgreSQL >= 9.1.12. (Gareth Rees)
+* The new widget template can now be translated (Gareth Rees).
+* Various design and markup improvements to the layout, home page and request
+  page (Martin Wright).
+* OpenGraph markup added to improve the appearance of Alaveteli links on social
+  media (Owen Blacker).
+* Request graph cron job no longer errors if there are no requests in a
+  particular state (Petter Reinholdtsen).
+* Refactoring of user controller for shorter methods and clearer syntax (Caleb
+  Tutty)
+* Rspec is upgraded to version 3, and specs have been upgraded to modern
+  syntax (Louise Crow).
+* New rake task stats:list_hidden for printing a list of requests with hidden
+  material (Louise Crow).
+* Standard filters and parameter whitelisting added to admin controllers
+  (James McKinney, Louise Crow)
 
 ## Upgrade Notes
 
+* Please upgrade the syntax in any theme specs you have to be compatible with
+  rspec 3. Useful resources:
+  * https://relishapp.com/rspec/docs/upgrade
+  * http://yujinakayama.me/transpec/
+
+### Changed Templates
+
+The following templates have been changed. Please update overrides in your theme
+to match the new templates.
+
+    app/views/admin_public_body_categories/_form.html.erb
+    app/views/admin_public_body_categories/edit.html.erb
+    app/views/admin_public_body_categories/new.html.erb
+    app/views/admin_public_body_headings/_form.html.erb
+    app/views/admin_public_body_headings/edit.html.erb
+    app/views/admin_public_body_headings/new.html.erb
+    app/views/general/_frontpage_hero.html.erb
+    app/views/general/_frontpage_how_it_works.html.erb
+    app/views/general/_frontpage_intro_sentence.html.erb
+    app/views/general/_frontpage_new_request.html.erb
+    app/views/general/_frontpage_requests_list.html.erb
+    app/views/general/_locale_switcher.html.erb
+    app/views/general/_responsive_credits.html.erb
+    app/views/general/_responsive_footer.html.erb
+    app/views/general/_responsive_header.html.erb
+    app/views/general/frontpage.html.erb
+    app/views/general/search.html.erb
+    app/views/request/_act.html.erb
+    app/views/request/_sidebar.html.erb
+    app/views/request/list.html.erb
+    app/views/user/show.html.erb
+    app/views/widgets/new.html.erb
+
+# Version 0.22.4.0
+
+## Highlighted Features
+
+* Set the return-path for the contact form mail (Louise Crow).
+
+## Upgrade Notes
+
+* There should be no action necessary.
+
+# Version 0.22.3.0
+
+## Highlighted Features
+
+* Added additional transaction stats to /version.json endpoint (Gareth Rees).
+* Added additional transaction stats to stats:show rake task (Gareth Rees).
+
+## Upgrade Notes
+
+* There should be no action necessary.
+
+# Version 0.22.2.0
+
+## Highlighted Features
+
+* Adds filtering of incoming mail based on a spam score from SpamAssassin.
+  Requests over a threshold can be discarded or sent to the holding pen.
+  See http://alaveteli.org/docs/customising/config#incoming_email_spam_action
+  for configuration instructions (Gareth Rees).
+
+## Upgrade Notes
+
+* There should be no action necessary.
+
+# Version 0.22.1.0
+
+## Highlighted Features
+
+* The source code now uses two-space indentation (Gareth Rees).
+* A `FACEBOOK_USERNAME` configuration option is now available (Gareth Rees).
+* The [`json` API for public bodies](http://alaveteli.org/docs/developers/api/#json-structured-data)
+  now includes statistics on the number of requests, number of visible successful classified requests,
+  and number of successful, overdue, not held requests (Ross Jones).
+
+## Upgrade Notes
+
+* There should be no action necessary.
+* Most templates have changed to two-space indentation. For ease of future
+  upgrades you _should_ update your overrides to match.
+
+# Version 0.22
+
+## Highlighted Features
+
+* Upgrades and fixes for security announcements CVE-2015-3225, CVE-2015-3227 and
+  CVE-2015-1840 (Louise Crow).
+* Attachment text conversion to UTF-8 is now handled in a clearer way by the
+  `FoiAttachment` model. Censor rules are applied with the appropriate encoding
+  (Louise Crow).
+* A rake task `temp:fix_invalid_utf8` has been added to help people migrating an
+  Alaveteli install from ruby 1.8.7 to a later ruby version (Louise Crow).
+* An example wrapper script, `config/run-with-rbenv-path` has been added to run
+  the mail scripts using the ruby version set by `rbenv`. Example code for this
+  has also been added to the daemon and cron example files.
+* Remove dependency on tools provided by sharutils package (Gareth Rees).
+* Use rack-utf8_sanitizer to handle badly-formed UTF-8 in request URI and
+  headers (Louise Crow).
+* Correctly handle names with commas in ContactMailer (Louise Crow).
+* Various performance improvements in InfoRequestEvent (Gareth Rees).
+* Improve performance of PublicBodyController#show (Gareth Rees).
+* Various performance improvements in PublicBody (Gareth Rees).
+* General improvements to string encoding handling (Louise Crow).
+* Allow locale specific language names (Louise Crow).
+* Fix count of requests on authority page (Henare Degan).
+* Added Croatian Alaveteli to the list of world FOI websites
+  (Miroslav Schlossberg).
+* Various code duplication cleanup (James McKinney).
+* Improve error reporting on graph generation (Petter Reinholdtsen).
+* Admin summary page performance improvements (Gareth Rees).
+* Various performance improvements in InfoRequest (Gareth Rees).
+* Add missing ttf-bitstream-vera package (Petter Reinholdtsen).
+* Send mail import errors to exception notification address (Louise Crow).
+* Add bullet for tracking N+1 queries in development environment. Turn on by
+  setting `USE_BULLET_IN_DEVELOPMENT` to `true` (Gareth Rees).
+* Performance improvement when initializing InfoRequest instances (Gareth Rees).
+* root no longer required to read mail logs
+* Code quality improvements to ActsAsXapian (Louise Crow).
+* Don't put HTML entities in email subject lines (Henare Degan).
+* Defunct authorities are removed from the list of authorities with mising
+  emails on the admin summary page (Henare Degan).
+* Correctly encode words to highlight (Caleb Tutty).
+* The request email of a PublicBody with a blank request_email database
+  attribute will not be overridden by `OVERRIDE_ALL_PUBLIC_BODY_REQUEST_EMAILS`
+  (Henare Degan).
+* Fixed a bug in the HealthChecksHelper when applying 'OK' style (Caleb Tutty).
+* Keep cookies from txt files in suggested Varnish configuration (Henare Degan).
+* Improvements to the Categorisation Game charts (Henare Degan).
+* Destroing an InfoRequest now destroys associated Comments and CensorRules
+  (Louise Crow).
+* There is experimental support for using an STMP server, rather than sendmail,
+  for outgoing mail. There is not yet any ability to retry if the SMTP server is
+  unavailable (Caleb Tutty, Louise Crow).
+* HTML 'widgets' advertising requests can be displayed on other sites in iframes.
+  If `ENABLE_WIDGETS` is set to true in `general.yml` (the default is false), a link
+  to the widget code will appear in the right hand sidebar of a request page.
+  (Jody McIntyre, Louise Crow).
+* Capistrano now caches themes (Henare Degan).
+* Improve correspondence box padding (Luke Bacon).
+* Improve empty PublicBody translation rejection (Henare Degan).
+* New message attachment icons (Martin Wright).
+* Improve localisation (Louise Crow, Petter Reinholdtsen, Gorm Eriksen).
+* Update xapian-full-alaveteli for Ruby 2.1 compatibility (Louise Crow).
+* Improve header search form (Luke Bacon).
+* Fix 'link to this' button on touch devices (Luke Bacon).
+
+## Upgrade Notes
+
+* **Version 0.22 is the last release to support Ruby 1.8.7.**
+
+  We have an evolving [upgrade guide](http://git.io/vLNg0) on the wiki, and
+  we're always available on the [alaveteli-dev mailing list](https://goo.gl/6u67Jg).
+* Ruby version files are ignored – these are delegated to people's development
+  or deployment environments. See https://goo.gl/01MCCi and e5180fa89.
+* Ensure all overridden Ruby source files have encoding specifier. See
+  576b58803.
+* Memcached namespace is now dependent on Ruby version. No action required.
 * Capistrano now caches themes in `shared/themes`. Run the `deploy:setup` task
-  to create the shared directory before making a new code deploy. 
+  to create the shared directory before making a new code deploy.
+* Example daemon files have been renamed (7af5e9d). You'll need to use the new
+  names in any scripts or documentation you've written.
+* Regenerate alert tracks and purge varnish daemons to get better stop daemon
+  handling.
+* Regenerate Varnish config so that cookies from txt files are not ignored.
+  See db2db066.
+* Regenerate the crontab so that root is no longer used to read mail logs.
+* Give the unix application user membership of the adm group so that they can
+  read the mail log files `usermod -a -G adm "$UNIX_USER"`
+* Remove summary stats from admin summary page. They're duplicated on
+  /admin/summary. No action required.
+* The default branch has been changed from `rails-3-develop` to `develop`. Use
+  of `rails-3-develop` will stop, and the branch will be removed at some point.
+* Add the ttf-bitstream-vera package to provide Vera.ttf to the cron jobs.
+* Alaveteli no longer requires the sharutils package.
+* Remember to `rake db:migrate` and `git submodule update`
+* If you handle attachment text in your theme, note that:
+    * `FoiAttachment#body` will always return a binary encoded string
+    * `FoiAttachment#body_as_text` will always return a UTF-8 encoded string
+    * `FoiAttachment#default_body` will return a UTF-8 encoded string for text
+      content types, and a binary encoded string for all other types.
+
+### Changed Templates
+
+The following templates have been changed. Please update overrides in your theme
+to match the new templates.
+
+    app/views/admin_general/index.html.erb
+    app/views/admin_public_body/edit.html.erb
+    app/views/comment/_comment_form.html.erb
+    app/views/comment/_single_comment.html.erb
+    app/views/general/_responsive_topnav.html.erb
+    app/views/help/unhappy.html.erb
+    app/views/public_body/show.html.erb
+    app/views/public_body_change_requests/new.html.erb
+    app/views/request/_act.html.erb
+    app/views/request/_followup.html.erb
+    app/views/request/_incoming_correspondence.html.erb
+    app/views/request/_outgoing_correspondence.html.erb
+    app/views/request/_request_listing_via_event.html.erb
+    app/views/request/_request_search_form.html.erb
+    app/views/request/_resent_outgoing_correspondence.html.erb
+    app/views/request/new.html.erb
+    app/views/request/new_bad_contact.html.erb
+    app/views/request/show.html.erb
+    app/views/request_game/play.html.erb
+    app/views/track/_tracking_links.html.erb
+    app/views/user/_user_listing_single.html.erb
+    app/views/user/show.html.erb
 
 # Version 0.21
 
@@ -70,7 +295,7 @@
 * CSRF protection is now used by default on forms using 'POST', and as a result, the navbar and front page
   search forms have been converted to use 'GET' rather than 'POST'. If you override `/app/views/general/_frontpage_search_box.html.erb`, `app/views/general/header.html.erb` or `app/views/general/_responsive_topnav.html.erb`, you should update the search forms in your templates to use 'GET'. Any forms of your own
   that use the 'POST' method should be generated in Rails or otherwise include a CSRF token. If
-  they don't, logged-in users will be logged out when they use them. 
+  they don't, logged-in users will be logged out when they use them.
 * If you override the `app/views/user/_signin.html.erb` or
   `app/view/user/_signup.html.erb` templates, check the tabindex order
   is still sensible - the order of the elements on the page has changed

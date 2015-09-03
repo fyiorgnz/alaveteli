@@ -11,7 +11,7 @@ load "debug_helpers.rb"
 load "util.rb"
 
 # Application version
-ALAVETELI_VERSION = '0.21.0.36'
+ALAVETELI_VERSION = '0.22.4.1'
 
 # Add new inflection rules using the following format
 # (all these examples are active by default):
@@ -55,6 +55,7 @@ require 'date_quarter'
 require 'public_body_csv'
 require 'routing_filters'
 require 'alaveteli_text_masker'
+require 'database_collation'
 
 AlaveteliLocalization.set_locales(AlaveteliConfiguration::available_locales,
                                   AlaveteliConfiguration::default_locale)
@@ -63,4 +64,3 @@ AlaveteliLocalization.set_locales(AlaveteliConfiguration::available_locales,
 if Rails.env == 'test' and ActiveRecord::Base.configurations['test']['constraint_disabling'] == false
   require 'no_constraint_disabling'
 end
-

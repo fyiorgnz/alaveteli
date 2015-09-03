@@ -1,0 +1,33 @@
+image: registry.pinpoint.io/ruby-node-ci:latest
+envs:
+  - TERM=xterm
+  - DATABASE_URL=postgres://localhost/fyi_test
+script:
+  - apt-get install -y libicu-dev libmagic-dev libmagickwand-dev libmagickcore-dev libpq-dev libxml2-dev libxslt1-dev links catdoc elinks links sqlite3 lockfile-progs mutt pdftk poppler-utils tnef unrtf uuid-dev wkhtmltopdf wv xapian-tools
+  - cp script/docker/database.yml config/database.yml
+  - cp script/docker/general.yml config/general.yml
+  - bundle install --path /tmp/bundle --clean
+  - rm config/brakeman.yml
+  - bundle exec rake db:setup
+  - gem install brakeman rubocop
+  - brakeman
+  - # rubocop
+  - bundle exec rspec
+services:
+  - postgres
+cache:
+  - /tmp/bundle
+notify:
+  slack:
+    webhook_url: $$WEBHOOK_URL
+    channel: '#development'
+    username: 'drone'
+    on_started: true
+    on_success: true
+    on_failure: true
+    deploy:
+      bash:
+        command: make
+        when:
+          branch: develop
+

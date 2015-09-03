@@ -37,7 +37,7 @@ module AttachmentToHTML
     end
 
     def has_content?
-        !body.gsub(/\s+/,"").gsub(/\<[^\>]*\>/, "").empty?
+      !body.gsub(/\s+/,"").gsub(/\<[^\>]*\>/, "").empty?
     end
 
     def contains_images?
@@ -61,7 +61,7 @@ module AttachmentToHTML
     end
 
     def attachment_body
-      @attachment_body ||= attachment.body
+      @attachment_body ||= attachment.default_body
     end
   end
 end

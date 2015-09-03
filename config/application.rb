@@ -62,15 +62,16 @@ module Alaveteli
 
     # Set the cache to use a memcached backend
     config.cache_store = :mem_cache_store,
-                        { :namespace => "#{AlaveteliConfiguration::domain}_#{RUBY_VERSION}" }
+      { :namespace => "#{AlaveteliConfiguration::domain}_#{RUBY_VERSION}" }
     config.action_dispatch.rack_cache = nil
 
     config.after_initialize do |app|
-       # Add a catch-all route to force routing errors to be handled by the application,
-       # rather than by middleware.
-       app.routes.append{ match '*path', :to => 'general#not_found' }
+      # Add a catch-all route to force routing errors to be handled by the application,
+      # rather than by middleware.
+      app.routes.append{ match '*path', :to => 'general#not_found' }
     end
 
+    config.autoload_paths << "#{Rails.root.to_s}/app/controllers/concerns"
     config.autoload_paths << "#{Rails.root.to_s}/app/models/concerns"
     config.autoload_paths << "#{Rails.root.to_s}/lib/mail_handler"
     config.autoload_paths << "#{Rails.root.to_s}/lib/attachment_to_html"
@@ -83,6 +84,9 @@ module Alaveteli
     # Insert a bit of middleware code to prevent uneeded cookie setting.
     require "#{Rails.root}/lib/whatdotheyknow/strip_empty_sessions"
     config.middleware.insert_before ::ActionDispatch::Cookies, WhatDoTheyKnow::StripEmptySessions, :key => '_wdtk_cookie_session', :path => "/", :httponly => true
+
+    # Strip non-UTF-8 request parameters
+    config.middleware.insert 0, Rack::UTF8Sanitizer
 
     # Allow the generation of full URLs in emails
     config.action_mailer.default_url_options = { :host => AlaveteliConfiguration::domain }
@@ -108,10 +112,9 @@ module Alaveteli
                                  'fancybox.js']
     # ... while these are individual files that can't easily be
     # grouped:
-    config.assets.precompile += ['jquery.Jcrop.css',
+    config.assets.precompile += ['jquery.Jcrop.min.css',
                                  'excanvas.min.js',
                                  'select-authorities.js',
-                                 'jquery_ujs.js',
                                  'new-request.js',
                                  'fonts.css',
                                  'print.css',
@@ -124,10 +127,10 @@ module Alaveteli
                                  'responsive/application-lte-ie7.css',
                                  'responsive/application-ie8.css']
 
-     config.sass.load_paths += [
-       "#{Gem.loaded_specs['foundation-rails'].full_gem_path}/vendor/assets/stylesheets/foundation/components",
-       "#{Gem.loaded_specs['foundation-rails'].full_gem_path}/vendor/assets/stylesheets/foundation/"
-     ]
+    config.sass.load_paths += [
+      "#{Gem.loaded_specs['foundation-rails'].full_gem_path}/vendor/assets/stylesheets/foundation/components",
+      "#{Gem.loaded_specs['foundation-rails'].full_gem_path}/vendor/assets/stylesheets/foundation/"
+    ]
 
   end
 end
