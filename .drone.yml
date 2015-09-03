@@ -2,6 +2,7 @@ image: registry.pinpoint.io/ruby-ci:latest
 script:
   - export TERM=xterm
   - export DATABASE_URL=postgres://localhost/fyi_test
+  - apt-get install -y libicu-dev
   - cp script/docker/database.yml config/database.yml
   - cp script/docker/general.yml config/general.yml
   - bundle install --path /tmp/bundle --clean
