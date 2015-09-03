@@ -1,4 +1,4 @@
-image: registry.pinpoint.io/ruby-ci:latest
+image: registry.pinpoint.io/ruby-node-ci:latest
 script:
   - export TERM=xterm
   - export DATABASE_URL=postgres://localhost/fyi_test
