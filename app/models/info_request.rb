@@ -33,7 +33,7 @@ class InfoRequest < ActiveRecord::Base
 
   @non_admin_columns = %w(title url_title)
 
-  strip_attributes!
+  strip_attributes :allow_empty => true
 
   validates_presence_of :title, :message => N_("Please enter a summary of your request")
   # TODO: When we no longer support Ruby 1.8, this can be done with /[[:alpha:]]/
@@ -470,6 +470,32 @@ class InfoRequest < ActiveRecord::Base
           raise "Unknown handle_rejected_responses '" + self.handle_rejected_responses + "'"
         end
         return
+      end
+    end
+
+    # Take action if the message looks like spam
+    spam_action = AlaveteliConfiguration.incoming_email_spam_action
+    spam_threshold = AlaveteliConfiguration.incoming_email_spam_threshold
+    spam_header = AlaveteliConfiguration.incoming_email_spam_header
+    spam_score = email.header[spam_header].try(:value).to_f
+
+    if spam_action && spam_header && spam_threshold && spam_score
+      if spam_score > spam_threshold
+        case spam_action
+        when 'discard'
+          # Do nothing. Silently drop spam above the threshold
+          return
+        when 'holding_pen'
+          unless self == InfoRequest.holding_pen_request
+            reason = _("Incoming message has a spam score ({{spam_score}}) " \
+                       "above the configured threshold ({{spam_threshold}}).",
+                       :spam_score => spam_score,
+                       :spam_threshold => spam_threshold)
+            request = InfoRequest.holding_pen_request
+            request.receive(email, raw_email_data, false, reason)
+            return
+          end
+        end
       end
     end
 

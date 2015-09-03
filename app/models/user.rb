@@ -27,7 +27,7 @@
 require 'digest/sha1'
 
 class User < ActiveRecord::Base
-  strip_attributes!
+  strip_attributes :allow_empty => true
 
   attr_accessor :password_confirmation, :no_xapian_reindex
 
@@ -165,6 +165,11 @@ class User < ActiveRecord::Base
     return true
   end
 
+  def self.find_similar_named_users(user)
+    User.where('name ILIKE ? AND email_confirmed = ? AND id <> ?',
+                user.name, true, user.id).order(:created_at)
+  end
+
   def created_at_numeric
     # format it here as no datetime support in Xapian's value ranges
     created_at.strftime("%Y%m%d%H%M%S")
@@ -203,14 +208,9 @@ class User < ActiveRecord::Base
                 comments.visible
   end
 
-  # Don't display any leading/trailing spaces
-  # TODO: we have strip_attributes! now, so perhaps this can be removed (might
-  # be still needed for existing cases)
   def name
     name = read_attribute(:name)
-    if not name.nil?
-      name.strip!
-    end
+
     if banned?
       # Use interpolation to return a string rather than a SafeBuffer so that
       # gsub can be called on it until we upgrade to Rails 3.2. The name returned
@@ -219,17 +219,18 @@ class User < ActiveRecord::Base
       name = _("{{user_name}} (Account suspended)", :user_name => name.html_safe)
       name = "#{name}"
     end
+
     name
   end
 
   # When name is changed, also change the url name
   def name=(name)
-    write_attribute(:name, name)
+    write_attribute(:name, name.try(:strip))
     update_url_name
   end
 
   def update_url_name
-    url_name = MySociety::Format.simplify_url_part(name, 'user', 32)
+    url_name = MySociety::Format.simplify_url_part(read_attribute(:name), 'user', 32)
     # For user with same name as others, add on arbitary numeric identifier
     unique_url_name = url_name
     suffix_num = 2 # as there's already one without numeric suffix
@@ -308,6 +309,7 @@ class User < ActiveRecord::Base
   def can_file_requests?
     ban_text.empty? && !exceeded_limit?
   end
+
   def exceeded_limit?
     # Some users have no limit
     return false if no_limit
@@ -321,6 +323,7 @@ class User < ActiveRecord::Base
 
     recent_requests >= AlaveteliConfiguration.max_requests_per_user_per_day
   end
+
   def next_request_permitted_at
     return nil if no_limit
 
@@ -332,15 +335,19 @@ class User < ActiveRecord::Base
     nth_most_recent_request = n_most_recent_requests[-1]
     nth_most_recent_request.created_at + 1.day
   end
+
   def can_make_followup?
     ban_text.empty?
   end
+
   def can_make_comments?
     ban_text.empty?
   end
+
   def can_contact_other_users?
     ban_text.empty?
   end
+
   def can_fail_html
     if ban_text
       text = ban_text.strip
@@ -442,7 +449,7 @@ class User < ActiveRecord::Base
     end
   end
 
-  def purge_in_cache        
+  def purge_in_cache
     info_requests.each { |x| x.purge_in_cache } if name_changed?
   end
 

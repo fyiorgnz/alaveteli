@@ -2,6 +2,8 @@
 
 ## Highlighted Features
 
+* Fixes incorrectly updating `url_name` when a banned user record is updated
+  (Gareth Rees).
 * Definition lists are now easier to read and follow, greatly improves help
   pages (Martin Wright).
 * The sorting on PublicBodyController#list now uses `COLLATE` to sort in the
@@ -15,14 +17,33 @@
   media (Owen Blacker).
 * Request graph cron job no longer errors if there are no requests in a
   particular state (Petter Reinholdtsen).
+* Refactoring of user controller for shorter methods and clearer syntax (Caleb
+  Tutty)
+* Rspec is upgraded to version 3, and specs have been upgraded to modern
+  syntax (Louise Crow).
+* New rake task stats:list_hidden for printing a list of requests with hidden
+  material (Louise Crow).
+* Standard filters and parameter whitelisting added to admin controllers
+  (James McKinney, Louise Crow)
 
 ## Upgrade Notes
+
+* Please upgrade the syntax in any theme specs you have to be compatible with
+  rspec 3. Useful resources:
+  * https://relishapp.com/rspec/docs/upgrade
+  * http://yujinakayama.me/transpec/
 
 ### Changed Templates
 
 The following templates have been changed. Please update overrides in your theme
 to match the new templates.
 
+    app/views/admin_public_body_categories/_form.html.erb
+    app/views/admin_public_body_categories/edit.html.erb
+    app/views/admin_public_body_categories/new.html.erb
+    app/views/admin_public_body_headings/_form.html.erb
+    app/views/admin_public_body_headings/edit.html.erb
+    app/views/admin_public_body_headings/new.html.erb
     app/views/general/_frontpage_hero.html.erb
     app/views/general/_frontpage_how_it_works.html.erb
     app/views/general/_frontpage_intro_sentence.html.erb
@@ -40,7 +61,19 @@ to match the new templates.
     app/views/user/show.html.erb
     app/views/widgets/new.html.erb
 
+# Version 0.22.4.0
+
+## Highlighted Features
+
+* Set the return-path for the contact form mail (Louise Crow).
+
+## Upgrade Notes
+
+* There should be no action necessary.
+
 # Version 0.22.3.0
+
+## Highlighted Features
 
 * Added additional transaction stats to /version.json endpoint (Gareth Rees).
 * Added additional transaction stats to stats:show rake task (Gareth Rees).
@@ -128,7 +161,7 @@ to match the new templates.
 * Destroing an InfoRequest now destroys associated Comments and CensorRules
   (Louise Crow).
 * There is experimental support for using an STMP server, rather than sendmail,
-  for outgoing mail. There is not yet any ability to retry if the SMTP server is 
+  for outgoing mail. There is not yet any ability to retry if the SMTP server is
   unavailable (Caleb Tutty, Louise Crow).
 * HTML 'widgets' advertising requests can be displayed on other sites in iframes.
   If `ENABLE_WIDGETS` is set to true in `general.yml` (the default is false), a link
@@ -155,7 +188,7 @@ to match the new templates.
   576b58803.
 * Memcached namespace is now dependent on Ruby version. No action required.
 * Capistrano now caches themes in `shared/themes`. Run the `deploy:setup` task
-  to create the shared directory before making a new code deploy. 
+  to create the shared directory before making a new code deploy.
 * Example daemon files have been renamed (7af5e9d). You'll need to use the new
   names in any scripts or documentation you've written.
 * Regenerate alert tracks and purge varnish daemons to get better stop daemon
@@ -262,7 +295,7 @@ to match the new templates.
 * CSRF protection is now used by default on forms using 'POST', and as a result, the navbar and front page
   search forms have been converted to use 'GET' rather than 'POST'. If you override `/app/views/general/_frontpage_search_box.html.erb`, `app/views/general/header.html.erb` or `app/views/general/_responsive_topnav.html.erb`, you should update the search forms in your templates to use 'GET'. Any forms of your own
   that use the 'POST' method should be generated in Rails or otherwise include a CSRF token. If
-  they don't, logged-in users will be logged out when they use them. 
+  they don't, logged-in users will be logged out when they use them.
 * If you override the `app/views/user/_signin.html.erb` or
   `app/view/user/_signup.html.erb` templates, check the tabindex order
   is still sensible - the order of the elements on the page has changed
