@@ -79,7 +79,8 @@ module AlaveteliConfiguration
       :VARNISH_HOST => '',
       :WORKING_OR_CALENDAR_DAYS => 'working',
       :USE_BULLET_IN_DEVELOPMENT => false,
-      :FACEBOOK_USERNAME => ''
+      :FACEBOOK_USERNAME => '',
+      :INCOMING_EMAIL_SPAM_ACTION => false
     }
   end
 
