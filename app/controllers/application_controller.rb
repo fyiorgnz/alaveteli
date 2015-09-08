@@ -164,7 +164,11 @@ class ApplicationController < ActionController::Base
     # In development or the admin interface let Rails handle the exception
     # with its stack trace templates
     if Rails.application.config.consider_all_requests_local || show_rails_exceptions?
-      raise exception
+      if defined?(Raygun)
+        Raygun.track_exception(e)
+      else
+        raise exception
+      end
     end
 
     @exception_backtrace = exception.backtrace.join("\n")
@@ -181,14 +185,16 @@ class ApplicationController < ActionController::Base
       backtrace = Rails.backtrace_cleaner.clean(exception.backtrace, :silent)
       message << "  " << backtrace.join("\n  ")
       Rails.logger.fatal("#{message}\n\n")
+
       if !AlaveteliConfiguration.exception_notifications_from.blank? && !AlaveteliConfiguration.exception_notifications_to.blank?
         ExceptionNotifier::Notifier.exception_notification(request.env, exception).deliver
       end
       @status = 500
     end
+
     respond_to do |format|
-      format.html{ render :template => "general/exception_caught", :status => @status }
-      format.any{ render :nothing => true, :status => @status }
+      format.html { render :template => "general/exception_caught", :status => @status }
+      format.any { render :nothing => true, :status => @status }
     end
   end
 
