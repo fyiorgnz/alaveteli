@@ -193,7 +193,7 @@ class ApplicationController < ActionController::Base
   end
 
   def show_rails_exceptions?
-    false
+    ENV['SHOW_RAILS_EXCEPTIONS'] == 'true'
   end
 
   # Called from test code, is a mimic of UserController.confirm, for use in following email
