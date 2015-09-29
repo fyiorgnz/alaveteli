@@ -87,7 +87,7 @@ module AlaveteliConfiguration
   def self.method_missing(name)
     self.config ||= YAML.load(ERB.new(File.read(Rails.root.join 'config', 'general.yml')).result)
     key = name.to_s.upcase
-    return super unless DEFAULTS.has_key?(key.to_sym)
+    return super unless self.config.has_key?(key) or DEFAULTS.has_key?(key.to_sym)
     config.fetch(key, DEFAULTS[key.to_sym])
   end
 end
