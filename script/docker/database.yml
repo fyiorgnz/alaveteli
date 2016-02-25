@@ -1,0 +1,12 @@
+development:
+  adapter: postgresql
+  url: <%= ENV['DATABASE_URL'] %>
+
+production:
+  adapter: postgresql
+  url: <%= ENV['DATABASE_URL'] %>
+  pool: 10
+
+test:
+  adapter: postgresql
+  url: <%= ENV['DATABASE_URL'] %>
