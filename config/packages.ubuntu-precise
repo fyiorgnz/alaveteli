@@ -1,6 +1,7 @@
 build-essential
 catdoc
 elinks
+geoip-database
 gettext
 ghostscript
 gnuplot-nox
@@ -33,4 +34,3 @@ uuid-dev
 wkhtmltopdf-static
 wv
 xapian-tools
-xlhtml

@@ -8,8 +8,8 @@ describe GeneralController do
 
     it 'renders json stats about the install' do
       # Clean up fixtures
-      InfoRequest.find_each(&:fully_destroy)
-      Comment.find_each(&:fully_destroy)
+      InfoRequest.find_each(&:destroy)
+      Comment.find_each(&:destroy)
       PublicBody.find_each(&:destroy)
       TrackThing.find_each(&:destroy)
       User.find_each(&:destroy)
@@ -48,10 +48,9 @@ describe GeneralController do
 
       mock_git_commit = Digest::SHA1.hexdigest(Time.now.to_s)
 
-      ApplicationController.
-        any_instance.
-          stub(:alaveteli_git_commit).
-            and_return(mock_git_commit)
+      allow_any_instance_of(ApplicationController).
+        to receive(:alaveteli_git_commit).
+          and_return(mock_git_commit)
 
       expected = { :alaveteli_git_commit => mock_git_commit,
                    :alaveteli_version => ALAVETELI_VERSION,
@@ -247,6 +246,13 @@ describe GeneralController, "when showing the frontpage" do
       expect(session[:user_id]).to be_nil
     end
 
+    it "should render the front page successfully with post_redirect if post_params is not set" do
+      session[:post_redirect_token] = 'orphaned_token'
+      get :frontpage, :post_redirect => 1
+      expect(response).to be_success
+      expect(response).to have_http_status(200)
+    end
+
   end
 
 end
@@ -377,6 +383,13 @@ describe GeneralController, 'when using xapian search' do
     expect {
       get :search, :combined => 'bob/all', :page => 25
     }.to raise_error(ActiveRecord::RecordNotFound)
+  end
+
+  it 'should pass xapian error messages to flash and redirect to a blank search page' do
+    error_text = "Your query was not quite right. QueryParserError: Syntax: <expression> AND <expression>"
+    get :search, :combined => "test AND"
+    expect(flash[:error]).to eq(error_text)
+    expect(response).to redirect_to(:action => 'search', :combined => "")
   end
 
 end

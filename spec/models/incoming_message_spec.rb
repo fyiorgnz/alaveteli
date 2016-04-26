@@ -23,6 +23,321 @@
 
 require File.expand_path(File.dirname(__FILE__) + '/../spec_helper')
 
+
+describe IncomingMessage do
+
+  describe '#valid_to_reply_to' do
+
+    it 'is true if _calculate_valid_to_reply_to is true' do
+      message = FactoryGirl.create(:incoming_message)
+      allow(message).to receive(:_calculate_valid_to_reply_to).and_return(true)
+      message.parse_raw_email!(true)
+      expect(message.valid_to_reply_to).to eq(true)
+    end
+
+    it 'is false if _calculate_valid_to_reply_to is false' do
+      message = FactoryGirl.create(:incoming_message)
+      allow(message).to receive(:_calculate_valid_to_reply_to).and_return(false)
+      message.parse_raw_email!(true)
+      expect(message.valid_to_reply_to).to eq(false)
+    end
+
+  end
+
+  describe '#valid_to_reply_to?' do
+
+    it 'returns the value of #valid_to_reply_to' do
+      message = FactoryGirl.create(:incoming_message)
+      expect(message.valid_to_reply_to?).to eq(message.valid_to_reply_to)
+    end
+
+  end
+
+  describe '#mail_from' do
+
+    it 'returns the name in the From: field of an email' do
+      raw_email_data = <<-EOF.strip_heredoc
+      From: FOI Person <authority@example.com>
+      To: Jane Doe <request-magic-email@example.net>
+      Subject: A response
+      Hello, World
+      EOF
+
+      message = FactoryGirl.create(:incoming_message)
+      message.raw_email.data = raw_email_data
+      message.parse_raw_email!(true)
+      expect(message.mail_from).to eq('FOI Person')
+    end
+
+    it 'returns nil if there is no name in the From: field of an email' do
+      raw_email_data = <<-EOF.strip_heredoc
+      From: authority@example.com
+      To: Jane Doe <request-magic-email@example.net>
+      Subject: A response
+      Hello, World
+      EOF
+
+      message = FactoryGirl.create(:incoming_message)
+      message.raw_email.data = raw_email_data
+      message.parse_raw_email!(true)
+      expect(message.mail_from).to be_nil
+    end
+
+    it 'unquotes RFC 2047 headers' do
+      raw_email_data = <<-EOF.strip_heredoc
+      From: =?iso-8859-1?Q?Coordena=E7=E3o_de_Relacionamento=2C_Pesquisa_e_Informa=E7?=
+      	=?iso-8859-1?Q?=E3o/CEDI?= <geraldinequango@localhost>
+      To: Jane Doe <request-magic-email@example.net>
+      Subject: A response
+      Hello, World
+      EOF
+
+      message = FactoryGirl.create(:incoming_message)
+      message.raw_email.data = raw_email_data
+      message.parse_raw_email!(true)
+      expect(message.mail_from).
+        to eq('Coordenação de Relacionamento, Pesquisa e Informação/CEDI')
+    end
+
+  end
+
+  describe '#safe_mail_from' do
+
+    it 'applies the info request censor rules to mail_from' do
+      raw_email_data = <<-EOF.strip_heredoc
+      From: FOI Person <authority@example.com>
+      To: Jane Doe <request-magic-email@example.net>
+      Subject: A response
+      Hello, World
+      EOF
+
+      message = FactoryGirl.create(:incoming_message)
+      message.raw_email.data = raw_email_data
+      message.parse_raw_email!(true)
+      FactoryGirl.create(:censor_rule,
+                         :text => 'Person',
+                         :info_request => message.info_request)
+
+      expect(message.safe_mail_from).to eq('FOI [REDACTED]')
+    end
+
+  end
+
+  describe '#mail_from_domain' do
+
+    it 'returns the domain part of the email address in the From header' do
+      raw_email_data = <<-EOF.strip_heredoc
+      From: FOI Person <authority@mail.example.com>
+      To: Jane Doe <request-magic-email@example.net>
+      Subject: A response
+      Hello, World
+      EOF
+
+      message = FactoryGirl.create(:incoming_message)
+      message.raw_email.data = raw_email_data
+      message.parse_raw_email!(true)
+      expect(message.mail_from_domain).to eq('mail.example.com')
+    end
+
+    it 'returns an empty string if there is no From header' do
+      raw_email_data = <<-EOF.strip_heredoc
+      To: Jane Doe <request-magic-email@example.net>
+      Subject: A response
+      Hello, World
+      EOF
+
+      message = FactoryGirl.create(:incoming_message)
+      message.raw_email.data = raw_email_data
+      message.parse_raw_email!(true)
+      expect(message.mail_from_domain).to eq('')
+    end
+
+  end
+
+  describe '#subject' do
+
+    it 'returns the Subject: field of an email' do
+      raw_email_data = <<-EOF.strip_heredoc
+      From: FOI Person <authority@example.com>
+      To: Jane Doe <request-magic-email@example.net>
+      Subject: A response
+      Hello, World
+      EOF
+
+      message = FactoryGirl.create(:incoming_message)
+      message.raw_email.data = raw_email_data
+      message.parse_raw_email!(true)
+      expect(message.subject).to eq('A response')
+    end
+
+    it 'returns nil if there is no Subject: field' do
+      raw_email_data = <<-EOF.strip_heredoc
+      From: FOI Person <authority@example.com>
+      To: Jane Doe <request-magic-email@example.net>
+      Hello, World
+      EOF
+
+      message = FactoryGirl.create(:incoming_message)
+      message.raw_email.data = raw_email_data
+      message.parse_raw_email!(true)
+      expect(message.subject).to be_nil
+    end
+
+    it 'unquotes RFC 2047 headers' do
+      raw_email_data = <<-EOF.strip_heredoc
+      From: FOI Person <authority@example.com>
+      To: Jane Doe <request-magic-email@example.net>
+      Subject: =?iso-8859-1?Q?C=E2mara_Responde=3A__Banco_de_ideias?=
+      Hello, World
+      EOF
+
+      message = FactoryGirl.create(:incoming_message)
+      message.raw_email.data = raw_email_data
+      message.parse_raw_email!(true)
+      expect(message.subject).to eq('Câmara Responde:  Banco de ideias')
+    end
+
+  end
+
+  describe '#sent_at' do
+
+    it 'uses the Date header if the mail has one' do
+      raw_email_data = <<-EOF.strip_heredoc
+      From: FOI Person <authority@example.com>
+      To: Jane Doe <request-magic-email@example.net>
+      Subject: A response
+      Date: Fri, 9 Dec 2011 10:42:02 -0200
+      Hello, World
+      EOF
+
+      message = FactoryGirl.create(:incoming_message)
+      message.raw_email.data = raw_email_data
+      message.parse_raw_email!(true)
+      expect(message.sent_at).
+        to eq(DateTime.parse('Fri, 9 Dec 2011 10:42:02 -0200').in_time_zone)
+    end
+
+    it 'uses the created_at attribute if there is no Date header' do
+      raw_email_data = <<-EOF.strip_heredoc
+      From: FOI Person <authority@example.com>
+      To: Jane Doe <request-magic-email@example.net>
+      Subject: A response
+      Hello, World
+      EOF
+
+      message = FactoryGirl.create(:incoming_message)
+      message.raw_email.data = raw_email_data
+      message.parse_raw_email!(true)
+      expect(message.sent_at).to eq(message.created_at)
+    end
+
+  end
+
+  describe '#apply_masks' do
+
+    before(:each) do
+      @im = incoming_messages(:useless_incoming_message)
+
+      @default_opts = { :last_edit_editor => 'unknown',
+                        :last_edit_comment => 'none' }
+
+      load_raw_emails_data
+    end
+
+    it 'replaces text with global censor rules' do
+      data = 'There was a mouse called Stilton, he wished that he was blue'
+      expected = 'There was a mouse called Stilton, he said that he was blue'
+
+      opts = { :text => 'wished',
+               :replacement => 'said' }.merge(@default_opts)
+      CensorRule.create!(opts)
+
+      result = @im.apply_masks(data, 'text/plain')
+
+      expect(result).to eq(expected)
+    end
+
+    it 'replaces text with censor rules belonging to the info request' do
+      data = 'There was a mouse called Stilton.'
+      expected = 'There was a cat called Jarlsberg.'
+
+      rules = [
+        { :text => 'Stilton', :replacement => 'Jarlsberg' },
+        { :text => 'm[a-z][a-z][a-z]e', :regexp => true, :replacement => 'cat' }
+      ]
+
+      rules.each do |rule|
+        @im.info_request.censor_rules << CensorRule.new(rule.merge(@default_opts))
+      end
+
+      result = @im.apply_masks(data, 'text/plain')
+      expect(result).to eq(expected)
+    end
+
+    it 'replaces text with censor rules belonging to the user' do
+      data = 'There was a mouse called Stilton.'
+      expected = 'There was a cat called Jarlsberg.'
+
+      rules = [
+        { :text => 'Stilton', :replacement => 'Jarlsberg' },
+        { :text => 'm[a-z][a-z][a-z]e', :regexp => true, :replacement => 'cat' }
+      ]
+
+      rules.each do |rule|
+        @im.info_request.user.censor_rules << CensorRule.new(rule.merge(@default_opts))
+      end
+
+      result = @im.apply_masks(data, 'text/plain')
+      expect(result).to eq(expected)
+    end
+
+    it 'replaces text with masks belonging to the info request' do
+      data = "He emailed #{ @im.info_request.incoming_email }"
+      expected = "He emailed [FOI ##{ @im.info_request.id } email]"
+      result = @im.apply_masks(data, 'text/plain')
+      expect(result).to eq(expected)
+    end
+
+    it 'replaces text with global masks' do
+      data = 'His email address was stilton@example.org'
+      expected = 'His email address was [email address]'
+      result = @im.apply_masks(data, 'text/plain')
+      expect(result).to eq(expected)
+    end
+
+    it 'replaces text in binary files' do
+      data = 'His email address was stilton@example.org'
+      expected = 'His email address was xxxxxxx@xxxxxxx.xxx'
+      result = @im.apply_masks(data, 'application/vnd.ms-word')
+      expect(result).to eq(expected)
+    end
+
+  end
+
+  describe '#_extract_text' do
+
+    it 'does not generate incompatible character encodings' do
+      if String.respond_to?(:encode)
+        message = FactoryGirl.create(:incoming_message)
+        FactoryGirl.create(:body_text,
+                           :body => 'hí',
+                           :incoming_message => message,
+                           :url_part_number => 2)
+        FactoryGirl.create(:pdf_attachment,
+                           :body => load_file_fixture('pdf-with-utf8-characters.pdf'),
+                           :incoming_message => message,
+                           :url_part_number => 3)
+        message.reload
+
+        expect{ message._extract_text }.
+          to_not raise_error
+      end
+    end
+
+  end
+
+end
+
 describe IncomingMessage, 'when validating' do
 
   it 'should be valid with valid prominence values' do
@@ -51,6 +366,36 @@ describe IncomingMessage, 'when getting a response event' do
       incoming_message.info_request_events << InfoRequestEvent.new(:event_type => event_type)
     end
     expect(incoming_message.response_event.event_type).to eq('response')
+  end
+
+end
+
+describe IncomingMessage, "when the prominence is changed" do
+  let(:request) { FactoryGirl.create(:info_request) }
+
+  it "updates the info_request's last_public_response_at to nil when hidden" do
+    im = FactoryGirl.create(:incoming_message, :info_request => request)
+    response_event = FactoryGirl.
+                      create(:info_request_event, :event_type => 'response',
+                                                  :info_request => request,
+                                                  :incoming_message => im)
+    im.prominence = 'hidden'
+    im.save
+    expect(request.last_public_response_at).to be_nil
+  end
+
+  it "updates the info_request's last_public_response_at to a timestamp \
+      when unhidden" do
+    im = FactoryGirl.create(:incoming_message, :prominence => 'hidden',
+                                               :info_request => request)
+    response_event = FactoryGirl.
+                      create(:info_request_event, :event_type => 'response',
+                                                  :info_request => request,
+                                                  :incoming_message => im)
+    im.prominence = 'normal'
+    im.save
+    expect(request.last_public_response_at).to be_within(1.second).
+      of(response_event.created_at)
   end
 
 end
@@ -113,19 +458,60 @@ describe IncomingMessage, 'when asked if a user can view it' do
 end
 
 describe 'when destroying a message' do
+  let(:incoming_message) { FactoryGirl.create(:plain_incoming_message) }
 
-  before do
-    @incoming_message = FactoryGirl.create(:plain_incoming_message)
+  it 'destroys the incoming message' do
+    incoming_message.destroy
+    expect(IncomingMessage.where(:id => incoming_message.id)).to be_empty
   end
 
-  it 'can destroy a message with more than one info request event' do
-    @info_request = @incoming_message.info_request
-    @info_request.log_event('response',
-                            :incoming_message_id => @incoming_message.id)
-    @info_request.log_event('edit_incoming',
-                            :incoming_message_id => @incoming_message.id)
-    @incoming_message.fully_destroy
-    expect(IncomingMessage.where(:id => @incoming_message.id)).to be_empty
+  it 'should destroy the related info_request_event' do
+    info_request = incoming_message.info_request
+    info_request.log_event('response',
+                           :incoming_message_id => incoming_message.id)
+    incoming_message.reload
+    incoming_message.destroy
+    expect(InfoRequestEvent.where(:incoming_message_id => incoming_message.id)).
+      to be_empty
+  end
+
+  it 'should nullify outgoing_message_followups' do
+    outgoing_message = FactoryGirl.
+                         create(:initial_request,
+                                :info_request => incoming_message.info_request,
+                                :incoming_message_followup_id => incoming_message.id)
+    incoming_message.reload
+    incoming_message.destroy
+
+    expect(OutgoingMessage.
+      where(:incoming_message_followup_id => incoming_message.id)).to be_empty
+    expect(OutgoingMessage.where(:id => outgoing_message.id)).
+      to eq([outgoing_message])
+  end
+
+  context 'with attachments' do
+    let(:incoming_with_attachment) {
+      FactoryGirl.create(:incoming_message_with_html_attachment)
+    }
+
+    it 'destroys the incoming message' do
+      incoming_with_attachment.destroy
+      expect(IncomingMessage.where(:id => incoming_with_attachment.id)).
+        to be_empty
+    end
+
+    it 'should destroy associated attachments' do
+      incoming_with_attachment.destroy
+      expect(
+        FoiAttachment.where(:incoming_message_id => incoming_with_attachment.id)
+      ).to be_empty
+    end
+
+    it 'should destroy the file representation of the raw email' do
+      raw_email = incoming_with_attachment.raw_email
+      expect(raw_email).to receive(:destroy_file_representation!)
+      incoming_with_attachment.destroy
+    end
   end
 
 end
@@ -172,12 +558,6 @@ describe IncomingMessage, " when dealing with incoming mail" do
     expect(message.mail.multipart?).to eq(true)
   end
 
-  it "should return the mail Date header date for sent at" do
-    @im.parse_raw_email!(true)
-    @im.reload
-    expect(@im.sent_at).to eq(@im.mail.date)
-  end
-
   it "should correctly fold various types of footer" do
     Dir.glob(File.join(RSpec.configuration.fixture_path, "files", "email-folding-example-*.txt")).each do |file|
       message = File.read(file)
@@ -201,14 +581,6 @@ describe IncomingMessage, " when dealing with incoming mail" do
     message.parse_raw_email!
     expect(message.get_main_body_text_part.charset).to eq("iso-8859-1")
     expect(message.get_main_body_text_internal).to include("política")
-  end
-
-  it "should unquote RFC 2047 headers" do
-    ir = info_requests(:fancy_dog_request)
-    receive_incoming_mail('quoted-subject-iso8859-1.email', ir.incoming_email)
-    message = ir.incoming_messages[1]
-    expect(message.mail_from).to eq("Coordenação de Relacionamento, Pesquisa e Informação/CEDI")
-    expect(message.subject).to eq("Câmara Responde:  Banco de ideias")
   end
 
   it 'should deal with GB18030 text even if the charset is missing' do
@@ -423,84 +795,6 @@ describe IncomingMessage, " checking validity to reply to with real emails" do
 
 end
 
-
-describe IncomingMessage, " when censoring data" do
-
-  before(:each) do
-    @test_data = "There was a mouse called Stilton, he wished that he was blue."
-
-    @im = incoming_messages(:useless_incoming_message)
-
-    @censor_rule_1 = CensorRule.new
-    @censor_rule_1.text = "Stilton"
-    @censor_rule_1.replacement = "Jarlsberg"
-    @censor_rule_1.last_edit_editor = "unknown"
-    @censor_rule_1.last_edit_comment = "none"
-    @im.info_request.censor_rules << @censor_rule_1
-
-    @censor_rule_2 = CensorRule.new
-    @censor_rule_2.text = "blue"
-    @censor_rule_2.replacement = "yellow"
-    @censor_rule_2.last_edit_editor = "unknown"
-    @censor_rule_2.last_edit_comment = "none"
-    @im.info_request.censor_rules << @censor_rule_2
-
-    @regex_censor_rule = CensorRule.new
-    @regex_censor_rule.text = 'm[a-z][a-z][a-z]e'
-    @regex_censor_rule.regexp = true
-    @regex_censor_rule.replacement = 'cat'
-    @regex_censor_rule.last_edit_editor = 'unknown'
-    @regex_censor_rule.last_edit_comment = 'none'
-    @im.info_request.censor_rules << @regex_censor_rule
-    load_raw_emails_data
-  end
-
-  it "should replace censor text" do
-    data = "There was a mouse called Stilton, he wished that he was blue."
-    @im.apply_masks!(data, "application/vnd.ms-word")
-    expect(data).to eq("There was a xxxxx called xxxxxxx, he wished that he was xxxx.")
-  end
-
-  it "should apply censor rules to From: addresses" do
-    allow(@im).to receive(:mail_from).and_return("Stilton Mouse")
-    allow(@im).to receive(:last_parsed).and_return(Time.now)
-    safe_mail_from = @im.safe_mail_from
-    expect(safe_mail_from).to eq("Jarlsberg Mouse")
-  end
-
-end
-
-describe IncomingMessage, " when censoring whole users" do
-
-  before(:each) do
-    @test_data = "There was a mouse called Stilton, he wished that he was blue."
-
-    @im = incoming_messages(:useless_incoming_message)
-
-    @censor_rule_1 = CensorRule.new
-    @censor_rule_1.text = "Stilton"
-    @censor_rule_1.replacement = "Gorgonzola"
-    @censor_rule_1.last_edit_editor = "unknown"
-    @censor_rule_1.last_edit_comment = "none"
-    @im.info_request.user.censor_rules << @censor_rule_1
-    load_raw_emails_data
-  end
-
-  it "should apply censor rules to HTML files" do
-    data = @test_data.dup
-    @im.apply_masks!(data, 'text/html')
-    expect(data).to eq("There was a mouse called Gorgonzola, he wished that he was blue.")
-  end
-
-  it "should replace censor text to Word documents" do
-    data = @test_data.dup
-    @im.apply_masks!(data, "application/vnd.ms-word")
-    expect(data).to eq("There was a mouse called xxxxxxx, he wished that he was blue.")
-  end
-
-end
-
-
 describe IncomingMessage, " when uudecoding bad messages" do
 
   it "decodes a valid uuencoded attachment" do
@@ -551,7 +845,7 @@ describe IncomingMessage, " when uudecoding bad messages" do
     im = incoming_messages :useless_incoming_message
     allow(im).to receive(:raw_email).and_return(raw_email)
     allow(im).to receive(:mail).and_return(mail)
-    im.parse_raw_email!
+    im.parse_raw_email!(true)
     attachments = im.foi_attachments
     expect(attachments.size).to eq(2)
   end
@@ -589,7 +883,7 @@ describe IncomingMessage, "when messages are attached to messages" do
 
       im = incoming_messages(:useless_incoming_message)
       allow(im).to receive(:mail).and_return(mail)
-
+      im.parse_raw_email!(true)
       attachments = im.get_attachments_for_display
       expect(attachments.size).to eq(1)
       attachment = attachments.first
@@ -627,7 +921,7 @@ describe IncomingMessage, "when messages are attached to messages" do
 
       im = incoming_messages(:useless_incoming_message)
       allow(im).to receive(:mail).and_return(mail)
-
+      im.parse_raw_email!(true)
       attachments = im.get_attachments_for_display
       expect(attachments.size).to eq(2)
       expect(attachments[0].body).to match('Date: Fri, 23 May 2008')
@@ -720,32 +1014,6 @@ describe IncomingMessage, "when extracting attachments" do
 
       expect(im._get_attachment_text_internal.valid_encoding?).to be true
     end
-  end
-
-end
-
-describe IncomingMessage do
-
-  describe '#_extract_text' do
-
-    it 'does not generate incompatible character encodings' do
-      if String.respond_to?(:encode)
-        message = FactoryGirl.create(:incoming_message)
-        FactoryGirl.create(:body_text,
-                           :body => 'hí',
-                           :incoming_message => message,
-                           :url_part_number => 2)
-        FactoryGirl.create(:pdf_attachment,
-                           :body => load_file_fixture('pdf-with-utf8-characters.pdf'),
-                           :incoming_message => message,
-                           :url_part_number => 3)
-        message.reload
-
-        expect{ message._extract_text }.
-          to_not raise_error
-      end
-    end
-
   end
 
 end

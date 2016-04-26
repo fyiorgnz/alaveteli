@@ -14,6 +14,7 @@ module AlaveteliConfiguration
       :AVAILABLE_LOCALES => '',
       :BLACKHOLE_PREFIX => 'do-not-reply-to-this-address',
       :BLOG_FEED => '',
+      :BLOG_TIMEOUT => 60,
       :CACHE_FRAGMENTS => true,
       :CONTACT_EMAIL => 'contact@localhost',
       :CONTACT_NAME => 'Alaveteli',
@@ -23,6 +24,8 @@ module AlaveteliConfiguration
       :DISABLE_EMERGENCY_USER => false,
       :DOMAIN => 'localhost:3000',
       :DONATION_URL => '',
+      :ENABLE_ANNOTATIONS => true,
+      :ENABLE_TWO_FACTOR_AUTH => false,
       :ENABLE_WIDGETS => false,
       :EXCEPTION_NOTIFICATIONS_FROM => 'errors@localhost',
       :EXCEPTION_NOTIFICATIONS_TO => 'user-support@localhost',
@@ -32,6 +35,7 @@ module AlaveteliConfiguration
       :FRONTPAGE_PUBLICBODY_EXAMPLES => '',
       :GA_CODE => '',
       :GAZE_URL => '',
+      :GEOIP_DATABASE => '/usr/share/GeoIP/GeoIP.dat',
       :HTML_TO_PDF_COMMAND => '',
       :INCLUDE_DEFAULT_LOCALE_IN_URLS => true,
       :INCOMING_EMAIL_DOMAIN => 'localhost',
@@ -63,7 +67,7 @@ module AlaveteliConfiguration
       :SMTP_MAILER_PASSWORD => '',
       :SMTP_MAILER_AUTHENTICATION => 'plain',
       :SMTP_MAILER_ENABLE_STARTTLS_AUTO => true,
-      :SPECIAL_REPLY_VERY_LATE_AFTER_DAYS => 60,
+      :RESTRICT_NEW_RESPONSES_ON_OLD_REQUESTS_AFTER_MONTHS => 6,
       :THEME_BRANCH => false,
       :THEME_URL => "",
       :THEME_URLS => [],
@@ -75,12 +79,13 @@ module AlaveteliConfiguration
       :USE_DEFAULT_BROWSER_LANGUAGE => true,
       :USE_GHOSTSCRIPT_COMPRESSION => false,
       :USE_MAILCATCHER_IN_DEVELOPMENT => true,
+      :USE_RECAPTCHA_FOR_REGISTRATION => false,
       :UTILITY_SEARCH_PATH => ["/usr/bin", "/usr/local/bin"],
       :VARNISH_HOST => '',
       :WORKING_OR_CALENDAR_DAYS => 'working',
       :USE_BULLET_IN_DEVELOPMENT => false,
-      :FACEBOOK_USERNAME => '',
-      :INCOMING_EMAIL_SPAM_ACTION => false
+      :INCOMING_EMAIL_SPAM_ACTION => false,
+      :EXTERNAL_REVIEWERS => ''
     }
   end
 

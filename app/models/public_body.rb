@@ -25,6 +25,7 @@
 #  info_requests_not_held_count           :integer
 #  info_requests_overdue_count            :integer
 #  info_requests_visible_classified_count :integer
+#  info_requests_visible_count            :integer
 #
 
 require 'csv'
@@ -56,8 +57,8 @@ class PublicBody < ActiveRecord::Base
   end
 
   has_many :info_requests, :order => 'created_at desc'
-  has_many :track_things, :order => 'created_at desc'
-  has_many :censor_rules, :order => 'created_at desc'
+  has_many :track_things, :order => 'created_at desc', :dependent => :destroy
+  has_many :censor_rules, :order => 'created_at desc', :dependent => :destroy
 
   validates_presence_of :name, :message => N_("Name can't be blank")
   validates_presence_of :url_name, :message => N_("URL name can't be blank")
@@ -111,7 +112,7 @@ class PublicBody < ActiveRecord::Base
   self.non_versioned_columns << 'info_requests_count' << 'info_requests_successful_count'
   self.non_versioned_columns << 'info_requests_count' << 'info_requests_visible_classified_count'
   self.non_versioned_columns << 'info_requests_not_held_count' << 'info_requests_overdue'
-  self.non_versioned_columns << 'info_requests_overdue_count'
+  self.non_versioned_columns << 'info_requests_overdue_count' << 'info_requests_visible_count'
 
   # Cannot be defined directly under `include` statements as this is opening
   # the PublicBody::Version class dynamically defined by  the
@@ -238,6 +239,7 @@ class PublicBody < ActiveRecord::Base
 
   # Schools are allowed more time in holidays, so we change some wordings
   def is_school?
+    warn %q([DEPRECATION] PublicBody#is_school? will be removed in 0.25)
     has_tag?('school')
   end
 
@@ -527,25 +529,12 @@ class PublicBody < ActiveRecord::Base
 
     alias_method :foi_officer_domain_required, :request_email_domain
 
-    # Return the domain part of an email address, canonicalised and with common
-    # extra UK Government server name parts removed.
+    # Return the canonicalised domain part of an email address
     #
     # TODO: Extract to library class
     def self.extract_domain_from_email(email)
       email =~ /@(.*)/
-      if $1.nil?
-        return nil
-      end
-
-      # take lower case
-      ret = $1.downcase
-
-      # remove special email domains for UK Government addresses
-      ret.sub!(".gsi.", ".")
-      ret.sub!(".x.", ".")
-      ret.sub!(".pnn.", ".")
-
-      return ret
+      $1.nil? ? nil : $1.downcase
     end
 
     # TODO: Could this be defined as `sorted_versions.reverse`?
@@ -687,7 +676,7 @@ class PublicBody < ActiveRecord::Base
         if body_short_names.empty?
           # This is too slow
           bodies = visible.find(:all,
-                                :order => "info_requests_count desc",
+                                :order => "info_requests_visible_count desc",
                                 :limit => 32,
                                 :conditions => conditions,
                                 :joins => :translations
@@ -701,18 +690,11 @@ class PublicBody < ActiveRecord::Base
       return bodies
     end
 
-    # Methods to privatise
-    # --------------------------------------------------------------------------
+    private
 
     # TODO: This could be removed by updating the default value (to '') of the
     # `publication_scheme` column in the `public_body_translations` table.
-    #
-    # TODO: Can't actually deprecate this because spec/script/mailin_spec.rb:28
-    # fails due to the deprecation notice output
     def set_default_publication_scheme
-      # warn %q([DEPRECATION] PublicBody#set_default_publication_scheme will
-      # become a private method in 0.23).squish
-
       # Make sure publication_scheme gets the correct default value.
       # (This would work automatically, were publication_scheme not a
       # translated attribute)
@@ -722,13 +704,7 @@ class PublicBody < ActiveRecord::Base
     # if the URL name has changed, then all requested_from: queries
     # will break unless we update index for every event for every
     # request linked to it
-    #
-    # TODO: Can't actually deprecate this because spec/script/mailin_spec.rb:28
-    # fails due to the deprecation notice output
     def reindex_requested_from
-      # warn %q([DEPRECATION] PublicBody#reindex_requested_from will become a
-      # private method in 0.23).squish
-
       if changes.include?('url_name')
         info_requests.each do |info_request|
           info_request.info_request_events.each do |info_request_event|
@@ -737,35 +713,6 @@ class PublicBody < ActiveRecord::Base
         end
       end
     end
-
-    # Methods to remove
-    # --------------------------------------------------------------------------
-
-    # Set the first letter on a public body or translation
-    def self.set_first_letter(instance)
-      warn %q([DEPRECATION] PublicBody.set_first_letter will be removed
-              in 0.23).squish
-
-      unless instance.name.nil? or instance.name.empty?
-        # we use a regex to ensure it works with utf-8/multi-byte
-        first_letter = Unicode.upcase instance.name.scan(/^./mu)[0]
-        if first_letter != instance.first_letter
-          instance.first_letter = first_letter
-        end
-      end
-    end
-
-    def calculate_cached_fields(t)
-      warn %q([DEPRECATION] PublicBody#calculate_cached_fields will be removed
-              in 0.23).squish
-
-      PublicBody.set_first_letter(t)
-      short_long_name = t.name
-      short_long_name = t.short_name if t.short_name and !t.short_name.empty?
-      t.url_name = MySociety::Format.simplify_url_part(short_long_name, 'body')
-    end
-
-    private
 
     # Read an attribute value (without using locale fallbacks if the attribute is translated)
     def read_attribute_value(name, locale)

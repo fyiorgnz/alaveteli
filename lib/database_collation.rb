@@ -6,11 +6,21 @@
 class DatabaseCollation
   MINIMUM_POSTGRESQL_VERSION = 90112
 
+  attr_reader :connection
+
   # Public: Does the connected database support collation in the given locale?
-  # Delegates to an instance configured with the DEFAULT_CONNECTION. See
-  # DatabaseCollation#supports? for more documentation.
+  # Delegates to an instance configured with a connection from the
+  # ActiveRecord::Base connection pool. See DatabaseCollation#supports? for
+  # more documentation.
   def self.supports?(locale)
-    new.supports?(locale)
+    ActiveRecord::Base.connection_pool.with_connection do |connection|
+      i = new(connection)
+      i.supports?(locale)
+    end
+  end
+
+  def initialize(connection)
+    @connection = connection
   end
 
   # Public: Does the connected database support collation in the given locale?
@@ -27,10 +37,6 @@ class DatabaseCollation
   # Returns a Boolean
   def supports?(locale)
     exist? && supported_collations.include?(locale)
-  end
-
-  def connection
-    ActiveRecord::Base.connection
   end
 
   private

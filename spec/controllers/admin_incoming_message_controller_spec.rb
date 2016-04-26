@@ -12,7 +12,6 @@ describe AdminIncomingMessageController, "when administering incoming messages" 
 
     before do
       @im = incoming_messages(:useless_incoming_message)
-      allow(@controller).to receive(:expire_for_request)
     end
 
     it "destroys the raw email file" do
@@ -22,14 +21,17 @@ describe AdminIncomingMessageController, "when administering incoming messages" 
       assert_equal File.exists?(raw_email), false
     end
 
-    it 'asks the incoming message to fully destroy itself' do
+    it 'asks the incoming message to destroy itself' do
       allow(IncomingMessage).to receive(:find).and_return(@im)
-      expect(@im).to receive(:fully_destroy)
+      expect(@im).to receive(:destroy)
       post :destroy, :id => @im.id
     end
 
     it 'expires the file cache for the associated info_request' do
-      expect(@controller).to receive(:expire_for_request).with(@im.info_request)
+      info_request = FactoryGirl.create(:info_request)
+      allow(@im).to receive(:info_request).and_return(info_request)
+      allow(IncomingMessage).to receive(:find).and_return(@im)
+      expect(@im.info_request).to receive(:expire).with(:preserve_database_cache => true)
       post :destroy, :id => @im.id
     end
 
@@ -43,10 +45,12 @@ describe AdminIncomingMessageController, "when administering incoming messages" 
     end
 
     it 'expires the file cache for the previous request' do
-      current_info_request = info_requests(:fancy_dog_request)
+      previous_info_request = FactoryGirl.create(:info_request)
       destination_info_request = info_requests(:naughty_chicken_request)
       incoming_message = incoming_messages(:useless_incoming_message)
-      expect(@controller).to receive(:expire_for_request).with(current_info_request)
+      allow(incoming_message).to receive(:info_request).and_return(previous_info_request)
+      allow(IncomingMessage).to receive(:find).and_return(incoming_message)
+      expect(previous_info_request).to receive(:expire)
       post :redeliver, :id => incoming_message.id,
         :url_title => destination_info_request.url_title
     end
@@ -135,7 +139,10 @@ describe AdminIncomingMessageController, "when administering incoming messages" 
     end
 
     it 'should expire the file cache for the info request' do
-      expect(@controller).to receive(:expire_for_request).with(@incoming.info_request)
+      info_request = FactoryGirl.create(:info_request)
+      allow(IncomingMessage).to receive(:find).and_return(@incoming)
+      allow(@incoming).to receive(:info_request).and_return(info_request)
+      expect(info_request).to receive(:expire)
       make_request
     end
 
@@ -163,6 +170,100 @@ describe AdminIncomingMessageController, "when administering incoming messages" 
       end
 
     end
+  end
+
+  describe "when destroying multiple incoming messages" do
+    let(:request) { FactoryGirl.create(:info_request) }
+    let(:spam1) { FactoryGirl.create(
+                    :incoming_message,
+                    :subject => "Buy a watch!1!!",
+                    :info_request => request) }
+    let(:spam2) { FactoryGirl.create(
+                    :incoming_message,
+                    :subject => "Best cheap w@tches!!1!",
+                    :info_request => request) }
+    let(:spam_ids) { [spam1.id, spam2.id] }
+
+    context "the user confirms deletion" do
+
+      it "destroys the selected messages" do
+        post :bulk_destroy, :request_id => request.id,
+                            :ids => spam_ids.join(","),
+                            :commit => "Yes"
+
+        expect(IncomingMessage.where(:id => spam_ids)).to be_empty
+      end
+
+      it 'expires the file cache for the associated info_request' do
+        allow(InfoRequest).to receive(:find).and_return(request)
+        expect(request).to receive(:expire).with(:preserve_database_cache => true)
+        post :bulk_destroy, :request_id => request.id,
+                            :ids => spam_ids.join(","),
+                            :commit => "Yes"
+      end
+
+      it "redirects back to the admin page for the request" do
+        post :bulk_destroy, :request_id => request.id,
+                            :ids => spam_ids.join(","),
+                            :commit => "Yes"
+
+        expect(response).to redirect_to(admin_request_url(request))
+      end
+
+      it "sets a success message in flash" do
+        post :bulk_destroy, :request_id => request.id,
+                            :ids => spam_ids.join(","),
+                            :commit => "Yes"
+
+        expect(response).to redirect_to(admin_request_url(request))
+        expect(flash[:notice]).to eq("Incoming messages successfully destroyed.")
+      end
+
+      it "only destroys selected messages" do
+        post :bulk_destroy, :request_id => request.id,
+                            :ids => spam2.id,
+                            :commit => "Yes"
+
+        expect(IncomingMessage.where(:id => spam_ids)).to eq([spam1])
+      end
+
+      context "not all the messages can be destroyed" do
+
+        it "set an error message in flash" do
+          allow(spam2).to receive(:destroy).and_raise("random DB error")
+          allow(IncomingMessage).to receive(:where).and_return([spam1, spam2])
+          msg = "Incoming Messages #{spam2.id} could not be destroyed"
+          post :bulk_destroy, :request_id => request.id,
+                              :ids => spam_ids.join(","),
+                              :commit => "Yes"
+
+          expect(flash[:error]).to match(msg)
+        end
+
+      end
+
+    end
+
+    context "the user does not confirm deletion" do
+
+      it "does not destroy the messages" do
+        post :bulk_destroy, :request_id => request.id,
+                            :ids => spam_ids.split(","),
+                            :commit => "No"
+
+        expect(IncomingMessage.where(:id => spam_ids)).to eq([spam1, spam2])
+      end
+
+      it "redirects back to the admin page for the request" do
+        post :bulk_destroy, :request_id => request.id,
+                            :ids => spam_ids.join(","),
+                            :commit => "No"
+
+        expect(response).to redirect_to(admin_request_url(request))
+      end
+
+    end
+
   end
 
 end

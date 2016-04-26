@@ -11,6 +11,7 @@ class UserController < ApplicationController
   layout :select_layout
   # NOTE: Rails 4 syntax: change before_filter to before_action
   before_filter :normalize_url_name, :only => :show
+  before_filter :set_use_recaptcha, :only => [:signin, :signup]
 
   # Show page about a user
   def show
@@ -132,19 +133,24 @@ class UserController < ApplicationController
   # Create new account form
   def signup
     work_out_post_redirect
-    @request_from_foreign_country = country_from_ip != AlaveteliConfiguration::iso_country_code
     # Make the user and try to save it
     @user_signup = User.new(user_params(:user_signup))
     error = false
-    if @request_from_foreign_country && !verify_recaptcha
+    if @use_recaptcha && !verify_recaptcha
       flash.now[:error] = _("There was an error with the words you entered, please try again.")
       error = true
     end
-    if error || !@user_signup.valid?
+    @user_signup.valid?
+    user_alreadyexists = User.find_user_by_email(params[:user_signup][:email].strip)
+    if user_alreadyexists
+      # attempt to remove the 'already in use message' from the errors hash
+      # so it doesn't get accidentally shown to the end user
+      @user_signup.errors[:email].delete_if{|message| message == _("This email is already in use")}
+    end
+    if error || !@user_signup.errors.empty?
       # Show the form
       render :action => 'sign'
     else
-      user_alreadyexists = User.find_user_by_email(params[:user_signup][:email])
       if user_alreadyexists
         already_registered_mail user_alreadyexists
         return
@@ -158,8 +164,6 @@ class UserController < ApplicationController
     end
   end
 
-  # Followed link in user account confirmation email.
-  # If you change this, change ApplicationController.test_code_redirect_by_email_token also
   def confirm
     post_redirect = PostRedirect.find_by_email_token(params[:email_token])
 
@@ -168,12 +172,30 @@ class UserController < ApplicationController
       return
     end
 
-    if !User.stay_logged_in_on_redirect?(@user) || post_redirect.circumstance == "login_as"
-      @user = post_redirect.user
-      @user.email_confirmed = true
-      @user.save!
+    case post_redirect.circumstance
+    when 'login_as'
+      @user = confirm_user!(post_redirect.user)
+      session[:user_id] = @user.id
+    when 'change_password'
+      unless session[:user_id] == post_redirect.user_id
+        clear_session_credentials
+      end
+
+      session[:change_password_post_redirect_id] = post_redirect.id
+    when 'normal', 'change_email'
+      # !User.stay_logged_in_on_redirect?(nil)
+      # # => true
+      # !User.stay_logged_in_on_redirect?(user)
+      # # => true
+      # !User.stay_logged_in_on_redirect?(admin)
+      # # => false
+      unless User.stay_logged_in_on_redirect?(@user)
+        @user = confirm_user!(post_redirect.user)
+      end
+
+      session[:user_id] = @user.id
     end
-    session[:user_id] = @user.id
+
     session[:user_circumstance] = post_redirect.circumstance
 
     do_post_redirect post_redirect
@@ -185,73 +207,6 @@ class UserController < ApplicationController
       redirect_to URI.parse(params[:r]).path
     else
       redirect_to :controller => "general", :action => "frontpage"
-    end
-  end
-
-  # Change password (TODO: and perhaps later email) - requires email authentication
-  def signchangepassword
-    if @user and ((not session[:user_circumstance]) or (session[:user_circumstance] != "change_password"))
-      # Not logged in via email, so send confirmation
-      params[:submitted_signchangepassword_send_confirm] = true
-      params[:signchangepassword] = { :email => @user.email }
-    end
-
-    if params[:submitted_signchangepassword_send_confirm]
-      # They've entered the email, check it is OK and user exists
-      unless MySociety::Validate.is_valid_email(params[:signchangepassword][:email])
-        flash[:error] = _("That doesn't look like a valid email address. Please check you have typed it correctly.")
-        render :action => 'signchangepassword_send_confirm'
-        return
-      end
-      user_signchangepassword = User.find_user_by_email(params[:signchangepassword][:email])
-      if user_signchangepassword
-        # Send email with login link to go to signchangepassword page
-        url = signchangepassword_url
-        if params[:pretoken]
-          url += "?pretoken=" + params[:pretoken]
-        end
-        post_redirect = PostRedirect.new(:uri => url , :post_params => {},
-                                         :reason_params => {
-                                           :web => "",
-                                           :email => _("Then you can change your password on {{site_name}}",:site_name=>site_name),
-                                           :email_subject => _("Change your password on {{site_name}}",:site_name=>site_name)
-                                         },
-                                         :circumstance => "change_password" # special login that lets you change your password
-                                         )
-        post_redirect.user = user_signchangepassword
-        post_redirect.save!
-        url = confirm_url(:email_token => post_redirect.email_token)
-        UserMailer.confirm_login(user_signchangepassword, post_redirect.reason_params, url).deliver
-      else
-        # User not found, but still show confirm page to not leak fact user exists
-      end
-
-      render :action => 'signchangepassword_confirm'
-    elsif @user.nil?
-      # Not logged in, prompt for email
-      render :action => 'signchangepassword_send_confirm'
-    else
-      # Logged in via special email change password link, so can offer form to change password
-      raise "internal error" unless (session[:user_circumstance] == "change_password")
-
-      if params[:submitted_signchangepassword_do]
-        @user.password = params[:user][:password]
-        @user.password_confirmation = params[:user][:password_confirmation]
-        if @user.valid?
-          @user.save!
-          flash[:notice] = _("Your password has been changed.")
-          if params[:pretoken] and not params[:pretoken].empty?
-            post_redirect = PostRedirect.find_by_token(params[:pretoken])
-            do_post_redirect post_redirect
-          else
-            redirect_to user_url(@user)
-          end
-        else
-          render :action => 'signchangepassword'
-        end
-      else
-        render :action => 'signchangepassword'
-      end
     end
   end
 
@@ -339,9 +294,12 @@ class UserController < ApplicationController
     #
     # "authenticated?" has done the redirect to signin page for us
     return unless authenticated?(
-        :web => _("To send a message to ") + CGI.escapeHTML(@recipient_user.name),
-        :email => _("Then you can send a message to ") + @recipient_user.name + ".",
-        :email_subject => _("Send a message to ") + @recipient_user.name
+        :web => _("To send a message to {{user_name}}",
+                  :user_name => CGI.escapeHTML(@recipient_user.name)),
+        :email => _("Then you can send a message to {{user_name}}.",
+                    :user_name => @recipient_user.name),
+        :email_subject => _("Send a message to {{user_name}}",
+                            :user_name => @recipient_user.name)
       )
 
     if params[:submitted_contact_form]
@@ -426,9 +384,11 @@ class UserController < ApplicationController
       @user.set_profile_photo(@profile_photo)
       draft_profile_photo.destroy
 
+
       if @user.get_about_me_for_html_display.empty?
-        flash[:notice] = _("<p>Thanks for updating your profile photo.</p>
-                <p><strong>Next...</strong> You can put some text about you and your research on your profile.</p>")
+        flash[:notice] = _("<p>Thanks for updating your profile photo.</p>" \
+                "<p><strong>Next...</strong> You can put some text about " \
+                "you and your research on your profile.</p>")
         redirect_to set_profile_about_me_url
       else
         flash[:notice] = _("Thank you for updating your profile photo")
@@ -512,8 +472,9 @@ class UserController < ApplicationController
       flash[:notice] = _("You have now changed the text about you on your profile.")
       redirect_to user_url(@user)
     else
-      flash[:notice] = _("<p>Thanks for changing the text about you on your profile.</p>
-            <p><strong>Next...</strong> You can upload a profile photograph too.</p>")
+      flash[:notice] = _("<p>Thanks for changing the text about you on your " \
+                         "profile.</p><p><strong>Next...</strong> You can " \
+                         "upload a profile photograph too.</p>")
       redirect_to set_profile_photo_url
     end
   end
@@ -574,12 +535,7 @@ class UserController < ApplicationController
 
     # The explicit "signin" link uses this to specify where to go back to
     if params[:r]
-      @post_redirect = PostRedirect.new(:uri => params[:r], :post_params => {},
-                                        :reason_params => {
-                                          :web => "",
-                                          :email => _("Then you can sign in to {{site_name}}", :site_name => site_name),
-                                          :email_subject => _("Confirm your account on {{site_name}}", :site_name => site_name)
-      })
+      @post_redirect = generate_post_redirect_for_signup(params[:r])
       @post_redirect.save!
       params[:token] = @post_redirect.token
     elsif params[:token]
@@ -602,6 +558,7 @@ class UserController < ApplicationController
   # If they register again
   def already_registered_mail(user)
     post_redirect = PostRedirect.find_by_token(params[:token])
+    post_redirect ||= generate_post_redirect_for_signup(params[:r])
     post_redirect.user = user
     post_redirect.save!
 
@@ -659,7 +616,29 @@ class UserController < ApplicationController
     @feed_autodetect = [ { :url => do_track_url(@track_thing, 'feed'), :title => @track_thing.params[:title_in_rss], :has_json => true } ]
   end
 
+  def confirm_user!(user)
+    user.confirm!
+    user
+  end
+
   def current_user_is_display_user
     @user.try(:id) == @display_user.id
+  end
+
+  # Redirects to front page later if nothing else specified
+  def generate_post_redirect_for_signup(redirect_to="/")
+    redirect_to = "/" if redirect_to.nil?
+    PostRedirect.new(:uri => redirect_to,
+                     :post_params => {},
+                     :reason_params => {
+                       :web => "",
+                       :email => _("Then you can sign in to {{site_name}}", :site_name => site_name),
+                       :email_subject => _("Confirm your account on {{site_name}}", :site_name => site_name)
+                     })
+  end
+
+  def set_use_recaptcha
+    @use_recaptcha = (AlaveteliConfiguration::use_recaptcha_for_registration ||
+                      country_from_ip != AlaveteliConfiguration::iso_country_code)
   end
 end

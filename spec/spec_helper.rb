@@ -6,11 +6,15 @@ require 'spork'
 #require 'spork/ext/ruby-debug'
 require 'simplecov'
 require 'coveralls'
-# Generate coverage locally in html as well as in coveralls.io
+
+cov_formats = [Coveralls::SimpleCov::Formatter]
+cov_formats << SimpleCov::Formatter::HTMLFormatter if ENV['COVERAGE'] == 'local'
+
+# Generate coverage in coveralls.io and locally if requested
 SimpleCov.formatter = SimpleCov::Formatter::MultiFormatter[
-  SimpleCov::Formatter::HTMLFormatter,
-  Coveralls::SimpleCov::Formatter
+  *cov_formats
 ]
+
 SimpleCov.start('rails') do
   add_filter  'commonlib'
   add_filter  'vendor/plugins'
@@ -30,6 +34,8 @@ Spork.prefork do
   ENV["RAILS_ENV"] ||= 'test'
   require File.expand_path("../../config/environment", __FILE__)
   require 'rspec/rails'
+  # prevent Test::Unit's AutoRunner from executing during RSpec's rake task on JRuby
+  Test::Unit.run = true if defined?(Test::Unit) && Test::Unit.respond_to?(:run=)
 
   # Requires supporting ruby files with custom matchers and macros, etc,
   # in spec/support/ and its subdirectories.
@@ -203,6 +209,7 @@ Spork.prefork do
     password = AlaveteliConfiguration::admin_password if password.nil?
     request.env["HTTP_AUTHORIZATION"] = "Basic " + Base64::encode64("#{username}:#{password}")
   end
+
 end
 
 Spork.each_run do

@@ -16,7 +16,7 @@ class AdminPublicBodyController < AdminController
   end
 
   def show
-    @locale = locale_from_params
+    @locale = I18n.locale.to_s
     I18n.with_locale(@locale) do
       @public_body = PublicBody.find(params[:id])
       @info_requests = @public_body.info_requests.paginate :order => "created_at desc",
@@ -103,7 +103,7 @@ class AdminPublicBodyController < AdminController
   end
 
   def destroy
-    if @public_body.info_requests.size > 0
+    if @public_body.info_requests.count > 0
       flash[:notice] = "There are requests associated with the authority, so can't destroy it"
       redirect_to admin_body_url(@public_body)
       return
@@ -231,7 +231,7 @@ class AdminPublicBodyController < AdminController
     end
 
     def lookup_query
-        @locale = locale_from_params
+        @locale = I18n.locale.to_s
         underscore_locale = @locale.gsub '-', '_'
         I18n.with_locale(@locale) do
             @query = params[:query]

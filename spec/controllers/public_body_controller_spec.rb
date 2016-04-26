@@ -89,6 +89,10 @@ describe PublicBodyController, "when showing a body" do
     }.to raise_error(ActiveRecord::RecordNotFound)
   end
 
+  it 'should not raise an error when given an empty query param' do
+    get :show, :url_name => "dfh", :view => 'all', :query => nil
+    expect(response).to be_success
+  end
 end
 
 describe PublicBodyController, "when listing bodies" do
@@ -195,7 +199,7 @@ describe PublicBodyController, "when listing bodies" do
                                         public_bodies(:sensible_walks_public_body),
                                         public_bodies(:silly_walks_public_body) ])
     expect(assigns[:tag]).to eq("all")
-    expect(assigns[:description]).to eq("")
+    expect(assigns[:description]).to eq("Found 6 public authorities")
   end
 
   it 'list bodies in collate order according to the locale with the fallback set' do
@@ -270,7 +274,7 @@ describe PublicBodyController, "when listing bodies" do
       expect(response).to render_template('list')
       expect(assigns[:public_bodies]).to eq([ public_bodies(:geraldine_public_body), public_bodies(:humpadink_public_body) ])
       expect(assigns[:tag]).to eq("all")
-      expect(assigns[:description]).to eq("")
+      expect(assigns[:description]).to eq("Found 2 public authorities")
     end
   end
 
@@ -286,7 +290,8 @@ describe PublicBodyController, "when listing bodies" do
     expect(response).to render_template('list')
     expect(assigns[:public_bodies]).to eq([ public_bodies(:humpadink_public_body) ])
     expect(assigns[:tag]).to eq(category.category_tag)
-    expect(assigns[:description]).to eq("in the category ‘#{category.title}’")
+    expect(assigns[:description]).
+      to eq("Found 1 public authority in the category ‘#{category.title}’")
 
     get :list, :tag => "other"
     expect(response).to render_template('list')
@@ -325,13 +330,35 @@ describe PublicBodyController, "when listing bodies" do
     expect(assigns[:tag]).to eq("eats_cheese:stilton")
   end
 
+  it 'should not include hidden requests in the request count' do
+    fake_pb = FactoryGirl.create(:public_body)
+    hidden_request = FactoryGirl.create(:info_request,
+                                        :prominence => 'hidden',
+                                        :public_body => fake_pb)
+    visible_request = FactoryGirl.create(:info_request, :public_body => fake_pb)
+    fake_pb.reload
+    expect(fake_pb.info_requests.size).to eq(2)
+    expect(fake_pb.info_requests.visible.size).to eq(1)
+    fake_list = [fake_pb]
+    allow(fake_list).to receive(:joins).and_return(fake_list)
+    allow(fake_list).to receive(:paginate).and_return(fake_list)
+    allow(fake_list).to receive(:order).and_return(fake_list)
+    allow(fake_list).to receive(:total_entries).and_return(1)
+    allow(fake_list).to receive(:total_pages).and_return(1)
+
+    allow(PublicBody).to receive(:where).and_return(fake_list)
+    get :list
+    expect(response.body).to have_content('1 request made')
+  end
+
   it 'should return a "406 Not Acceptable" code if asked for a json version of a list' do
     get :list, :format => 'json'
     expect(response.code).to eq('406')
   end
 
   it "should list authorities starting with a multibyte first letter" do
-    get :list, {:tag => "å", :show_locale => 'cs'}
+    AlaveteliLocalization.set_locales('cs', 'cs')
+    get :list, {:tag => "å", :locale => 'cs'}
     expect(response).to render_template('list')
     expect(assigns[:public_bodies]).to eq([ public_bodies(:accented_public_body) ])
     expect(assigns[:tag]).to eq("Å")
