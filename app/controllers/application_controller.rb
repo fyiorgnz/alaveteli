@@ -187,7 +187,7 @@ class ApplicationController < ActionController::Base
       Rails.logger.fatal("#{message}\n\n")
 
       if !AlaveteliConfiguration.exception_notifications_from.blank? && !AlaveteliConfiguration.exception_notifications_to.blank?
-        ExceptionNotifier::Notifier.exception_notification(request.env, exception).deliver
+        ExceptionNotifier.notify_exception(exception, :env => request.env)
       end
       @status = 500
     end
