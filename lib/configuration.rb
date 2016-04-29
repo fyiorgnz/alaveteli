@@ -80,7 +80,8 @@ module AlaveteliConfiguration
       :WORKING_OR_CALENDAR_DAYS => 'working',
       :USE_BULLET_IN_DEVELOPMENT => false,
       :FACEBOOK_USERNAME => '',
-      :INCOMING_EMAIL_SPAM_ACTION => false
+      :INCOMING_EMAIL_SPAM_ACTION => false,
+      :INCOMING_EMAIL_SPAM_THRESHOLD => false
     }
   end
 
