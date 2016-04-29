@@ -98,6 +98,7 @@ group :development do
   gem 'pry', '~> 0.9.6'
   gem 'quiet_assets', '~> 1.0.2'
   gem 'rdoc', '~> 3.12.2'
+  gem 'test-unit', '~> 3.0'
 end
 
 group :debug do
