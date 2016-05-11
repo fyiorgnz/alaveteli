@@ -6,5 +6,6 @@ cache/*
 log/*
 lib/acts_as_xapian/xapiands/development/*
 lib/acts_as_xapian/xapiands/production/*
+lib/themes/fyi-theme
 tmp/*
 webrat.log
