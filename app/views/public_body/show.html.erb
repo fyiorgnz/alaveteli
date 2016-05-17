@@ -24,7 +24,7 @@
   </p>
 
   <% if @public_body.has_notes? || @public_body.eir_only? || @public_body.special_not_requestable_reason? %>
-    <div id="stepwise_make_request">
+    <div id="stepwise_make_request" class="stepwise_make_request">
       <% if @public_body.has_notes? %>
         <p class="authority__header__notes">
           <%= @public_body.notes_as_html.html_safe %>
@@ -34,7 +34,8 @@
       <% if @public_body.is_requestable? %>
         <% if @public_body.eir_only? %>
           <p class="authority__header__notes">
-            <%= _('You can only request information about the environment from this authority.')%>
+            <%= _('You can only request information about the environment ' \
+                     'from this authority.')%>
           </p>
         <% end %>
       <% elsif @public_body.special_not_requestable_reason? %>
@@ -57,17 +58,17 @@
   <div class="authority__header__action-bar">
     <div class="action-bar__make-request">
       <% if @public_body.is_requestable? || @public_body.not_requestable_reason == 'bad_contact' %>
-        <%= link_to _("Make a request to this authority"), new_request_to_body_path(:url_name => @public_body.url_name), :class => "link_button_green" %>
+        <%= link_to _("Make a request to this authority"), new_request_to_body_path(:url_name => @public_body.url_name), :class => "link_button_green make-request__action" %>
       <% end %>
     </div>
 
     <div class="action-bar__follow">
       <div class="action-bar__follow-button">
         <% if @existing_track %>
-          <%= link_to _("Unsubscribe"), {:controller => 'track', :action => 'update', :track_id => @existing_track.id, :track_medium => "delete", :r => request.fullpath}, :class => "link_button_green" %>
+          <%= link_to _("Unsubscribe"), {:controller => 'track', :action => 'update', :track_id => @existing_track.id, :track_medium => "delete", :r => request.fullpath}, :class => "link_button_green unsubscribe__action" %>
         <% else %>
           <div class="feed_link">
-            <%= link_to _("Follow"), do_track_path(@track_thing), :class => "link_button_green" %>
+            <%= link_to _("Follow"), do_track_path(@track_thing), :class => "link_button_green track__action" %>
           </div>
         <% end %>
       </div>
@@ -118,7 +119,8 @@
         <p><% _('There were no requests matching your query.') %></p>
       <% else %>
         <p>
-          <%= _('Only requests made using {{site_name}} are shown.', :site_name => site_name) %>
+          <%= _('Only requests made using {{site_name}} are shown.',
+                :site_name => site_name) %>
           <%= link_to _('?'), help_about_path %>
         </p>
       <% end %>
@@ -129,7 +131,9 @@
       <% else %>
         <h2> <%= _('Freedom of Information requests made')%></h2>
       <% end %>
-      <p> <%= _('The search index is currently offline, so we can\'t show the Freedom of Information requests that have been made to this authority.')%></p>
+      <p> <%= _('The search index is currently offline, so we can\'t show ' \
+                  'the Freedom of Information requests that have been made ' \
+                  'to this authority.') %></p>
     <% end %>
   </div>
 

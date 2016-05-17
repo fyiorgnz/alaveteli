@@ -5,8 +5,6 @@
 # Copyright (c) 2009 UK Citizens Online Democracy. All rights reserved.
 # Email: hello@mysociety.org; WWW: http://www.mysociety.org/
 
-require 'fileutils'
-
 class AdminController < ApplicationController
   layout "admin"
   before_filter :authenticate
@@ -19,32 +17,6 @@ class AdminController < ApplicationController
   # Always give full stack trace for admin interface
   def show_rails_exceptions?
     true
-  end
-
-  # Expire cached attachment files for a request
-  def expire_for_request(info_request)
-    # Clear out cached entries, by removing files from disk (the built in
-    # Rails fragment cache made doing this and other things too hard)
-    info_request.foi_fragment_cache_directories.each{ |dir| FileUtils.rm_rf(dir) }
-
-    # Remove any download zips
-    FileUtils.rm_rf(info_request.download_zip_dir)
-
-    # Remove the database caches of body / attachment text (the attachment text
-    # one is after privacy rules are applied)
-    info_request.clear_in_database_caches!
-
-    # also force a search reindexing (so changed text reflected in search)
-    info_request.reindex_request_events
-    # and remove from varnish
-    info_request.purge_in_cache
-  end
-
-  # Expire cached attachment files for a user
-  def expire_requests_for_user(user)
-    for info_request in user.info_requests
-      expire_for_request(info_request)
-    end
   end
 
   # For administration interface, return display name of authenticated user

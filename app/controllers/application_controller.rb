@@ -40,17 +40,6 @@ class ApplicationController < ActionController::Base
   before_filter :validate_session_timestamp
   before_filter :collect_locales
   after_filter  :persist_session_timestamp
-  before_filter :deprecation_notice
-
-  def deprecation_notice
-    if RUBY_VERSION.to_f < 1.9
-      ActiveSupport::Deprecation.warn "[DEPRECATION] You are using Ruby 1.8. This will not be supported " \
-        "as of Alaveteli release 0.23. Please upgrade your ruby version. See " \
-        "https://github.com/mysociety/alaveteli/wiki/Migrating-an-existing-Alaveteli-site-from-ruby-1.8.7 " \
-        "for upgrade advice."
-    end
-  end
-
 
   def set_vary_header
     response.headers['Vary'] = 'Cookie'
@@ -98,8 +87,6 @@ class ApplicationController < ActionController::Base
       end
     end
   end
-
-  helper_method :locale_from_params
 
   # Help work out which request causes RAM spike.
   # http://www.codeweblog.com/rails-to-monitor-the-process-of-memory-leaks-skills/
@@ -162,6 +149,8 @@ class ApplicationController < ActionController::Base
     session[:remember_me] = false
     session[:using_admin] = nil
     session[:admin_name] = nil
+    session[:change_password_post_redirect_id] = nil
+    session[:post_redirect_token] = nil
   end
 
   def render_not_found(exception)
@@ -209,24 +198,17 @@ class ApplicationController < ActionController::Base
     end
   end
 
-  def show_rails_exceptions?
-    ENV['SHOW_RAILS_EXCEPTIONS'] == 'true'
+  def render_hidden(template='request/hidden')
+    respond_to do |format|
+      response_code = 403 # forbidden
+      format.html{ render :template => template, :status => response_code }
+      format.any{ render :nothing => true, :status => response_code }
+    end
+    false
   end
 
-  # Called from test code, is a mimic of UserController.confirm, for use in following email
-  # links when in controller tests (though we also have full integration tests that
-  # can work over multiple controllers)
-  # TODO: Move this to the tests. It shouldn't be here
-  def test_code_redirect_by_email_token(token, controller_example_group)
-    post_redirect = PostRedirect.find_by_email_token(token)
-    if post_redirect.nil?
-      raise "bad token in test code email"
-    end
-    session[:user_id] = post_redirect.user.id
-    session[:user_circumstance] = post_redirect.circumstance
-    params = Rails.application.routes.recognize_path(post_redirect.local_part_uri)
-    params.merge(post_redirect.post_params)
-    controller_example_group.get params[:action], params
+  def show_rails_exceptions?
+    ENV['SHOW_RAILS_EXCEPTIONS'] == 'true'
   end
 
   # Used to work out where to cache fragments. We add an extra path to the
@@ -265,15 +247,6 @@ class ApplicationController < ActionController::Base
     end
   end
 
-  # get the local locale
-  def locale_from_params(*args)
-    if params[:show_locale]
-      params[:show_locale]
-    else
-      I18n.locale.to_s
-    end
-  end
-
   private
 
   def user?
@@ -292,6 +265,13 @@ class ApplicationController < ActionController::Base
       post_redirect = PostRedirect.new(:uri => request.fullpath, :post_params => params,
                                        :reason_params => reason_params)
       post_redirect.save!
+      # Make sure this redirect does not get cached - it only applies to this user.
+      # HTTP 1.1
+      headers['Cache-Control'] = 'no-cache, no-store, max-age=0, must-revalidate'
+      # HTTP 1.0
+      headers['Pragma'] = 'no-cache'
+      # Proxies
+      headers['Expires'] = '0'
       # 'modal' controls whether the sign-in form will be displayed in the typical full-blown
       # page or on its own, useful for pop-ups
       redirect_to signin_url(:token => post_redirect.token, :modal => params[:modal])
@@ -335,7 +315,7 @@ class ApplicationController < ActionController::Base
   # the session, and when the GET redirect with "?post_redirect=1" happens,
   # load them in.
   def do_post_redirect(post_redirect)
-    uri = post_redirect.uri
+    uri = URI.parse(post_redirect.uri).path
 
     session[:post_redirect_token] = post_redirect.token
 
@@ -363,8 +343,10 @@ class ApplicationController < ActionController::Base
   def check_in_post_redirect
     if params[:post_redirect] and session[:post_redirect_token]
       post_redirect = PostRedirect.find_by_token(session[:post_redirect_token])
-      params.update(post_redirect.post_params)
-      params[:post_redirect_user] = post_redirect.user
+      if post_redirect
+        params.update(post_redirect.post_params)
+        params[:post_redirect_user] = post_redirect.user
+      end
     end
   end
 
@@ -378,9 +360,15 @@ class ApplicationController < ActionController::Base
   #
   def check_read_only
     if !AlaveteliConfiguration::read_only.empty?
-      flash[:notice] = _("<p>{{site_name}} is currently in maintenance. You can only view existing requests. You cannot make new ones, add followups or annotations, or otherwise change the database.</p> <p>{{read_only}}</p>",
-                         :site_name => site_name,
-                         :read_only => AlaveteliConfiguration::read_only)
+      if AlaveteliConfiguration::enable_annotations
+        flash[:notice] = _("<p>{{site_name}} is currently in maintenance. You can only view existing requests. You cannot make new ones, add followups or annotations, or otherwise change the database.</p> <p>{{read_only}}</p>",
+                           :site_name => site_name,
+                           :read_only => AlaveteliConfiguration::read_only)
+      else
+        flash[:notice] = _("<p>{{site_name}} is currently in maintenance. You can only view existing requests. You cannot make new ones, add followups or otherwise change the database.</p> <p>{{read_only}}</p>",
+                           :site_name => site_name,
+                           :read_only => AlaveteliConfiguration::read_only)
+      end
       redirect_to frontpage_url
     end
 
@@ -491,16 +479,13 @@ class ApplicationController < ActionController::Base
   end
 
   def country_from_ip
-    country = ""
-    if !AlaveteliConfiguration::gaze_url.empty?
-      begin
-        country = quietly_try_to_open("#{AlaveteliConfiguration::gaze_url}/gaze-rest?f=get_country_from_ip;ip=#{request.remote_ip}")
-      rescue ActionDispatch::RemoteIp::IpSpoofAttackError
-        country = AlaveteliConfiguration::iso_country_code
-      end
+    begin
+      ip = request.remote_ip
+    rescue ActionDispatch::RemoteIp::IpSpoofAttackError
+      ip = nil
     end
-    country = AlaveteliConfiguration::iso_country_code if country.empty?
-    return country
+    return AlaveteliGeoIP.country_code_from_ip(ip) if ip
+    AlaveteliConfiguration::iso_country_code
   end
 
   def alaveteli_git_commit

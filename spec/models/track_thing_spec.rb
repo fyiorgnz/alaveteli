@@ -71,4 +71,25 @@ describe TrackThing, "when tracking changes" do
     expect(track_thing.track_query).to match(/variety:authority/)
   end
 
+  it "will check that the query isn't too long to store" do
+    long_query = "Lorem ipsum " * 42 # 504 chars
+    track_thing = TrackThing.create_track_for_search_query(long_query)
+    track_thing.valid?
+    expect(track_thing.errors[:track_query][0]).to eq("Query is too long")
+  end
+end
+
+describe TrackThing, "destroy" do
+  let(:track_thing) { FactoryGirl.create(:search_track) }
+
+  it "should destroy the track_thing" do
+    track_thing.destroy
+    expect(TrackThing.where(:id => track_thing.id)).to be_empty
+  end
+
+  it "should destroy related track_things_sent_emails" do
+    TrackThingsSentEmail.create(:track_thing => track_thing)
+    track_thing.destroy
+    expect(TrackThingsSentEmail.where(:track_thing_id => track_thing.id)).to be_empty
+  end
 end

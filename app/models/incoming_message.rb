@@ -32,7 +32,6 @@
 # Move some of the (e.g. quoting) functions here into rblib, as they feel
 # general not specific to IncomingMessage.
 
-require 'htmlentities'
 require 'rexml/document'
 require 'zip/zip'
 require 'iconv' unless String.method_defined?(:encode)
@@ -40,18 +39,29 @@ require 'iconv' unless String.method_defined?(:encode)
 class IncomingMessage < ActiveRecord::Base
   include AdminColumn
   extend MessageProminence
+
+  MAX_ATTACHMENT_TEXT_CLIPPED = 1000000 # 1Mb ish
+
   belongs_to :info_request
   validates_presence_of :info_request
 
   validates_presence_of :raw_email
 
-  has_many :outgoing_message_followups, :foreign_key => 'incoming_message_followup_id', :class_name => 'OutgoingMessage'
-  has_many :foi_attachments, :order => 'id'
-  has_many :info_request_events # never really has many, but could in theory
+  has_many :outgoing_message_followups,
+           :foreign_key => 'incoming_message_followup_id',
+           :class_name => 'OutgoingMessage',
+           :dependent => :nullify
+  has_many :foi_attachments, :order => 'id', :dependent => :destroy
+  # never really has many info_request_events, but could in theory
+  has_many :info_request_events, :dependent => :destroy
 
   belongs_to :raw_email
 
   has_prominence
+
+  after_destroy :update_request
+  after_update :update_request
+  before_destroy :destroy_email_file
 
   # Given that there are in theory many info request events, a convenience method for
   # getting the response event
@@ -135,39 +145,107 @@ class IncomingMessage < ActiveRecord::Base
     end
   end
 
-  def valid_to_reply_to?
-    return self.valid_to_reply_to
+  def destroy_email_file
+    raw_email.destroy_file_representation!
   end
 
   # The cached fields mentioned in the previous comment
-  # TODO: there must be a nicer way to do this without all that
-  # repetition.  I tried overriding method_missing but got some
-  # unpredictable results.
+
+  # Public: Can this message be replied to?
+  # Caches the value set by _calculate_valid_to_reply_to in #parse_raw_email!
+  # #valid_to_reply_to overrides the ActiveRecord provided #valid_to_reply_to
+  #
+  # Returns a Boolean
   def valid_to_reply_to
     parse_raw_email!
     super
   end
+
+  alias_method :valid_to_reply_to?, :valid_to_reply_to
+
+  # Public: The date and time the email was sent. Uses the Date header if
+  # present in the email, otherwise uses the record's created_at attribute.
+  # #sent_at overrides the ActiveRecord provided #sent_at
+  #
+  # Returns an ActiveSupport::TimeWithZone
   def sent_at
     parse_raw_email!
     super
   end
 
+  # Public: The subject of an email.
+  # #subject overrides the ActiveRecord provided #subject
+  #
+  # Examples:
+  #
+  #   # Subject: A response to your FOI request
+  #   incoming_message.subject
+  #   # => 'A response to your FOI request'
+  #
+  #   # No subject header
+  #   incoming_message.subject
+  #   # => nil
+  #
+  # Returns a String or nil
   def subject
     parse_raw_email!
     super
   end
 
+  # Public: The display name of the email sender.
+  # #mail_from overrides the ActiveRecord provided #mail_from
+  #
+  # Examples:
+  #
+  #   # From: John Doe <john@example.com>
+  #   incoming_message.mail_from
+  #   # => 'John Doe'
+  #
+  #   # From: john@example.com
+  #   incoming_message.mail_from
+  #   # => nil
+  #
+  # Returns a String or nil
   def mail_from
     parse_raw_email!
     super
   end
 
+  # Public: The display name of the email sender with the associated
+  # InfoRequest's censor rules applied.
+  #
+  # Example:
+  #
+  #   # Given a CensorRule that redacts the word 'Person':
+  #
+  #   incoming_message.mail_from
+  #   # => FOI Person
+  #
+  #   incoming_message.safe_mail_from
+  #   # => FOI [REDACTED]
+  #
+  # Returns a String
   def safe_mail_from
-    if !self.mail_from.nil?
-      mail_from = self.mail_from.dup
-      self.info_request.apply_censor_rules_to_text!(mail_from)
-      return mail_from
+    if mail_from
+      info_request.apply_censor_rules_to_text(mail_from)
     end
+  end
+
+  # Public: The domain part of the email address in the From header.
+  # #mail_from_domain overrides the ActiveRecord provided #mail_from_domain
+  #
+  #   # From: John Doe <john@example.com>
+  #   incoming_message.mail_from_domain
+  #   # => 'example.com'
+  #
+  #   # No From header
+  #   incoming_message.mail_from_domain
+  #   # => ''
+  #
+  # Returns a String
+  def mail_from_domain
+    parse_raw_email!
+    super
   end
 
   def specific_from_name?
@@ -178,9 +256,11 @@ class IncomingMessage < ActiveRecord::Base
     safe_mail_from.nil? || (mail_from_domain == info_request.public_body.request_email_domain)
   end
 
-  def mail_from_domain
-    parse_raw_email!
-    super
+  # This method updates the cached column of the InfoRequest that
+  # stores the last created_at date of relevant events
+  # when updating an IncomingMessage associated with the request
+  def update_request
+    info_request.update_last_public_response_at
   end
 
   # And look up by URL part number and display filename to get an attachment
@@ -208,7 +288,15 @@ class IncomingMessage < ActiveRecord::Base
     end
   end
 
+  def apply_masks(text, content_type)
+    mask_options = { :censor_rules => info_request.applicable_censor_rules,
+                     :masks => info_request.masks }
+    AlaveteliTextMasker.apply_masks(text, content_type, mask_options)
+  end
+
   def apply_masks!(text, content_type)
+    warn %q([DEPRECATION] IncomingMessage#apply_masks! will be removed in 0.25.
+            Use the non-destructive IncomingMessage#apply_masks instead).squish
     mask_options = { :censor_rules => info_request.applicable_censor_rules,
                      :masks => info_request.masks }
     AlaveteliTextMasker.apply_masks!(text, content_type, mask_options)
@@ -335,7 +423,7 @@ class IncomingMessage < ActiveRecord::Base
     end
 
     # apply masks for this message
-    apply_masks!(text, 'text/html')
+    text = apply_masks(text, 'text/html')
 
     # Remove existing quoted sections
     folded_quoted_text = self.remove_lotus_quoting(text, 'FOLDED_QUOTED_SECTION')
@@ -537,7 +625,7 @@ class IncomingMessage < ActiveRecord::Base
     text = MySociety::Format.make_clickable(text, :contract => 1)
 
     # add a helpful link to email addresses and mobile numbers removed
-    # by apply_masks!
+    # by apply_masks
     email_pattern = Regexp.escape(_("email address"))
     mobile_pattern = Regexp.escape(_("mobile number"))
     text.gsub!(/\[(#{email_pattern}|#{mobile_pattern})\]/,
@@ -575,12 +663,10 @@ class IncomingMessage < ActiveRecord::Base
     return text
   end
 
-  MAX_ATTACHMENT_TEXT_CLIPPED = 1000000 # 1Mb ish
-
   # Returns text version of attachment text
   def get_attachment_text_full
     text = self._get_attachment_text_internal
-    apply_masks!(text, 'text/html')
+    text = apply_masks(text, 'text/html')
 
     # This can be useful for memory debugging
     #STDOUT.puts 'xxx '+ MySociety::DebugHelpers::allocated_string_size_around_gc
@@ -630,22 +716,6 @@ class IncomingMessage < ActiveRecord::Base
   # Has message arrived "recently"?
   def recently_arrived
     (Time.now - self.created_at) <= 3.days
-  end
-
-  def fully_destroy
-    ActiveRecord::Base.transaction do
-      outgoing_message_followups.each do |outgoing_message_followup|
-        outgoing_message_followup.incoming_message_followup = nil
-        outgoing_message_followup.save!
-      end
-      info_request_events.each do |info_request_event|
-        info_request_event.track_things_sent_emails.each { |a| a.destroy }
-        info_request_event.user_info_request_sent_alerts.each { |a| a.destroy }
-        info_request_event.destroy
-      end
-      self.raw_email.destroy_file_representation!
-      self.destroy
-    end
   end
 
   # Search all info requests for

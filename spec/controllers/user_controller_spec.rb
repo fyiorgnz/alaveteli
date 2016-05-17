@@ -56,6 +56,234 @@ describe UserController do
 
   end
 
+  describe 'GET confirm' do
+
+    context 'if the post redirect cannot be found' do
+
+      it 'renders bad_token' do
+        get :confirm, :email_token => ''
+        expect(response).to render_template(:bad_token)
+      end
+
+    end
+
+    context 'the post redirect circumstance is login_as' do
+
+      before :each do
+        @user = FactoryGirl.create(:user, :email_confirmed => false)
+        @post_redirect =
+          PostRedirect.
+            create(:uri => '/', :user => @user, :circumstance => 'login_as')
+
+        get :confirm, :email_token => @post_redirect.email_token
+      end
+
+      it 'confirms the post redirect user' do
+        expect(@user.reload.email_confirmed).to eq(true)
+      end
+
+      it 'logs in as the post redirect user' do
+        expect(session[:user_id]).to eq(@user.id)
+      end
+
+      it 'sets the user_circumstance to login_as' do
+        expect(session[:user_circumstance]).to eq('login_as')
+      end
+
+      it 'redirects to the post redirect uri' do
+        expect(response).to redirect_to('/?post_redirect=1')
+      end
+
+    end
+
+    context 'the post redirect circumstance is change_password' do
+
+      before :each do
+        @user = FactoryGirl.create(:user)
+        @post_redirect =
+          PostRedirect.create(:uri => edit_password_change_path,
+                              :user => @user,
+                              :circumstance => 'change_password')
+
+        get :confirm, :email_token => @post_redirect.email_token
+      end
+
+      it 'sets the change_password_post_redirect_id session key' do
+         expect(session[:change_password_post_redirect_id]).
+           to eq(@post_redirect.id)
+      end
+
+      it 'does not log the user in' do
+        expect(session[:user_id]).to eq(nil)
+      end
+
+      it 'logs out a user who does not own the post redirect' do
+        logged_in_user = FactoryGirl.create(:user)
+        @user = FactoryGirl.create(:user, :email_confirmed => false)
+        @post_redirect =
+          PostRedirect.create(:uri => edit_password_change_path,
+                              :user => @user,
+                              :circumstance => 'change_password')
+
+        session[:user_id] = logged_in_user.id
+        get :confirm, :email_token => @post_redirect.email_token
+
+        expect(session[:user_id]).to be_nil
+      end
+
+      it 'does not log out a user if they own the post redirect' do
+        @user = FactoryGirl.create(:user, :email_confirmed => false)
+        @post_redirect =
+          PostRedirect.create(:uri => edit_password_change_path,
+                              :user => @user,
+                              :circumstance => 'change_password')
+
+        session[:user_id] = @user.id
+        get :confirm, :email_token => @post_redirect.email_token
+
+        expect(session[:user_id]).to eq(@user.id)
+        expect(assigns[:user]).to eq(@user)
+      end
+
+      it 'does not confirm an unconfirmed user' do
+        @user = FactoryGirl.create(:user, :email_confirmed => false)
+        @post_redirect =
+          PostRedirect.create(:uri => edit_password_change_path,
+                              :user => @user,
+                              :circumstance => 'change_password')
+
+        get :confirm, :email_token => @post_redirect.email_token
+
+        expect(@user.reload.email_confirmed).to eq(false)
+      end
+
+      it 'sets the user_circumstance to change_password' do
+        expect(session[:user_circumstance]).to eq('change_password')
+      end
+
+      it 'redirects to the post redirect uri' do
+        expect(response).
+          to redirect_to('/profile/change_password?post_redirect=1')
+      end
+
+    end
+
+    context 'if the currently logged in user is an admin' do
+
+      before :each do
+        @admin = FactoryGirl.create(:user, :admin_level => 'super')
+        @user = FactoryGirl.create(:user, :email_confirmed => false)
+        @post_redirect = PostRedirect.create(:uri => '/', :user => @user)
+
+        session[:user_id] = @admin.id
+        get :confirm, :email_token => @post_redirect.email_token
+      end
+
+      it 'does not confirm the post redirect user' do
+        expect(@user.reload.email_confirmed).to eq(false)
+      end
+
+      it 'stays logged in as the admin user' do
+        expect(session[:user_id]).to eq(@admin.id)
+      end
+
+      it 'sets the user_circumstance to normal' do
+        expect(session[:user_circumstance]).to eq('normal')
+      end
+
+      it 'redirects to the post redirect uri' do
+        expect(response).to redirect_to('/?post_redirect=1')
+      end
+
+    end
+
+    context 'if the currently logged in user is not an admin and owns the post redirect' do
+
+      before :each do
+        @user = FactoryGirl.create(:user, :email_confirmed => false)
+        @post_redirect = PostRedirect.create(:uri => '/', :user => @user)
+
+        session[:user_id] = @user.id
+        get :confirm, :email_token => @post_redirect.email_token
+      end
+
+      it 'confirms the post redirect user' do
+        expect(@user.reload.email_confirmed).to eq(true)
+      end
+
+      it 'stays logged in as the user' do
+        expect(session[:user_id]).to eq(@user.id)
+      end
+
+      it 'sets the user_circumstance to normal' do
+        expect(session[:user_circumstance]).to eq('normal')
+      end
+
+      it 'redirects to the post redirect uri' do
+        expect(response).to redirect_to('/?post_redirect=1')
+      end
+
+    end
+
+    context 'if the currently logged in user is not an admin and does not own the post redirect' do
+
+      before :each do
+        @current_user = FactoryGirl.create(:user)
+        @user = FactoryGirl.create(:user, :email_confirmed => false)
+        @post_redirect = PostRedirect.create(:uri => '/', :user => @user)
+
+        session[:user_id] = @current_user.id
+        get :confirm, :email_token => @post_redirect.email_token
+      end
+
+      it 'confirms the post redirect user' do
+        expect(@user.reload.email_confirmed).to eq(true)
+      end
+
+      # FIXME: There's no reason this should be allowed
+      it 'gets logged in as the post redirect user' do
+        expect(session[:user_id]).to eq(@user.id)
+      end
+
+      it 'sets the user_circumstance to normal' do
+        expect(session[:user_circumstance]).to eq('normal')
+      end
+
+      it 'redirects to the post redirect uri' do
+        expect(response).to redirect_to('/?post_redirect=1')
+      end
+
+    end
+
+    context 'if there is no logged in user' do
+
+      before :each do
+        @user = FactoryGirl.create(:user, :email_confirmed => false)
+        @post_redirect = PostRedirect.create(:uri => '/', :user => @user)
+
+        get :confirm, :email_token => @post_redirect.email_token
+      end
+
+      it 'confirms the post redirect user' do
+        expect(@user.reload.email_confirmed).to eq(true)
+      end
+
+      it 'gets logged in as the post redirect user' do
+        expect(session[:user_id]).to eq(@user.id)
+      end
+
+      it 'sets the user_circumstance to normal' do
+        expect(session[:user_circumstance]).to eq('normal')
+      end
+
+      it 'redirects to the post redirect uri' do
+        expect(response).to redirect_to('/?post_redirect=1')
+      end
+
+    end
+
+  end
+
 end
 
 # TODO: Use route_for or params_from to check /c/ links better
@@ -137,6 +365,30 @@ describe UserController, "when showing a user" do
       expect(response.body).not_to include("Change your password")
     end
 
+    it 'should not include annotations of hidden requests in the count' do
+      hidden_request = FactoryGirl.create(:info_request, :prominence => "hidden")
+      shown_request = FactoryGirl.create(:info_request)
+      comment1 = FactoryGirl.create(:visible_comment,
+                                    :info_request => hidden_request,
+                                    :user => @user)
+      comment2 = FactoryGirl.create(:visible_comment,
+                                    :info_request => shown_request,
+                                    :user => @user)
+      FactoryGirl.create(:info_request_event,
+                         :event_type => 'comment',
+                         :comment => comment1,
+                         :info_request => hidden_request)
+      FactoryGirl.create(:info_request_event,
+                         :event_type => 'comment',
+                         :comment => comment2,
+                         :info_request => shown_request)
+      expect(@user.comments.size).to eq(2)
+      expect(@user.comments.visible.size).to eq(1)
+      update_xapian_index
+
+      make_request
+      expect(response.body).to match(/Your 1 annotation/)
+    end
   end
 
 end
@@ -194,6 +446,34 @@ describe UserController, "when signing in" do
     post_redirects = PostRedirect.find_by_sql("select * from post_redirects order by id desc limit 1")
     expect(post_redirects.size).to eq(1)
     post_redirects[0]
+  end
+
+  context "when checking whether to use reCAPTCHA" do
+    before do
+      allow(controller).to receive(:country_from_ip).
+        and_return(AlaveteliConfiguration::iso_country_code)
+    end
+
+    it "uses reCAPTCHA if USE_RECAPTCHA_FOR_REGISTRATION is set in config" do
+      allow(AlaveteliConfiguration).to receive(:use_recaptcha_for_registration).
+        and_return(true)
+      get :signin
+
+      expect(assigns[:use_recaptcha]).to eq(true)
+    end
+
+    it "uses reCAPTCHA if country_from_ip does not match" do
+      allow(controller).to receive(:country_from_ip).and_return('xx')
+      get :signin
+
+      expect(assigns[:use_recaptcha]).to eq(true)
+    end
+
+    it "does not use reCAPTCHA with default settings and country_from_ip match" do
+      get :signin
+      expect(assigns[:use_recaptcha]).to eq(false)
+    end
+
   end
 
   it "should show sign in / sign up page" do
@@ -267,6 +547,17 @@ describe UserController, "when signing in" do
                     }
     expect(response).to render_template('confirm')
     expect(ActionMailer::Base.deliveries).not_to be_empty
+  end
+
+  it 'does not redirect you to another domain' do
+    get :signin, :r => "http://bad.place.com/list"
+    post_redirect = get_last_postredirect
+    post :signin, { :user_signin => { :email => 'unconfirmed@localhost',
+                                      :password => 'jonespassword' },
+                    :token => post_redirect.token
+                  }
+    get :confirm, :email_token => post_redirect.email_token
+    expect(response).to redirect_to('/list?post_redirect=1')
   end
 
   it "should confirm your email, log you in and redirect you to where you were after you click an email link" do
@@ -351,7 +642,17 @@ describe UserController, "when signing up" do
     post :signup, { :user_signup => { :email => 'malformed-email', :name => 'Mr Malformed',
                                       :password => 'sillypassword', :password_confirmation => 'sillypassword' }
                     }
-    expect(assigns[:user_signup].errors[:email]).not_to be_nil
+    expect(assigns[:user_signup].errors[:email]).to eq(['Please enter a valid email address'])
+  end
+
+  it "should not show the 'already in use' error when trying to sign up with a duplicate email" do
+    existing_user = FactoryGirl.create(:user, :email => 'in-use@localhost')
+
+    post :signup, { :user_signup => { :email => 'in-use@localhost', :name => 'Mr Suspected-Hacker',
+                                      :password => 'sillypassword', :password_confirmation => 'mistyped' }
+                    }
+    expect(assigns[:user_signup].errors[:password]).to eq(['Please enter the same password twice'])
+    expect(assigns[:user_signup].errors[:email]).to be_empty
   end
 
   it "should send confirmation mail if you fill in the form right" do
@@ -378,17 +679,40 @@ describe UserController, "when signing up" do
     expect(deliveries[0].body).to include("No revelaremos")
   end
 
-  it "should send special 'already signed up' mail if you fill the form in with existing registered email" do
-    post :signup, { :user_signup => { :email => 'silly@localhost', :name => 'New Person',
-                                      :password => 'sillypassword', :password_confirmation => 'sillypassword' }
+  context "filling in the form with an existing registered email" do
+    it "should send special 'already signed up' mail" do
+      post :signup, { :user_signup => { :email => 'silly@localhost', :name => 'New Person',
+                                        :password => 'sillypassword', :password_confirmation => 'sillypassword' }
                     }
-    expect(response).to render_template('confirm')
+      expect(response).to render_template('confirm')
 
-    deliveries = ActionMailer::Base.deliveries
-    expect(deliveries.size).to  eq(1)
+      deliveries = ActionMailer::Base.deliveries
+      expect(deliveries.size).to  eq(1)
 
-    # This text may span a line break, depending on the length of the SITE_NAME
-    expect(deliveries[0].body).to match(/when\s+you\s+already\s+have\s+an/)
+      # This text may span a line break, depending on the length of the SITE_NAME
+      expect(deliveries[0].body).to match(/when\s+you\s+already\s+have\s+an/)
+    end
+
+    it "cope with trailing spaces in the email address" do
+      post :signup, { :user_signup => { :email => 'silly@localhost ', :name => 'New Person',
+                                        :password => 'sillypassword', :password_confirmation => 'sillypassword' }
+                    }
+      expect(response).to render_template('confirm')
+
+      deliveries = ActionMailer::Base.deliveries
+      expect(deliveries.size).to  eq(1)
+
+      # This text may span a line break, depending on the length of the SITE_NAME
+      expect(deliveries[0].body).to match(/when\s+you\s+already\s+have\s+an/)
+    end
+
+    it "should create a new PostRedirect if the old one has expired" do
+      allow(PostRedirect).to receive(:find_by_token).and_return(nil)
+      post :signup, { :user_signup => { :email => 'silly@localhost', :name => 'New Person',
+                                        :password => 'sillypassword', :password_confirmation => 'sillypassword' }
+                    }
+      expect(response).to render_template('confirm')
+    end
   end
 
   it 'accepts only whitelisted parameters' do
@@ -457,76 +781,6 @@ describe UserController, "when sending another user a message" do
     expect(mail.body).to include("Just a test!")
     #mail.to_addrs.first.to_s.should == users(:silly_name_user).name_and_email # TODO: fix some nastiness with quoting name_and_email
     expect(mail.from_addrs.first.to_s).to eq(users(:bob_smith_user).email)
-  end
-
-end
-
-describe UserController, "when changing password" do
-  render_views
-
-  it "should show the email form when not logged in" do
-    get :signchangepassword
-    expect(response).to render_template('signchangepassword_send_confirm')
-  end
-
-  it "should send a confirmation email when logged in normally" do
-    session[:user_id] = users(:bob_smith_user).id
-    get :signchangepassword
-    expect(response).to render_template('signchangepassword_confirm')
-
-    deliveries = ActionMailer::Base.deliveries
-    expect(deliveries.size).to  eq(1)
-    mail = deliveries[0]
-    expect(mail.body).to include("Please click on the link below to confirm your email address")
-  end
-
-  it "should send a confirmation email when have wrong login circumstance" do
-    session[:user_id] = users(:bob_smith_user).id
-    session[:user_circumstance] = "bogus"
-    get :signchangepassword
-    expect(response).to render_template('signchangepassword_confirm')
-  end
-
-  it "should show the password change screen when logged in as special password change mode" do
-    session[:user_id] = users(:bob_smith_user).id
-    session[:user_circumstance] = "change_password"
-    get :signchangepassword
-    expect(response).to render_template('signchangepassword')
-  end
-
-  it "should change the password, if you have right to do so" do
-    session[:user_id] = users(:bob_smith_user).id
-    session[:user_circumstance] = "change_password"
-
-    old_hash = users(:bob_smith_user).hashed_password
-    post :signchangepassword, { :user => { :password => 'ooo', :password_confirmation => 'ooo' },
-                                :submitted_signchangepassword_do => 1
-                                }
-    expect(users(:bob_smith_user).reload.hashed_password).not_to eq(old_hash)
-
-    expect(response).to redirect_to(:controller => 'user', :action => 'show', :url_name => users(:bob_smith_user).url_name)
-  end
-
-  it "should not change the password, if you're not logged in" do
-    session[:user_circumstance] = "change_password"
-
-    old_hash = users(:bob_smith_user).hashed_password
-    post :signchangepassword, { :user => { :password => 'ooo', :password_confirmation => 'ooo' },
-                                :submitted_signchange_password => 1
-                                }
-    expect(users(:bob_smith_user).hashed_password).to eq(old_hash)
-  end
-
-  it "should not change the password, if you're just logged in normally" do
-    session[:user_id] = users(:bob_smith_user).id
-    session[:user_circumstance] = nil
-
-    old_hash = users(:bob_smith_user).hashed_password
-    post :signchangepassword, { :user => { :password => 'ooo', :password_confirmation => 'ooo' },
-                                :submitted_signchange_password => 1
-                                }
-
-    expect(users(:bob_smith_user).hashed_password).to eq(old_hash)
   end
 
 end
@@ -616,7 +870,7 @@ describe UserController, "when changing email address" do
     deliveries = ActionMailer::Base.deliveries
     expect(deliveries.size).to  eq(1)
     mail = deliveries[0]
-    expect(mail.body).to include("confirm that you want to \nchange")
+    expect(mail.body).to include("confirm that you want to change")
     expect(mail.to).to eq([ 'newbob@localhost' ])
 
     mail.body.to_s =~ /(http:\/\/.*(\/c\/(.*)))/
@@ -785,7 +1039,7 @@ describe UserController, "when viewing the wall" do
     user = users(:silly_name_user)
     session[:user_id] = user.id
     get :wall, :url_name => user.url_name
-    assigns[:feed_results].uniq.should == assigns[:feed_results]
+    expect(assigns[:feed_results].uniq).to eq(assigns[:feed_results])
   end
 
 end

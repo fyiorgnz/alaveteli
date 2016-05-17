@@ -27,7 +27,7 @@ class PublicBodyController < ApplicationController
       return
     end
 
-    @locale = locale_from_params
+    @locale = I18n.locale.to_s
 
     I18n.with_locale(@locale) do
       @public_body = PublicBody.find_by_url_name_with_historic(params[:url_name])
@@ -100,7 +100,7 @@ class PublicBodyController < ApplicationController
     @public_body = PublicBody.find_by_url_name_with_historic(params[:url_name])
     raise ActiveRecord::RecordNotFound.new("None found") if @public_body.nil?
 
-    I18n.with_locale(locale_from_params) do
+    I18n.with_locale(I18n.locale.to_s) do
       if params[:submitted_view_email]
         if verify_recaptcha
           flash.discard(:error)
@@ -123,7 +123,8 @@ class PublicBodyController < ApplicationController
 
     @tag = params[:tag]
 
-    @locale = locale_from_params
+    @country_code = AlaveteliConfiguration.iso_country_code
+    @locale = I18n.locale.to_s
     underscore_locale = @locale.gsub '-', '_'
     underscore_default_locale = I18n.default_locale.to_s.gsub '-', '_'
 
@@ -155,19 +156,6 @@ class PublicBodyController < ApplicationController
     else
       where_condition += base_tag_condition + " AND has_tag_string_tags.name = ?) > 0"
       where_parameters.concat [@tag]
-    end
-
-    if @tag == 'all'
-      @description = ''
-    elsif @tag.size == 1
-      @description = _("beginning with ‘{{first_letter}}’", :first_letter => @tag)
-    else
-      category_name = PublicBodyCategory.get.by_tag[@tag]
-      if category_name.nil?
-        @description = _("matching the tag ‘{{tag_name}}’", :tag_name => @tag)
-      else
-        @description = _("in the category ‘{{category_name}}’", :category_name => category_name)
-      end
     end
 
     I18n.with_locale(@locale) do
@@ -220,6 +208,41 @@ class PublicBodyController < ApplicationController
               joins(:translations).
                 order('public_body_translations.name').
                   paginate(:page => params[:page], :per_page => 100)
+        end
+      end
+
+    @description =
+      if @tag == 'all'
+        n_('Found {{count}} public authority',
+           'Found {{count}} public authorities',
+           @public_bodies.total_entries,
+           :count => @public_bodies.total_entries)
+      elsif @tag.size == 1
+        n_('Found {{count}} public authority beginning with ' \
+           '‘{{first_letter}}’',
+           'Found {{count}} public authorities beginning with ' \
+           '‘{{first_letter}}’',
+           @public_bodies.total_entries,
+           :count => @public_bodies.total_entries,
+           :first_letter => @tag)
+      else
+        category_name = PublicBodyCategory.get.by_tag[@tag]
+        if category_name.nil?
+          n_('Found {{count}} public authority matching the tag ' \
+             '‘{{tag_name}}’',
+             'Found {{count}} public authorities matching the tag ' \
+             '‘{{tag_name}}’',
+             @public_bodies.total_entries,
+             :count => @public_bodies.total_entries,
+             :tag_name => @tag)
+        else
+          n_('Found {{count}} public authority in the category ' \
+             '‘{{category_name}}’',
+             'Found {{count}} public authorities in the category ' \
+             '‘{{category_name}}’',
+             @public_bodies.total_entries,
+             :count => @public_bodies.total_entries,
+             :category_name => category_name)
         end
       end
 

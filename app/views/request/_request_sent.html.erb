@@ -2,7 +2,7 @@
   <div class="request-sent-message" id="notice">
     <h1>
       <%= _("Your {{law_used_full}} request has been sent",
-            :law_used_full => @info_request.law_used_full) %>
+            :law_used_full => @info_request.law_used_human(:full)) %>
     </h1>
 
     <div class="request-sent-message__row">
@@ -24,7 +24,10 @@
                                 :url => request.url,
                                 :via => AlaveteliConfiguration.twitter_username,
                                 :text => "'#{ @info_request.title }'",
-                                :related => _('alaveteli_foi:The software that runs {{site_name}}', :site_name => site_name)
+                                :related => _('mySocietyIntl:Helping people set ' \
+                                                'up sites like {{site_name}} ' \
+                                                'all over the world',
+                                              :site_name => site_name)
                               }.to_query, :class => 'share-link' %>
 
         <%= link_to image_tag("next-step-facebook.png",
@@ -37,13 +40,22 @@
 
         <h2><%= _("Keep your request up to date") %></h2>
 
-        <p>
-          <%= _('If you write about this request ' \
-                '(for example in a forum or a blog) ' \
-                'please link to this page, and <a href="{{url}}">add an ' \
-                'annotation</a> below telling people ' \
-                'about your writing.', :url => new_comment_url(:url_title => @info_request.url_title).html_safe) %>
-        </p>
+        <% if AlaveteliConfiguration.enable_annotations %>
+          <p>
+            <%= _('If you write about this request ' \
+                  '(for example in a forum or a blog) ' \
+                  'please link to this page, and <a href="{{url}}">add an ' \
+                  'annotation</a> below telling people ' \
+                  'about your writing.',
+                  :url => new_comment_url(:url_title => @info_request.url_title).html_safe) %>
+          </p>
+        <% else %>
+          <p>
+            <%= _('If you write about this request ' \
+                  '(for example in a forum or a blog) ' \
+                  'please link to this page.') %>
+          </p>
+        <% end %>
       </div>
 
       <div class="request-sent-message__column-2">
