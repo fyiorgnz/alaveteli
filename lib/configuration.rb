@@ -84,7 +84,7 @@ module AlaveteliConfiguration
       :VARNISH_HOST => '',
       :WORKING_OR_CALENDAR_DAYS => 'working',
       :USE_BULLET_IN_DEVELOPMENT => false,
-      :INCOMING_EMAIL_SPAM_THRESHOLD => false
+      :INCOMING_EMAIL_SPAM_THRESHOLD => false,
       :INCOMING_EMAIL_SPAM_ACTION => false,
       :EXTERNAL_REVIEWERS => ''
     }
