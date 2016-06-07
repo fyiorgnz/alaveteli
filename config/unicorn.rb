@@ -1,5 +1,5 @@
-# 8 workers and 1 master
-worker_processes(8)
+# 4 workers and 1 master
+worker_processes(ENV.fetch('UNICORNS') { 4 }.to_i)
 
 preload_app true
 
