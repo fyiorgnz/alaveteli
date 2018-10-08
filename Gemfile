@@ -157,6 +157,9 @@ gem 'coffee-rails', '~> 4.2.0'
 gem 'uglifier', '~> 3.2.0'
 gem 'therubyracer', '~> 0.12.0'
 
+# Rollbar for exception reporting
+gem 'rollbar'
+
 # Feature flags
 gem 'alaveteli_features', :path => 'gems/alaveteli_features'
 gem 'flipper-ui', '~> 0.10.2'

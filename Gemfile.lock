@@ -315,6 +315,8 @@ GEM
       rack (>= 1.4)
     rmagick (2.16.0)
     rolify (5.2.0)
+    rollbar (2.20.2)
+      multi_json
     rotp (3.3.0)
     routing-filter (0.6.2)
       actionpack (>= 4.2, < 6)
@@ -495,6 +497,7 @@ DEPENDENCIES
   recaptcha (~> 4.9.0, < 4.10.0)
   rmagick (~> 2.16.0)
   rolify (~> 5.2.0)
+  rollbar
   routing-filter (~> 0.6.2)
   rspec-activemodel-mocks (~> 1.1.0)
   rspec-rails (~> 3.7.2)
