@@ -19,7 +19,8 @@ class OutgoingMailer < ApplicationMailer
     @info_request = info_request
     @outgoing_message = outgoing_message
     @contact_email = AlaveteliConfiguration.contact_email
-    headers["message-id"] = OutgoingMailer.id_for_message(@outgoing_message)
+    headers({'X-SES-CONFIGURATION-SET' => 'alaveteli-agency',
+             'message-id' => OutgoingMailer.id_for_message(@outgoing_message)})
 
     mail(:from => @outgoing_message.from,
          :to => @outgoing_message.to,
@@ -32,7 +33,8 @@ class OutgoingMailer < ApplicationMailer
     @outgoing_message = outgoing_message
     @incoming_message_followup = incoming_message_followup
     @contact_email = AlaveteliConfiguration.contact_email
-    headers["message-id"] = OutgoingMailer.id_for_message(@outgoing_message)
+    headers({'X-SES-CONFIGURATION-SET' => 'alaveteli-agency',
+             'message-id' => OutgoingMailer.id_for_message(@outgoing_message)})
 
     mail(:from => @outgoing_message.from,
          :to => @outgoing_message.to,
