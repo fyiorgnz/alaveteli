@@ -20,10 +20,6 @@ class ApplicationController < ActionController::Base
   # assign our own handler method for non-local exceptions
   rescue_from Exception, :with => :render_exception
 
-  rescue_from ActiveRecord::RecordNotFound, :with => :render_not_found
-  rescue_from RouteNotFound, :with => :render_not_found
-  rescue_from WillPaginate::InvalidPage, :with => :render_not_found
-
   # Add some security-related headers (see config/initializers/secure_headers.rb)
   ensure_security_headers
 
@@ -153,31 +149,20 @@ class ApplicationController < ActionController::Base
     session[:post_redirect_token] = nil
   end
 
-  def render_not_found(exception)
-    Rails.logger.warn "#{request.url} not found raising #{exception.class}"
-    sanitize_path(params)
-
-    respond_to do |format|
-      format.html { render :template => "general/exception_caught", :status => 404 }
-      format.any { render :nothing => true, :status => 404 }
-    end
-  end
-
   def render_exception(exception)
     # In development or the admin interface let Rails handle the exception
     # with its stack trace templates
-    if Rails.application.config.consider_all_requests_local || show_rails_exceptions?
-      if defined?(Raygun)
-        Raygun.track_exception(exception)
-      else
-        raise exception
-      end
+    if Rails.application.config.consider_all_requests_local
+      raise exception
     end
 
     @exception_backtrace = exception.backtrace.join("\n")
     @exception_class = exception.class.to_s
     @exception_message = exception.message
     case exception
+    when ActiveRecord::RecordNotFound, RouteNotFound, WillPaginate::InvalidPage
+      @status = 404
+      sanitize_path(params)
     when PermissionDenied
       @status = 403
     else
