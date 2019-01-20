@@ -53,11 +53,9 @@ gem 'routing-filter', '~> 0.3.1'
 gem 'unicode', '~> 0.4.4'
 gem 'unidecoder', '~> 1.1.2'
 
-# Skylight monitoring
-gem 'skylight'
 
-# Raygun for exception reporting
-gem 'raygun4ruby'
+# Rollbar for exception reporting
+gem 'rollbar'
 
 group :assets do
   gem 'bootstrap-sass', '~> 2.3.1.2'
