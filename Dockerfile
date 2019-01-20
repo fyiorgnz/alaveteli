@@ -1,4 +1,4 @@
-FROM ruby:2.3.1 as rubybase
+FROM ruby:2.3.1
 
 # Set noninteractive mode for apt-get
 ENV DEBIAN_FRONTEND noninteractive
@@ -12,8 +12,6 @@ RUN apt-get -y install supervisor ca-certificates git postgresql-client build-es
  libicu-dev libmagic-dev libmagickwand-dev libmagickcore-dev libpq-dev libxml2-dev libxslt1-dev links \
  sqlite3 lockfile-progs mutt pdftk poppler-utils \
  postgresql-client tnef unrtf uuid-dev wkhtmltopdf wv xapian-tools
-
-FROM rubybase
 
 ENV RAILS_ENV production
 
