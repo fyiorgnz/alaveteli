@@ -160,6 +160,9 @@ gem 'therubyracer', '~> 0.12.0'
 # Rollbar for exception reporting
 gem 'rollbar'
 
+# AWS SDK for SES
+gem 'aws-sdk-rails'
+
 # Feature flags
 gem 'alaveteli_features', :path => 'gems/alaveteli_features'
 gem 'flipper-ui', '~> 0.10.2'
