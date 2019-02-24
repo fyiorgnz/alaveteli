@@ -21,6 +21,8 @@ FORCE_SSL: <%= ENV['FORCE_SSL'] == 'true' ? true : false %>
 # (http://en.wikipedia.org/wiki/ISO_3166-1_alpha-2)
 ISO_COUNTRY_CODE: <%= ENV['ISO_COUNTRY_CODE'] %>
 
+ISO_CURRENCY_CODE: <%= ENV['ISO_CURRENCY_CODE'] %>
+
 # This is the timezone that times and dates are displayed in
 # If not set defaults to UTC.
 TIME_ZONE: <%= ENV['TIME_ZONE'] %>
@@ -115,7 +117,7 @@ ADMIN_BASE_URL: <%= ENV['ADMIN_BASE_URL'] %>
 ADMIN_PUBLIC_URL: <%= ENV['ADMIN_PUBLIC_URL'] %>
 
 # Secret key for signing cookie_store sessions
-COOKIE_STORE_SESSION_SECRET: <%= ENV['COOKIE_STORE_SESSION_SECRET'] %>
+SECRET_KEY_BASE: <%= ENV['COOKIE_STORE_SESSION_SECRET'] %>
 
 # If present, puts the site in read only mode, and uses the text as reason
 # (whole paragraph). Please use a read-only database user as well, as it only
@@ -129,8 +131,8 @@ READ_ONLY: <%= ENV['READ_ONLY'] %>
 STAGING_SITE: ENV['STAGING_SITE'] %>
 
 # Recaptcha, for detecting humans. Get keys here: http://recaptcha.net/whyrecaptcha.html
-RECAPTCHA_PUBLIC_KEY: <%= ENV['RECAPTCHA_PUBLIC_KEY'] %>
-RECAPTCHA_PRIVATE_KEY: <%= ENV['RECAPTCHA_PRIVATE_KEY'] %>
+RECAPTCHA_SITE_KEY: <%= ENV['RECAPTCHA_PUBLIC_KEY'] %>
+RECAPTCHA_SECRET_KEY: <%= ENV['RECAPTCHA_PRIVATE_KEY'] %>
 
 # Number of days after which to send a 'new response reminder'
 NEW_RESPONSE_REMINDER_AFTER_DAYS: <%= ENV['NEW_RESPONSE_REMINDER_AFTER_DAYS'] %>
@@ -171,6 +173,8 @@ EXCEPTION_NOTIFICATIONS_TO:
 
 # This rate limiting can be turned off per-user via the admin interface
 MAX_REQUESTS_PER_USER_PER_DAY: <%= ENV['MAX_REQUESTS_PER_USER_PER_DAY'] %>
+
+OVERRIDE_ALL_PUBLIC_BODY_REQUEST_EMAILS: <%= ENV['OVERRIDE_ALL_PUBLIC_BODY_REQUEST_EMAILS'] %>
 
 VARNISH_HOST: <%= ENV['VARNISH_HOST'] %>
 

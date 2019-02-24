@@ -1,4 +1,4 @@
-FROM ruby:2.3.1
+FROM ruby:2.5
 
 # Set noninteractive mode for apt-get
 ENV DEBIAN_FRONTEND noninteractive
@@ -17,14 +17,16 @@ ENV RAILS_ENV production
 
 # Clone develop branch
 COPY Gemfile Gemfile.lock /opt/alaveteli/
+# https://stackoverflow.com/questions/26504846/copy-directory-to-other-directory-at-docker-using-add-command
+COPY gems /opt/alaveteli/gems
 WORKDIR /opt/alaveteli/
 RUN bundle install --without development debug test --deployment --retry=10 --clean
 
 COPY . /opt/alaveteli/
 
 # Add yaml configuration which take environment variables
-COPY script/docker/database.yml config/database.yml
-COPY script/docker/general.yml config/general.yml
+COPY script/docker/database.yml config/database.yml.erb
+COPY script/docker/general.yml config/general.yml.erb
 
 RUN mkdir -p cache
 

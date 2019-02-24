@@ -19,6 +19,7 @@ mkdir -p $XAPIAN_MOUNT_PATH/$RAILS_ENV
 echo "linking $XAPIAN_MOUNT_PATH/$RAILS_ENV/ to /opt/alaveteli/lib/acts_as_xapian/xapiandbs/$RAILS_ENV/"
 ln -s $XAPIAN_MOUNT_PATH/$RAILS_ENV/ /opt/alaveteli/lib/acts_as_xapian/xapiandbs/$RAILS_ENV
 
+/opt/alaveteli/script/docker/buildconf.rb
 bundle exec rake db:create
 bundle exec rake db:migrate
 bundle exec rake themes:install
