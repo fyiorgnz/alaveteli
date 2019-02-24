@@ -58,7 +58,19 @@ Rails.application.configure do
     config.action_mailer.delivery_method = :smtp
     config.action_mailer.smtp_settings = { :address => "localhost", :port => 1025 }
   else
-    config.action_mailer.delivery_method = :sendmail
+    config.action_mailer.delivery_method = AlaveteliConfiguration.production_mailer_delivery_method.to_sym
+  end
+
+  if AlaveteliConfiguration.production_mailer_delivery_method.to_sym == :smtp
+    config.action_mailer.smtp_settings = {
+      :address => AlaveteliConfiguration.smtp_mailer_address,
+      :port => AlaveteliConfiguration.smtp_mailer_port,
+      :domain => AlaveteliConfiguration.smtp_mailer_domain,
+      :user_name => AlaveteliConfiguration.smtp_mailer_user_name,
+      :password => AlaveteliConfiguration.smtp_mailer_password,
+      :authentication => AlaveteliConfiguration.smtp_mailer_authentication,
+      :enable_starttls_auto => AlaveteliConfiguration.smtp_mailer_enable_starttls_auto
+    }
   end
 
   # Allow any IP address in the range 10.10.10.x to access the web console
