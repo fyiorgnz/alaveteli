@@ -179,6 +179,10 @@ class ApplicationController < ActionController::Base
     when ActionController::UnknownFormat
       @status = 406
     else
+      # [FYI:NJ] Include reporter for Rollbar to handle production errors
+      if defined?(Rollbar)
+        Rollbar.error(exception)
+      end
       message = "\n#{@exception_class} (#{@exception_message}):\n"
       backtrace = Rails.backtrace_cleaner.clean(exception.backtrace, :silent)
       message << "  " << backtrace.join("\n  ")
