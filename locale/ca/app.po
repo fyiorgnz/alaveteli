@@ -26,9 +26,9 @@
 # mmtarres <mmtarres@gmail.com>, 2012
 msgid ""
 msgstr ""
-"Project-Id-Version: alaveteli\n"
+"Project-Id-Version: version 0.0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-06-10 14:02+0000\n"
+"POT-Creation-Date: 2019-06-30 21:58+1200\n"
 "PO-Revision-Date: 2019-06-10 14:40+0000\n"
 "Last-Translator: Liz Conlan <liz@mysociety.org>\n"
 "Language-Team: Catalan (http://www.transifex.com/mysociety/alaveteli/language/ca/)\n"
@@ -37,6 +37,9 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgid "      <p>\\n        Requests made using FYI.org.nz are designed to be <strong>public</strong>\\n        as a result, anybody around the world can access your request and the\\n        response you would receive. For this reason we do not allow requests\\n        about private information, either about yourself or another person.\\n\\n        Many agencies will direct you to discuss such requests outside of the\\n        FYI.org.nz website, you will receive more efficient responses if you\\n        use the Privacy Commissioner's <a href=\"https://www.privacy.org.nz/further-resources/aboutme-request-my-info-tool/\">About Me</a> tool\\n        instead.\\n      </p>\\n"
+msgstr ""
 
 msgid " (<strong>no ranty</strong> politics, read our <a href=\"{{url}}\">moderation policy</a>)"
 msgstr " (<strong>sense atacs polítics</strong>, llegeixi la nostra <a href=\"{{url}}\">política de moderació</a>)"
@@ -552,6 +555,9 @@ msgstr "Adjunto:"
 msgid "Authority email:"
 msgstr ""
 
+msgid "Authority has transferred your request to a different public body."
+msgstr ""
+
 msgid "Authority name"
 msgstr ""
 
@@ -949,6 +955,9 @@ msgstr ""
 msgid "Every citizen has the right to access information held by public authorities."
 msgstr ""
 
+msgid "Everyone in New Zealand has the right to access information held by public bodies. <strong>By law, they must respond</strong>."
+msgstr ""
+
 msgid "Everything that you enter on this page, including <strong>your name</strong>, will be <strong>displayed publicly</strong> on this website <a href=\"{{url}}\">forever</a>"
 msgstr ""
 "Tot el que escriguis en aquesta pàgina, incloent <strong>el teu nom</strong>, \n"
@@ -1294,6 +1303,9 @@ msgid "I don't want to do any more tidying now!"
 msgstr "Ya no quiero seguir clasificando"
 
 msgid "I like this request"
+msgstr ""
+
+msgid "I wish to ask..."
 msgstr ""
 
 msgid "I would like to <strong>withdraw this request</strong>"
@@ -3245,6 +3257,9 @@ msgstr "Segueix aquesta persona"
 msgid "Track this search"
 msgstr "Segueix aquesta cerca"
 
+msgid "Transferred."
+msgstr ""
+
 msgid "Try opening the logs in a new window."
 msgstr ""
 
@@ -3557,6 +3572,9 @@ msgstr "Retirada por el autor."
 msgid "Wk"
 msgstr "Wk"
 
+msgid "Would you like to see a website like this in your country?"
+msgstr ""
+
 msgid "Write a reply"
 msgstr "Escribir una respuesta"
 
@@ -3813,6 +3831,10 @@ msgstr ""
 msgid "You've now cleared your profile photo"
 msgstr "Has borrado la foto de tu perfil"
 
+#, fuzzy
+msgid "Your <strong>Right to Know</strong>"
+msgstr "Puede <strong>apelar</strong>"
+
 msgid "Your <strong>name will appear publicly</strong> (<a href=\"{{why_url}}\">why?</a>) on this website and in search engines. <a href=\"{{help_url}}\">Thinking of using a pseudonym?</a>"
 msgstr ""
 "<strong>El teu nom apareixerà públicament</strong> \n"
@@ -3989,6 +4011,12 @@ msgstr ""
 
 msgid "\\n\\n[ {{site_name}} note: The above text was badly encoded, and has had strange characters removed. ]"
 msgstr "\\n\\n[ {{site_name}} Nota: El text anterior estava mal codificat, i s'han eliminat alguns caràcters estranys. ]"
+
+msgid "about information held in an official capacity."
+msgstr ""
+
+msgid "about myself, or another person."
+msgstr ""
 
 msgid "admin"
 msgstr "admin"
@@ -4198,6 +4226,10 @@ msgstr "motivo desconocido"
 
 msgid "unknown reason "
 msgstr "motivo desconocido "
+
+#, fuzzy
+msgid "unknown status "
+msgstr "estat desconegut {{status}}"
 
 msgid "unknown status {{state}}"
 msgstr ""

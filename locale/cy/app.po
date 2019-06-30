@@ -35,9 +35,9 @@
 # PerryX <wyeboy@gmail.com>, 2013
 msgid ""
 msgstr ""
-"Project-Id-Version: alaveteli\n"
+"Project-Id-Version: version 0.0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-06-10 14:02+0000\n"
+"POT-Creation-Date: 2019-06-30 21:58+1200\n"
 "PO-Revision-Date: 2019-06-10 14:40+0000\n"
 "Last-Translator: Liz Conlan <liz@mysociety.org>\n"
 "Language-Team: Welsh (http://www.transifex.com/mysociety/alaveteli/language/cy/)\n"
@@ -46,6 +46,9 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=4; plural=(n==1) ? 0 : (n==2) ? 1 : (n != 8 && n != 11) ? 2 : 3;\n"
+
+msgid "      <p>\\n        Requests made using FYI.org.nz are designed to be <strong>public</strong>\\n        as a result, anybody around the world can access your request and the\\n        response you would receive. For this reason we do not allow requests\\n        about private information, either about yourself or another person.\\n\\n        Many agencies will direct you to discuss such requests outside of the\\n        FYI.org.nz website, you will receive more efficient responses if you\\n        use the Privacy Commissioner's <a href=\"https://www.privacy.org.nz/further-resources/aboutme-request-my-info-tool/\">About Me</a> tool\\n        instead.\\n      </p>\\n"
+msgstr ""
 
 msgid " (<strong>no ranty</strong> politics, read our <a href=\"{{url}}\">moderation policy</a>)"
 msgstr " (<strong>Dim</strong> gwleidyddiaeth ymfflamychol, darllenwch ein <a href=\"{{url}}\">polisi safoni</a>)"
@@ -519,6 +522,9 @@ msgstr "Atodiad:"
 msgid "Authority email:"
 msgstr "Ebost awdurdod:"
 
+msgid "Authority has transferred your request to a different public body."
+msgstr ""
+
 msgid "Authority name"
 msgstr "Enw awdurdod"
 
@@ -912,6 +918,9 @@ msgstr "Digwyddiad {{id}}"
 msgid "Every citizen has the right to access information held by public authorities."
 msgstr ""
 
+msgid "Everyone in New Zealand has the right to access information held by public bodies. <strong>By law, they must respond</strong>."
+msgstr ""
+
 msgid "Everything that you enter on this page, including <strong>your name</strong>, will be <strong>displayed publicly</strong> on this website <a href=\"{{url}}\">forever</a>"
 msgstr "Dangosir popeth yr ydych yn rhoi i mewn ar y dudalen hon, gan gynnwys <strong>eich enw</strong>, <strong>yn gyhoeddus</strong> ar y wefan hon am byth (<a href =\"{{url}}\">pam?</a>)."
 
@@ -1251,6 +1260,9 @@ msgstr "Nid wyf am wneud rhagor o dacluso nawr!"
 
 msgid "I like this request"
 msgstr "Rwy'n hoffi'r cais hwn"
+
+msgid "I wish to ask..."
+msgstr ""
 
 msgid "I would like to <strong>withdraw this request</strong>"
 msgstr "Hoffwn <strong<dynnu</strong>'r cais hwn"
@@ -3122,6 +3134,9 @@ msgstr "Traciwch y person hwn"
 msgid "Track this search"
 msgstr "Traciwch y chwiliad hwn"
 
+msgid "Transferred."
+msgstr ""
+
 msgid "Try opening the logs in a new window."
 msgstr ""
 
@@ -3424,6 +3439,9 @@ msgstr "Fe'i tynnwyd yn ôl gan y ceisydd."
 msgid "Wk"
 msgstr "Wythnos"
 
+msgid "Would you like to see a website like this in your country?"
+msgstr ""
+
 msgid "Write a reply"
 msgstr "Ysgrifennwch ateb"
 
@@ -3673,6 +3691,10 @@ msgstr "Nid ydych yn dilyn dim."
 msgid "You've now cleared your profile photo"
 msgstr "Rydych chi wedi clirio eich llun proffil"
 
+#, fuzzy
+msgid "Your <strong>Right to Know</strong>"
+msgstr "Gallwch <strong>gwyno</strong> drwy"
+
 msgid "Your <strong>name will appear publicly</strong> (<a href=\"{{why_url}}\">why?</a>) on this website and in search engines. <a href=\"{{help_url}}\">Thinking of using a pseudonym?</a>"
 msgstr "Bydd eich <strong>enw yn ymddangos yn gyhoeddus</strong> (<a href=\"{{why_url}}\">pam?</a>) ar y wefan hon ac mewn peiriannau chwilio. Os ydych yn ystyried defnyddio ffugenw, <a href=\"{{help_url}}\">darllenwch hwn yn gyntaf</a>."
 
@@ -3850,6 +3872,12 @@ msgstr "[Cyswllt e-bost {{site_name}}]"
 
 msgid "\\n\\n[ {{site_name}} note: The above text was badly encoded, and has had strange characters removed. ]"
 msgstr "[Nodyn {{site_name}} : Roedd y testun uchod wedi'i amgodio'n wael, ac mae nodau rhyfedd wedi eu dileu. ]"
+
+msgid "about information held in an official capacity."
+msgstr ""
+
+msgid "about myself, or another person."
+msgstr ""
 
 msgid "admin"
 msgstr "gweinydd'"
@@ -4059,6 +4087,10 @@ msgstr "rheswm anhysbys"
 
 msgid "unknown reason "
 msgstr "rheswm anhysbys "
+
+#, fuzzy
+msgid "unknown status "
+msgstr "statws anhysbys {{status}}"
 
 msgid "unknown status {{state}}"
 msgstr ""

@@ -48,9 +48,9 @@
 # Yudeep Rajbhandari <endlessveins@gmail.com>, 2017
 msgid ""
 msgstr ""
-"Project-Id-Version: alaveteli\n"
+"Project-Id-Version: version 0.0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-06-10 14:02+0000\n"
+"POT-Creation-Date: 2019-06-30 21:58+1200\n"
 "PO-Revision-Date: 2019-06-10 14:40+0000\n"
 "Last-Translator: Liz Conlan <liz@mysociety.org>\n"
 "Language-Team: Nepali (http://www.transifex.com/mysociety/alaveteli/language/ne/)\n"
@@ -59,6 +59,9 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgid "      <p>\\n        Requests made using FYI.org.nz are designed to be <strong>public</strong>\\n        as a result, anybody around the world can access your request and the\\n        response you would receive. For this reason we do not allow requests\\n        about private information, either about yourself or another person.\\n\\n        Many agencies will direct you to discuss such requests outside of the\\n        FYI.org.nz website, you will receive more efficient responses if you\\n        use the Privacy Commissioner's <a href=\"https://www.privacy.org.nz/further-resources/aboutme-request-my-info-tool/\">About Me</a> tool\\n        instead.\\n      </p>\\n"
+msgstr ""
 
 msgid " (<strong>no ranty</strong> politics, read our <a href=\"{{url}}\">moderation policy</a>)"
 msgstr " (कुनै पनि <strong>उत्तेजक </strong> राजनीति पाइने छैन, हाम्रो  <a href=\"{{url}}\">व्यवस्थापन नीति हेर्नुहोस्</a>)"
@@ -530,6 +533,9 @@ msgstr "सङ्लग्न:"
 msgid "Authority email:"
 msgstr "निकायको इमेल:"
 
+msgid "Authority has transferred your request to a different public body."
+msgstr ""
+
 msgid "Authority name"
 msgstr "निकायको नाम"
 
@@ -925,6 +931,10 @@ msgstr "इभेन्ट {{id}}"
 msgid "Every citizen has the right to access information held by public authorities."
 msgstr "हरेक नागरिकलाई साधारण अधिकारीहरूद्वारा राखिएको सूचनाको पहुँचको हक छ "
 
+#, fuzzy
+msgid "Everyone in New Zealand has the right to access information held by public bodies. <strong>By law, they must respond</strong>."
+msgstr "हरेक नागरिकलाई साधारण अधिकारीहरूद्वारा राखिएको सूचनाको पहुँचको हक छ "
+
 msgid "Everything that you enter on this page, including <strong>your name</strong>, will be <strong>displayed publicly</strong> on this website <a href=\"{{url}}\">forever</a>"
 msgstr "तपाईँ ले यो पेजमा लेख्नु भएको हरेक कुराहरू,तपाईँको सहित<strong>नाम</strong>सहित,\\n<strong> सार्वजनिक रूपमा</strong>वेवसाइटमा देखाइनेछ <a href=\"{{url}}\">सधैँ भरी </a>"
 
@@ -1256,6 +1266,9 @@ msgstr "मलाई अरु सफा गर्न मन छैन|"
 
 msgid "I like this request"
 msgstr "यो अनुरोध मन पर्‍यो"
+
+msgid "I wish to ask..."
+msgstr ""
 
 msgid "I would like to <strong>withdraw this request</strong>"
 msgstr "म <strong>यो अनुरोध फिर्ता</strong> गर्न चाहन्छु"
@@ -3121,6 +3134,9 @@ msgstr "यस मानिसलाई ट्र्याक गर्नुह
 msgid "Track this search"
 msgstr "यस खोजलाई ट्र्याक गर्नुहोस्"
 
+msgid "Transferred."
+msgstr ""
+
 msgid "Try opening the logs in a new window."
 msgstr "नयाँ सञ्झ्यालमा लगहरू खोल्नुहोस्।"
 
@@ -3419,6 +3435,9 @@ msgstr "अनुरोधकर्ताद्वारा फिर्ता �
 msgid "Wk"
 msgstr "हप्ता"
 
+msgid "Would you like to see a website like this in your country?"
+msgstr ""
+
 msgid "Write a reply"
 msgstr "जवाफ लेख्नुहोस्"
 
@@ -3662,6 +3681,10 @@ msgstr "तपाईँले केही पनि फलो गर्नु �
 msgid "You've now cleared your profile photo"
 msgstr "तपाइले आफ्नो प्रोफाइल पोटो हटाउनु भएको छ "
 
+#, fuzzy
+msgid "Your <strong>Right to Know</strong>"
+msgstr "<strong>गुनासो</strong> को लागी"
+
 msgid "Your <strong>name will appear publicly</strong> (<a href=\"{{why_url}}\">why?</a>) on this website and in search engines. <a href=\"{{help_url}}\">Thinking of using a pseudonym?</a>"
 msgstr "तपाइको <strong>नाम सार्वजनिक हुनेछ </strong>\\n (<a href=\"{{why_url}}\">किन?</a>)\\n यो वेबसाइट र अन्य सर्च इन्जिनमा  \\n <a href=\"{{help_url}}\">पर्यायवाची सब्द प्रयोग गर्ने सोच्दै हुनुहुन्छ?</a>"
 
@@ -3831,6 +3854,12 @@ msgstr "[{{site_name}} सम्पर्क इमेल]"
 
 msgid "\\n\\n[ {{site_name}} note: The above text was badly encoded, and has had strange characters removed. ]"
 msgstr "\\n\\n[ {{site_name}} note: The above text was badly encoded, and has had strange characters removed. ] "
+
+msgid "about information held in an official capacity."
+msgstr ""
+
+msgid "about myself, or another person."
+msgstr ""
 
 msgid "admin"
 msgstr "एड्मिन"
@@ -4040,6 +4069,10 @@ msgstr "अज्ञात कारण"
 
 msgid "unknown reason "
 msgstr "अज्ञात कारण "
+
+#, fuzzy
+msgid "unknown status "
+msgstr "अज्ञात स्थिती {{state}}"
 
 msgid "unknown status {{state}}"
 msgstr "अज्ञात स्थिती {{state}}"

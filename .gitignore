@@ -24,6 +24,7 @@ db/schema.rb
 db/structure.sql
 files/
 lib/themes/*
+locale/*/app.mo
 locale/model_attributes.rb
 log/*
 old-cache/

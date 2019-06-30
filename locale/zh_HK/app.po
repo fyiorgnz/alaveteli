@@ -29,9 +29,9 @@
 # Wen XING, 2019
 msgid ""
 msgstr ""
-"Project-Id-Version: alaveteli\n"
+"Project-Id-Version: version 0.0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-06-10 14:02+0000\n"
+"POT-Creation-Date: 2019-06-30 21:58+1200\n"
 "PO-Revision-Date: 2019-06-10 14:40+0000\n"
 "Last-Translator: Liz Conlan <liz@mysociety.org>\n"
 "Language-Team: Chinese (Hong Kong) (http://www.transifex.com/mysociety/alaveteli/language/zh_HK/)\n"
@@ -40,6 +40,9 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
+
+msgid "      <p>\\n        Requests made using FYI.org.nz are designed to be <strong>public</strong>\\n        as a result, anybody around the world can access your request and the\\n        response you would receive. For this reason we do not allow requests\\n        about private information, either about yourself or another person.\\n\\n        Many agencies will direct you to discuss such requests outside of the\\n        FYI.org.nz website, you will receive more efficient responses if you\\n        use the Privacy Commissioner's <a href=\"https://www.privacy.org.nz/further-resources/aboutme-request-my-info-tool/\">About Me</a> tool\\n        instead.\\n      </p>\\n"
+msgstr ""
 
 msgid " (<strong>no ranty</strong> politics, read our <a href=\"{{url}}\">moderation policy</a>)"
 msgstr "（<strong>不要謾罵或作人身攻擊</strong>，請查看我們的 <a href=\"{{url}}\">管理政策</a>）"
@@ -510,6 +513,9 @@ msgstr "附件："
 msgid "Authority email:"
 msgstr "公共機構的電郵："
 
+msgid "Authority has transferred your request to a different public body."
+msgstr ""
+
 msgid "Authority name"
 msgstr "公共機構名稱"
 
@@ -903,6 +909,10 @@ msgstr ""
 msgid "Every citizen has the right to access information held by public authorities."
 msgstr "每一位市民都有權向公共機構索取資料。"
 
+#, fuzzy
+msgid "Everyone in New Zealand has the right to access information held by public bodies. <strong>By law, they must respond</strong>."
+msgstr "每一位市民都有權向公共機構索取資料。"
+
 msgid "Everything that you enter on this page, including <strong>your name</strong>, will be <strong>displayed publicly</strong> on this website <a href=\"{{url}}\">forever</a>"
 msgstr "你在本頁輸入的所有資料（包括<strong>你的姓名</strong>），將會在本站<a href=\"{{url}}\">永久地</a><strong>公開顯示</strong>。"
 
@@ -1230,6 +1240,9 @@ msgstr ""
 
 msgid "I like this request"
 msgstr "我喜歡此項索取資料要求"
+
+msgid "I wish to ask..."
+msgstr ""
 
 msgid "I would like to <strong>withdraw this request</strong>"
 msgstr "本人希望<strong>撤回這項索取資料要求</strong>"
@@ -3089,6 +3102,9 @@ msgstr ""
 msgid "Track this search"
 msgstr ""
 
+msgid "Transferred."
+msgstr ""
+
 msgid "Try opening the logs in a new window."
 msgstr ""
 
@@ -3385,6 +3401,9 @@ msgstr ""
 msgid "Wk"
 msgstr ""
 
+msgid "Would you like to see a website like this in your country?"
+msgstr ""
+
 msgid "Write a reply"
 msgstr "回覆"
 
@@ -3625,6 +3644,10 @@ msgstr ""
 msgid "You've now cleared your profile photo"
 msgstr "你已移除你的頭像"
 
+#, fuzzy
+msgid "Your <strong>Right to Know</strong>"
+msgstr "你可以透過一下途徑<strong>作出投訴</strong>："
+
 msgid "Your <strong>name will appear publicly</strong> (<a href=\"{{why_url}}\">why?</a>) on this website and in search engines. <a href=\"{{help_url}}\">Thinking of using a pseudonym?</a>"
 msgstr ""
 
@@ -3789,6 +3812,12 @@ msgid "[{{site_name}} contact email]"
 msgstr "[{{site_name}}的聯絡電郵]"
 
 msgid "\\n\\n[ {{site_name}} note: The above text was badly encoded, and has had strange characters removed. ]"
+msgstr ""
+
+msgid "about information held in an official capacity."
+msgstr ""
+
+msgid "about myself, or another person."
 msgstr ""
 
 msgid "admin"
@@ -3999,6 +4028,10 @@ msgstr "不明原因"
 
 msgid "unknown reason "
 msgstr "不明原因"
+
+#, fuzzy
+msgid "unknown status "
+msgstr "未知狀態 {{status}}"
 
 msgid "unknown status {{state}}"
 msgstr ""

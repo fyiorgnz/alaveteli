@@ -1,12 +1,4 @@
 #!/bin/bash
-
-if [ -z "$NEWRELIC_LICENSE_KEY" ]; then
-
-  nrsysmond-config --set license_key=$NEWRELIC_LICENSE_KEY
-  /etc/init.d/newrelic-sysmond start
-
-fi
-
 cd /opt/alaveteli
 
 rm -rf /opt/alaveteli/lib/acts_as_xapian/xapiandbs/production
@@ -25,8 +17,7 @@ bundle exec rake db:migrate
 bundle exec rake themes:install
 bundle exec rake assets:precompile
 
-rm -rf /data/alaveteli/public
-cp -rf /opt/alaveteli/public /data/alaveteli
+rsync -a --delete-delay /opt/alaveteli/public/ /data/alaveteli/public
 
 chown -R $(whoami) /data
 

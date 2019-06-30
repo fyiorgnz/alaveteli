@@ -35,9 +35,9 @@
 # Z.D <zdevir@gmail.com>, 2013
 msgid ""
 msgstr ""
-"Project-Id-Version: alaveteli\n"
+"Project-Id-Version: version 0.0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-06-10 14:02+0000\n"
+"POT-Creation-Date: 2019-06-30 21:58+1200\n"
 "PO-Revision-Date: 2019-06-10 14:40+0000\n"
 "Last-Translator: Liz Conlan <liz@mysociety.org>\n"
 "Language-Team: Hebrew (Israel) (http://www.transifex.com/mysociety/alaveteli/language/he_IL/)\n"
@@ -46,6 +46,9 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=4; plural=(n == 1 && n % 1 == 0) ? 0 : (n == 2 && n % 1 == 0) ? 1: (n % 10 == 0 && n % 1 == 0 && n > 10) ? 2 : 3;\n"
+
+msgid "      <p>\\n        Requests made using FYI.org.nz are designed to be <strong>public</strong>\\n        as a result, anybody around the world can access your request and the\\n        response you would receive. For this reason we do not allow requests\\n        about private information, either about yourself or another person.\\n\\n        Many agencies will direct you to discuss such requests outside of the\\n        FYI.org.nz website, you will receive more efficient responses if you\\n        use the Privacy Commissioner's <a href=\"https://www.privacy.org.nz/further-resources/aboutme-request-my-info-tool/\">About Me</a> tool\\n        instead.\\n      </p>\\n"
+msgstr ""
 
 msgid " (<strong>no ranty</strong> politics, read our <a href=\"{{url}}\">moderation policy</a>)"
 msgstr " (<strong>בלי פוליטיקה מפלגתית!</strong> קראו את<a href=\"{{url}}\">מדיניות הניהול</a>) שלנו"
@@ -521,6 +524,9 @@ msgstr "קובץ מצורף: "
 msgid "Authority email:"
 msgstr "דוא״ל הרשות:"
 
+msgid "Authority has transferred your request to a different public body."
+msgstr ""
+
 msgid "Authority name"
 msgstr ""
 
@@ -917,6 +923,9 @@ msgstr "אירוע {{id}}"
 msgid "Every citizen has the right to access information held by public authorities."
 msgstr ""
 
+msgid "Everyone in New Zealand has the right to access information held by public bodies. <strong>By law, they must respond</strong>."
+msgstr ""
+
 msgid "Everything that you enter on this page, including <strong>your name</strong>, will be <strong>displayed publicly</strong> on this website <a href=\"{{url}}\">forever</a>"
 msgstr "כל מה שתזינו בדף הזה, כולל <strong>השם שלכם</strong>, יוצג <strong>פתוח לציבור</strong> באתר הזה לתמיד(<a href=\"{{url}}\">למה?</a>)."
 
@@ -1256,6 +1265,9 @@ msgstr "אני לא רוצה לבצע עוד ניקיונות עכשיו!"
 
 msgid "I like this request"
 msgstr "הצבע לדרישה"
+
+msgid "I wish to ask..."
+msgstr ""
 
 msgid "I would like to <strong>withdraw this request</strong>"
 msgstr " אני מעוניין <strong>למשוך את הבקשה</strong>"
@@ -3127,6 +3139,9 @@ msgstr "עקבו אחר האדם הזה"
 msgid "Track this search"
 msgstr "עקבו אחר החיפוש הזה"
 
+msgid "Transferred."
+msgstr ""
+
 msgid "Try opening the logs in a new window."
 msgstr ""
 
@@ -3429,6 +3444,9 @@ msgstr "בוטל על-ידי מגיש הבקשה"
 msgid "Wk"
 msgstr "Wk"
 
+msgid "Would you like to see a website like this in your country?"
+msgstr ""
+
 msgid "Write a reply"
 msgstr "לכתוב תשובה"
 
@@ -3678,6 +3696,10 @@ msgstr "אתם לא עוקבים אחר דבר."
 msgid "You've now cleared your profile photo"
 msgstr "תמונת הפרופיל שלכם הוסרה בהצלחה"
 
+#, fuzzy
+msgid "Your <strong>Right to Know</strong>"
+msgstr "אתם יכולים <strong>להתלונן</strong> עד"
+
 msgid "Your <strong>name will appear publicly</strong> (<a href=\"{{why_url}}\">why?</a>) on this website and in search engines. <a href=\"{{help_url}}\">Thinking of using a pseudonym?</a>"
 msgstr ""
 "השם שלכם יופיע <strong/> בצורה פומבית <strong> \\n (<a href=\"{{why_url}}\">למה?</a>)\\n באתר הזה ובמנועי חיפוש. \n"
@@ -3867,6 +3889,12 @@ msgstr "[{{site_name}} דוא\"ל ליצירת קשר]"
 
 msgid "\\n\\n[ {{site_name}} note: The above text was badly encoded, and has had strange characters removed. ]"
 msgstr "\\n\\n[ הערת {{site_name}}: הטקסט המופיע למעלה קודד בצורה שגויה. התווים הלא מזוהים נמחקו ]"
+
+msgid "about information held in an official capacity."
+msgstr ""
+
+msgid "about myself, or another person."
+msgstr ""
 
 msgid "admin"
 msgstr "מנהל"
@@ -4076,6 +4104,10 @@ msgstr "סיבה לא ידוע"
 
 msgid "unknown reason "
 msgstr "סיבה לא ידוע"
+
+#, fuzzy
+msgid "unknown status "
+msgstr "ססטוס לא ידוע {{status}}"
 
 msgid "unknown status {{state}}"
 msgstr ""

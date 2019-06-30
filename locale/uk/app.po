@@ -29,9 +29,9 @@
 # Natalie Hiirulainen <murahoid@gmail.com>, 2012
 msgid ""
 msgstr ""
-"Project-Id-Version: alaveteli\n"
+"Project-Id-Version: version 0.0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-06-10 14:02+0000\n"
+"POT-Creation-Date: 2019-06-30 21:58+1200\n"
 "PO-Revision-Date: 2019-06-10 14:40+0000\n"
 "Last-Translator: Liz Conlan <liz@mysociety.org>\n"
 "Language-Team: Ukrainian (http://www.transifex.com/mysociety/alaveteli/language/uk/)\n"
@@ -40,6 +40,9 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=4; plural=(n % 1 == 0 && n % 10 == 1 && n % 100 != 11 ? 0 : n % 1 == 0 && n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 12 || n % 100 > 14) ? 1 : n % 1 == 0 && (n % 10 ==0 || (n % 10 >=5 && n % 10 <=9) || (n % 100 >=11 && n % 100 <=14 )) ? 2: 3);\n"
+
+msgid "      <p>\\n        Requests made using FYI.org.nz are designed to be <strong>public</strong>\\n        as a result, anybody around the world can access your request and the\\n        response you would receive. For this reason we do not allow requests\\n        about private information, either about yourself or another person.\\n\\n        Many agencies will direct you to discuss such requests outside of the\\n        FYI.org.nz website, you will receive more efficient responses if you\\n        use the Privacy Commissioner's <a href=\"https://www.privacy.org.nz/further-resources/aboutme-request-my-info-tool/\">About Me</a> tool\\n        instead.\\n      </p>\\n"
+msgstr ""
 
 msgid " (<strong>no ranty</strong> politics, read our <a href=\"{{url}}\">moderation policy</a>)"
 msgstr "(звертаємо вашу увагу на те, що тут не місце для політичних сварок)"
@@ -546,6 +549,9 @@ msgstr "Додаток:"
 msgid "Authority email:"
 msgstr ""
 
+msgid "Authority has transferred your request to a different public body."
+msgstr ""
+
 msgid "Authority name"
 msgstr ""
 
@@ -947,6 +953,9 @@ msgstr ""
 msgid "Every citizen has the right to access information held by public authorities."
 msgstr ""
 
+msgid "Everyone in New Zealand has the right to access information held by public bodies. <strong>By law, they must respond</strong>."
+msgstr ""
+
 msgid "Everything that you enter on this page, including <strong>your name</strong>, will be <strong>displayed publicly</strong> on this website <a href=\"{{url}}\">forever</a>"
 msgstr ""
 "Усе, що ви введете на цій сторінці (включно з вашим іменем), \n"
@@ -1297,6 +1306,9 @@ msgstr "Я більше не хочу займатися впорядковув�
 
 msgid "I like this request"
 msgstr "Мені подобається цей запит"
+
+msgid "I wish to ask..."
+msgstr ""
 
 msgid "I would like to <strong>withdraw this request</strong>"
 msgstr "Мені б хотілося <strong>відмовитись від цього запиту</strong>"
@@ -3199,6 +3211,9 @@ msgstr "Ви можете відслідковувати діяльність ц
 msgid "Track this search"
 msgstr ""
 
+msgid "Transferred."
+msgstr ""
+
 msgid "Try opening the logs in a new window."
 msgstr ""
 
@@ -3509,6 +3524,9 @@ msgstr "Автор запиту відмовився від нього."
 msgid "Wk"
 msgstr ""
 
+msgid "Would you like to see a website like this in your country?"
+msgstr ""
+
 msgid "Write a reply"
 msgstr "Напишіть відповідь"
 
@@ -3773,6 +3791,10 @@ msgstr "Ви нічого не відслідковуєте"
 msgid "You've now cleared your profile photo"
 msgstr "Ви видалили свою фотографію"
 
+#, fuzzy
+msgid "Your <strong>Right to Know</strong>"
+msgstr "Ви можете поскаржитися таким чином: "
+
 msgid "Your <strong>name will appear publicly</strong> (<a href=\"{{why_url}}\">why?</a>) on this website and in search engines. <a href=\"{{help_url}}\">Thinking of using a pseudonym?</a>"
 msgstr ""
 "Ваше <strong>ім’я з’явиться в публічному доступі</strong> \n"
@@ -3957,6 +3979,12 @@ msgstr ""
 
 msgid "\\n\\n[ {{site_name}} note: The above text was badly encoded, and has had strange characters removed. ]"
 msgstr "\\n\\n[ Повідомлення сайту: вищенаведений текст неправильний закодований, тож невідомі символи було вилучено.]"
+
+msgid "about information held in an official capacity."
+msgstr ""
+
+msgid "about myself, or another person."
+msgstr ""
 
 msgid "admin"
 msgstr ""
@@ -4166,6 +4194,10 @@ msgstr "невідома причина"
 
 msgid "unknown reason "
 msgstr "невідома причина"
+
+#, fuzzy
+msgid "unknown status "
+msgstr "статус невідомий {{status}}"
 
 msgid "unknown status {{state}}"
 msgstr ""

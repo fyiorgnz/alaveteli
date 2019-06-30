@@ -22,9 +22,9 @@
 # Páll Hilmarsson <pallih@kaninka.net>, 2015-2018
 msgid ""
 msgstr ""
-"Project-Id-Version: alaveteli\n"
+"Project-Id-Version: version 0.0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-06-10 14:02+0000\n"
+"POT-Creation-Date: 2019-06-30 21:58+1200\n"
 "PO-Revision-Date: 2019-06-10 14:40+0000\n"
 "Last-Translator: Liz Conlan <liz@mysociety.org>\n"
 "Language-Team: Icelandic (Iceland) (http://www.transifex.com/mysociety/alaveteli/language/is_IS/)\n"
@@ -33,6 +33,9 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n % 10 != 1 || n % 100 == 11);\n"
+
+msgid "      <p>\\n        Requests made using FYI.org.nz are designed to be <strong>public</strong>\\n        as a result, anybody around the world can access your request and the\\n        response you would receive. For this reason we do not allow requests\\n        about private information, either about yourself or another person.\\n\\n        Many agencies will direct you to discuss such requests outside of the\\n        FYI.org.nz website, you will receive more efficient responses if you\\n        use the Privacy Commissioner's <a href=\"https://www.privacy.org.nz/further-resources/aboutme-request-my-info-tool/\">About Me</a> tool\\n        instead.\\n      </p>\\n"
+msgstr ""
 
 msgid " (<strong>no ranty</strong> politics, read our <a href=\"{{url}}\">moderation policy</a>)"
 msgstr " (<strong>ekkert geðvonskulegt</strong> stjórnmálaþus. Kynntu þér <a href=\"{{url}}\">stefnu okkar um umræðustjórn</a>)"
@@ -504,6 +507,9 @@ msgstr "Viðhengi:"
 msgid "Authority email:"
 msgstr "Netfang stofnunar:"
 
+msgid "Authority has transferred your request to a different public body."
+msgstr ""
+
 msgid "Authority name"
 msgstr "Heiti stjórnvalds"
 
@@ -897,6 +903,10 @@ msgstr "Viðburður {{id}}"
 msgid "Every citizen has the right to access information held by public authorities."
 msgstr "Allir borgarar hafa rétt á að fá aðgang að upplýsingum sem stjórnvöld búa yfir."
 
+#, fuzzy
+msgid "Everyone in New Zealand has the right to access information held by public bodies. <strong>By law, they must respond</strong>."
+msgstr "Allir borgarar hafa rétt á að fá aðgang að upplýsingum sem stjórnvöld búa yfir."
+
 msgid "Everything that you enter on this page, including <strong>your name</strong>, will be <strong>displayed publicly</strong> on this website <a href=\"{{url}}\">forever</a>"
 msgstr "Allt sem þú setur á þetta vefsvæði, þar á meðal <strong>nafnið þitt</strong>,\\n verður  <strong>birt opinberlega</strong> á\\n þessum vef að eilífu (<a href=\"{{url}}\">af hverju?</a>)"
 
@@ -1228,6 +1238,9 @@ msgstr "Nenni ekki að hreinsa meira til núna!"
 
 msgid "I like this request"
 msgstr "Mér líkar þetta"
+
+msgid "I wish to ask..."
+msgstr ""
 
 msgid "I would like to <strong>withdraw this request</strong>"
 msgstr "Ég vil <strong>draga þessa beiðni til baka</strong>"
@@ -3091,6 +3104,9 @@ msgstr "Fylgjast með þessum einstaklingi"
 msgid "Track this search"
 msgstr "Fylgjast með þessari leit"
 
+msgid "Transferred."
+msgstr ""
+
 msgid "Try opening the logs in a new window."
 msgstr "Prófaðu að opna annálana í nýjum glugga."
 
@@ -3389,6 +3405,9 @@ msgstr "Dregið til baka af beiðanda."
 msgid "Wk"
 msgstr "Wk"
 
+msgid "Would you like to see a website like this in your country?"
+msgstr ""
+
 msgid "Write a reply"
 msgstr "Skrifa svar"
 
@@ -3632,6 +3651,10 @@ msgstr "Þú ert ekki að fylgjast með neinu."
 msgid "You've now cleared your profile photo"
 msgstr "Þú hefur hreinsað prófílmyndina þína"
 
+#, fuzzy
+msgid "Your <strong>Right to Know</strong>"
+msgstr "Þú getur <strong>kvartað</strong> með því að"
+
 msgid "Your <strong>name will appear publicly</strong> (<a href=\"{{why_url}}\">why?</a>) on this website and in search engines. <a href=\"{{help_url}}\">Thinking of using a pseudonym?</a>"
 msgstr "<strong>Nafnið þitt verður birt opinberlega</strong>\\n (<a href=\"{{why_url}}\">af hverju?</a>)\\n á þessum vef og hjá leitarvélum.\\n <a href=\"{{help_url}}\">Ertu að hugsa um að nota dulnefni?</a>"
 
@@ -3801,6 +3824,12 @@ msgstr "[{{site_name}} samskiptanetfang]"
 
 msgid "\\n\\n[ {{site_name}} note: The above text was badly encoded, and has had strange characters removed. ]"
 msgstr "\\n\\n[ {{site_name}} ath.: Ofangreindur texti var illa kóðaður og framandi tákn voru fjarlægð úr honum. ]"
+
+msgid "about information held in an official capacity."
+msgstr ""
+
+msgid "about myself, or another person."
+msgstr ""
 
 msgid "admin"
 msgstr "stjórnandi"
@@ -4010,6 +4039,10 @@ msgstr "óþekkt ástæða"
 
 msgid "unknown reason "
 msgstr "óþekkt ástæða"
+
+#, fuzzy
+msgid "unknown status "
+msgstr "óþekkt ástæða {{status}}"
 
 msgid "unknown status {{state}}"
 msgstr "óþekkt ástæða {{status}}"

@@ -31,9 +31,9 @@
 #   <sana_bj@live.fr>, 2013
 msgid ""
 msgstr ""
-"Project-Id-Version: alaveteli\n"
+"Project-Id-Version: version 0.0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-06-10 14:02+0000\n"
+"POT-Creation-Date: 2019-06-30 21:58+1200\n"
 "PO-Revision-Date: 2019-06-10 14:40+0000\n"
 "Last-Translator: Liz Conlan <liz@mysociety.org>\n"
 "Language-Team: Arabic (http://www.transifex.com/mysociety/alaveteli/language/ar/)\n"
@@ -42,6 +42,9 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;\n"
+
+msgid "      <p>\\n        Requests made using FYI.org.nz are designed to be <strong>public</strong>\\n        as a result, anybody around the world can access your request and the\\n        response you would receive. For this reason we do not allow requests\\n        about private information, either about yourself or another person.\\n\\n        Many agencies will direct you to discuss such requests outside of the\\n        FYI.org.nz website, you will receive more efficient responses if you\\n        use the Privacy Commissioner's <a href=\"https://www.privacy.org.nz/further-resources/aboutme-request-my-info-tool/\">About Me</a> tool\\n        instead.\\n      </p>\\n"
+msgstr ""
 
 msgid " (<strong>no ranty</strong> politics, read our <a href=\"{{url}}\">moderation policy</a>)"
 msgstr "(<strong>no ranty</strong>السياسة، وقراءة لدينا<a href={{url}}>الاعتدال سياسة</a>"
@@ -517,6 +520,9 @@ msgstr "ملحق"
 msgid "Authority email:"
 msgstr ""
 
+msgid "Authority has transferred your request to a different public body."
+msgstr ""
+
 msgid "Authority name"
 msgstr ""
 
@@ -910,6 +916,9 @@ msgstr ""
 msgid "Every citizen has the right to access information held by public authorities."
 msgstr ""
 
+msgid "Everyone in New Zealand has the right to access information held by public bodies. <strong>By law, they must respond</strong>."
+msgstr ""
+
 msgid "Everything that you enter on this page, including <strong>your name</strong>, will be <strong>displayed publicly</strong> on this website <a href=\"{{url}}\">forever</a>"
 msgstr ""
 
@@ -1257,6 +1266,9 @@ msgstr "ليست لدي الرغبة في القيام بمزيد من التن�
 
 msgid "I like this request"
 msgstr "أعجبني هذا المطلب"
+
+msgid "I wish to ask..."
+msgstr ""
 
 msgid "I would like to <strong>withdraw this request</strong>"
 msgstr "ارغب في <strong>سحب هذا المطلب</strong>"
@@ -3136,6 +3148,9 @@ msgstr "تتبع هذا الشخص"
 msgid "Track this search"
 msgstr "تتبع هذا البحث"
 
+msgid "Transferred."
+msgstr ""
+
 msgid "Try opening the logs in a new window."
 msgstr ""
 
@@ -3442,6 +3457,9 @@ msgstr "وقع سحبها من قبل صاحب الطلب"
 msgid "Wk"
 msgstr "Wk"
 
+msgid "Would you like to see a website like this in your country?"
+msgstr ""
+
 msgid "Write a reply"
 msgstr "اكتب ردا"
 
@@ -3697,6 +3715,10 @@ msgstr "لست متابعا لأي شيء"
 msgid "You've now cleared your profile photo"
 msgstr "قمت بحذف صورة حسابك"
 
+#, fuzzy
+msgid "Your <strong>Right to Know</strong>"
+msgstr "تستطيع <strong>تقديم شكوى</strong> من خلال"
+
 msgid "Your <strong>name will appear publicly</strong> (<a href=\"{{why_url}}\">why?</a>) on this website and in search engines. <a href=\"{{help_url}}\">Thinking of using a pseudonym?</a>"
 msgstr ""
 
@@ -3881,6 +3903,12 @@ msgid "[{{site_name}} contact email]"
 msgstr "[{{site_name}} اتصل بالبريد الالكتروني"
 
 msgid "\\n\\n[ {{site_name}} note: The above text was badly encoded, and has had strange characters removed. ]"
+msgstr ""
+
+msgid "about information held in an official capacity."
+msgstr ""
+
+msgid "about myself, or another person."
 msgstr ""
 
 msgid "admin"
@@ -4091,6 +4119,10 @@ msgstr "سبب مجهول"
 
 msgid "unknown reason "
 msgstr "سبب مجهول"
+
+#, fuzzy
+msgid "unknown status "
+msgstr "حالة مجهولة {{status}}"
 
 msgid "unknown status {{state}}"
 msgstr ""

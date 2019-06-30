@@ -42,9 +42,9 @@
 # vickyanderica <victoria@access-info.org>, 2011
 msgid ""
 msgstr ""
-"Project-Id-Version: alaveteli\n"
+"Project-Id-Version: version 0.0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-06-10 14:02+0000\n"
+"POT-Creation-Date: 2019-06-30 21:58+1200\n"
 "PO-Revision-Date: 2019-06-10 14:40+0000\n"
 "Last-Translator: Liz Conlan <liz@mysociety.org>\n"
 "Language-Team: French (Belgium) (http://www.transifex.com/mysociety/alaveteli/language/fr_BE/)\n"
@@ -53,6 +53,9 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+msgid "      <p>\\n        Requests made using FYI.org.nz are designed to be <strong>public</strong>\\n        as a result, anybody around the world can access your request and the\\n        response you would receive. For this reason we do not allow requests\\n        about private information, either about yourself or another person.\\n\\n        Many agencies will direct you to discuss such requests outside of the\\n        FYI.org.nz website, you will receive more efficient responses if you\\n        use the Privacy Commissioner's <a href=\"https://www.privacy.org.nz/further-resources/aboutme-request-my-info-tool/\">About Me</a> tool\\n        instead.\\n      </p>\\n"
+msgstr ""
 
 msgid " (<strong>no ranty</strong> politics, read our <a href=\"{{url}}\">moderation policy</a>)"
 msgstr "(il n'y a <strong>aucune garantie</strong> de publication, lisez notre <a href=\"{{url}}\">politique de modération</a>)"
@@ -524,6 +527,9 @@ msgstr "Pièce jointe :"
 msgid "Authority email:"
 msgstr "Adresse email de l'autorité publique :"
 
+msgid "Authority has transferred your request to a different public body."
+msgstr ""
+
 msgid "Authority name"
 msgstr "Nom de l'autorité publique"
 
@@ -917,6 +923,10 @@ msgstr "Evénement {{id}}"
 msgid "Every citizen has the right to access information held by public authorities."
 msgstr "Chaque citoyen a le droit d'accéder aux informations détenues par les autorités publiques."
 
+#, fuzzy
+msgid "Everyone in New Zealand has the right to access information held by public bodies. <strong>By law, they must respond</strong>."
+msgstr "Chaque citoyen a le droit d'accéder aux informations détenues par les autorités publiques."
+
 msgid "Everything that you enter on this page, including <strong>your name</strong>, will be <strong>displayed publicly</strong> on this website <a href=\"{{url}}\">forever</a>"
 msgstr "Tout ce que vous indiquez dans cette page, y compris <strong>votre nom</strong>, sera <strong>public</strong> sur ce site (<a href=\"{{url}}\">pourquoi?</a>)."
 
@@ -1248,6 +1258,9 @@ msgstr "Je ne veux plus faire de rangement maintenant !"
 
 msgid "I like this request"
 msgstr "J'aime cette demande "
+
+msgid "I wish to ask..."
+msgstr ""
 
 msgid "I would like to <strong>withdraw this request</strong>"
 msgstr "Je voudrais <strong>retirer cette demande</strong>"
@@ -3111,6 +3124,9 @@ msgstr "Suivre cette personne"
 msgid "Track this search"
 msgstr "Suivre cette recherche"
 
+msgid "Transferred."
+msgstr ""
+
 msgid "Try opening the logs in a new window."
 msgstr "Essayer d'ouvrir les logs dans une nouvelle fenêtre."
 
@@ -3409,6 +3425,9 @@ msgstr "Retiré par le demandeur."
 msgid "Wk"
 msgstr "Wk"
 
+msgid "Would you like to see a website like this in your country?"
+msgstr ""
+
 msgid "Write a reply"
 msgstr "Ecrire une réponse "
 
@@ -3652,6 +3671,10 @@ msgstr "Vous ne suivez rien."
 msgid "You've now cleared your profile photo"
 msgstr "Vous avez supprimé votre photo de profil"
 
+#, fuzzy
+msgid "Your <strong>Right to Know</strong>"
+msgstr "Si vous êtes l'auteur de la demande, vous pouvez <strong>vous plaindre</strong> via le lien "
+
 msgid "Your <strong>name will appear publicly</strong> (<a href=\"{{why_url}}\">why?</a>) on this website and in search engines. <a href=\"{{help_url}}\">Thinking of using a pseudonym?</a>"
 msgstr "Votre <strong>nom apparaîtra publiquement</strong> sur ce site et dans les moteurs de recherches (<a href=\"{{why_url}}\">pourquoi ?</a>). Si vous pensez utiliser un pseudonyme veuillez d'abord <a href=\"{{help_url}}\">consulter ceci</a>."
 
@@ -3821,6 +3844,12 @@ msgstr "[{{site_name}} contact email]"
 
 msgid "\\n\\n[ {{site_name}} note: The above text was badly encoded, and has had strange characters removed. ]"
 msgstr "\\n\\n[ {{site_name}} Remarque : Le texte ci-dessus a été mal encodé et les caractères étranges ont été supprimés. ]"
+
+msgid "about information held in an official capacity."
+msgstr ""
+
+msgid "about myself, or another person."
+msgstr ""
 
 msgid "admin"
 msgstr "admin"
@@ -4030,6 +4059,10 @@ msgstr "raison inconnue"
 
 msgid "unknown reason "
 msgstr "raison inconnue"
+
+#, fuzzy
+msgid "unknown status "
+msgstr "statut inconnu {{state}}"
 
 msgid "unknown status {{state}}"
 msgstr "statut inconnu {{state}}"

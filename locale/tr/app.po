@@ -27,9 +27,9 @@
 # Senol Kaya <kayasenolk@gmail.com>, 2018
 msgid ""
 msgstr ""
-"Project-Id-Version: alaveteli\n"
+"Project-Id-Version: version 0.0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-06-10 14:02+0000\n"
+"POT-Creation-Date: 2019-06-30 21:58+1200\n"
 "PO-Revision-Date: 2019-06-10 14:40+0000\n"
 "Last-Translator: Liz Conlan <liz@mysociety.org>\n"
 "Language-Team: Turkish (http://www.transifex.com/mysociety/alaveteli/language/tr/)\n"
@@ -38,6 +38,9 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+msgid "      <p>\\n        Requests made using FYI.org.nz are designed to be <strong>public</strong>\\n        as a result, anybody around the world can access your request and the\\n        response you would receive. For this reason we do not allow requests\\n        about private information, either about yourself or another person.\\n\\n        Many agencies will direct you to discuss such requests outside of the\\n        FYI.org.nz website, you will receive more efficient responses if you\\n        use the Privacy Commissioner's <a href=\"https://www.privacy.org.nz/further-resources/aboutme-request-my-info-tool/\">About Me</a> tool\\n        instead.\\n      </p>\\n"
+msgstr ""
 
 msgid " (<strong>no ranty</strong> politics, read our <a href=\"{{url}}\">moderation policy</a>)"
 msgstr "(<strong>siyasi polemiğe</strong>yer yok, <a href=\"{{url}}\">moderasyon kurallarımızı</a> okuyun.)"
@@ -511,6 +514,9 @@ msgstr "Ek:"
 msgid "Authority email:"
 msgstr "Kurum emaili:"
 
+msgid "Authority has transferred your request to a different public body."
+msgstr ""
+
 msgid "Authority name"
 msgstr ""
 
@@ -904,6 +910,10 @@ msgstr "Olay {{id}}"
 msgid "Every citizen has the right to access information held by public authorities."
 msgstr "Kamu kurumlarında bulunan bilgiye ulaşmak her vatandaşın hakkıdır. "
 
+#, fuzzy
+msgid "Everyone in New Zealand has the right to access information held by public bodies. <strong>By law, they must respond</strong>."
+msgstr "Kamu kurumlarında bulunan bilgiye ulaşmak her vatandaşın hakkıdır. "
+
 msgid "Everything that you enter on this page, including <strong>your name</strong>, will be <strong>displayed publicly</strong> on this website <a href=\"{{url}}\">forever</a>"
 msgstr "Bu sayfada <strong>adınız</strong> dahil girdiğiniz her türlü bilgi  <a href=\"{{url}}\">sonsuza kadar</a> bu web sitesinde<strong>halka açık </strong>şekilde görünür olacaktır. "
 
@@ -1235,6 +1245,9 @@ msgstr "Şu anda daha fazla ortalığı toparlama ile uğraşmak istemiyorum!"
 
 msgid "I like this request"
 msgstr "Bu başvuruyu beğendim"
+
+msgid "I wish to ask..."
+msgstr ""
 
 msgid "I would like to <strong>withdraw this request</strong>"
 msgstr "Bu başvuruyu <strong>geri çekmek</strong>istiyorum"
@@ -3105,6 +3118,9 @@ msgstr "Bu kişiyi izle"
 msgid "Track this search"
 msgstr "Bu aramayı izle"
 
+msgid "Transferred."
+msgstr ""
+
 msgid "Try opening the logs in a new window."
 msgstr ""
 
@@ -3403,6 +3419,9 @@ msgstr "Başvuruyu yapan kişi tarafından geri çekildi. "
 msgid "Wk"
 msgstr "Wk"
 
+msgid "Would you like to see a website like this in your country?"
+msgstr ""
+
 msgid "Write a reply"
 msgstr "Bir cevap yazın"
 
@@ -3646,6 +3665,10 @@ msgstr "Hiçbir şeyi takip etmiyorsunuz."
 msgid "You've now cleared your profile photo"
 msgstr "Profil resminizi temizlediniz"
 
+#, fuzzy
+msgid "Your <strong>Right to Know</strong>"
+msgstr " <strong>Şikayette bulunabilirsiniz</strong>"
+
 msgid "Your <strong>name will appear publicly</strong> (<a href=\"{{why_url}}\">why?</a>) on this website and in search engines. <a href=\"{{help_url}}\">Thinking of using a pseudonym?</a>"
 msgstr " <strong>Adınız hem bu web sitesinde hem internet arama motorlarında kamuya açık bir şekilde görünür olacak</strong>\\n (<a href=\"{{why_url}}\">neden?</a>) <a href=\"{{help_url}}\">Takma ad kullanmayı mı düşünüyorsunuz?</a>"
 
@@ -3815,6 +3838,12 @@ msgstr "[{{site_name}} iletişim emaili]"
 
 msgid "\\n\\n[ {{site_name}} note: The above text was badly encoded, and has had strange characters removed. ]"
 msgstr "\\n\\n[ {{site_name}} notu: Yukarıdaki metin kötü bir şekilde kodlanmıştı ve tuhaf karakterler çıkarıldı. ]"
+
+msgid "about information held in an official capacity."
+msgstr ""
+
+msgid "about myself, or another person."
+msgstr ""
 
 msgid "admin"
 msgstr "yönetici"
@@ -4024,6 +4053,10 @@ msgstr "bilinmeyen sebep"
 
 msgid "unknown reason "
 msgstr "bilinmeyen sebep"
+
+#, fuzzy
+msgid "unknown status "
+msgstr "bilinmeyen durum {{status}}"
 
 msgid "unknown status {{state}}"
 msgstr ""
