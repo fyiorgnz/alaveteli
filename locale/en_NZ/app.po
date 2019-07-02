@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: version 0.0.1\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-06-30 21:58+1200\n"
-"PO-Revision-Date: 2019-06-30 22:32+1200\n"
+"PO-Revision-Date: 2019-07-02 20:21+1200\n"
 "Last-Translator: Nigel Jones <nigel@fyi.org.nz>\n"
 "Language-Team: English\n"
 "Language: en_NZ\n"
@@ -129,11 +129,9 @@ msgstr " filtered by status: '{{status}}'"
 msgid " when you send this message."
 msgstr " when you send this message."
 
-#, fuzzy
 msgid "'Crime statistics by ward level for Wales'"
 msgstr "'Crime statistics by ward level for Wales'"
 
-#, fuzzy
 msgid "'Pollution levels over time for the River Tyne'"
 msgstr "'Pollution levels over time for the River Tyne'"
 
@@ -311,7 +309,6 @@ msgstr ""
 "requests. You cannot make new ones, add followups or otherwise change the "
 "database.</p> <p>{{read_only}}</p>"
 
-#, fuzzy
 msgid ""
 "<strong><code>commented_by:tony_bowden</code></strong> to search annotations "
 "made by Tony Bowden, typing the name as in the URL."
@@ -340,7 +337,6 @@ msgstr ""
 "<strong><code>request_public_body_tag:charity</code></strong> to find "
 "requests to public authorities with a given tag."
 
-#, fuzzy
 msgid ""
 "<strong><code>requested_by:julian_todd</code></strong> to search requests "
 "made by Julian Todd, typing the name as in the URL."
@@ -6060,7 +6056,7 @@ msgstr ""
 "<code>{{to_value}}</code>"
 
 msgid "{{title}} - a Freedom of Information request to {{public_body}}"
-msgstr "{{title}} - a Freedom of Information request to {{public_body}}"
+msgstr "{{title}} - an Official Information Act request to {{public_body}}"
 
 msgid "{{title}} - a batch request"
 msgstr "{{title}} - a batch request"
