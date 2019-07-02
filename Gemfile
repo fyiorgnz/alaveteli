@@ -200,3 +200,15 @@ group :development do
   gem 'web-console', '>= 3.3.0'
   gem 'rubocop', '~> 0.63.1'
 end
+
+group :taskserver do
+  gem 'clockwork', '~> 1.1.0'
+  gem 'sidekiq', '< 4'
+  gem 'sinatra', '>= 1.3.0', require: false
+
+  # S3 Mail
+  gem 'fog', '~> 1.29.0'
+
+  # SQS for Mail Status Processing
+  gem 'aws-sdk-sqs', '~> 1'
+end
