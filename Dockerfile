@@ -11,7 +11,8 @@ RUN apt-get -y install supervisor ca-certificates git postgresql-client build-es
  gettext ghostscript gnuplot-nox imagemagick unzip \
  libicu-dev libmagic-dev libmagickwand-dev libmagickcore-dev libpq-dev libxml2-dev libxslt1-dev links \
  sqlite3 lockfile-progs mutt pdftk poppler-utils \
- postgresql-client tnef unrtf uuid-dev wkhtmltopdf wv xapian-tools rsync
+ postgresql-client tnef unrtf uuid-dev wkhtmltopdf wv xapian-tools rsync \
+ redis-server supervisor
 
 ENV RAILS_ENV production
 
@@ -27,6 +28,7 @@ COPY . /opt/alaveteli/
 # Add yaml configuration which take environment variables
 COPY script/docker/database.yml config/database.yml.erb
 COPY script/docker/general.yml config/general.yml.erb
+COPY script/docker/supervisor-*.conf /etc/supervisor/
 
 RUN mkdir -p cache
 
