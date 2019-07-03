@@ -898,7 +898,6 @@ msgstr "Event {{id}}"
 msgid "Every citizen has the right to access information held by public authorities."
 msgstr "Every citizen has the right to access information held by public authorities."
 
-#, fuzzy
 msgid "Everyone in New Zealand has the right to access information held by public bodies. <strong>By law, they must respond</strong>."
 msgstr "Every citizen has the right to access information held by public authorities."
 
@@ -3646,7 +3645,6 @@ msgstr "You're not following anything."
 msgid "You've now cleared your profile photo"
 msgstr "You've now cleared your profile photo"
 
-#, fuzzy
 msgid "Your <strong>Right to Know</strong>"
 msgstr "You can <strong>complain</strong> by"
 
@@ -4035,7 +4033,6 @@ msgstr "unknown reason"
 msgid "unknown reason "
 msgstr "unknown reason "
 
-#, fuzzy
 msgid "unknown status "
 msgstr "unknown status {{state}}"
 
