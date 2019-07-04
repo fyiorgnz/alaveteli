@@ -207,7 +207,7 @@ group :taskserver do
   gem 'sinatra', '>= 1.3.0', require: false
 
   # S3 Mail
-  gem 'fog', '~> 1.29.0'
+  gem 'aws-sdk-s3'
 
   # SQS for Mail Status Processing
   gem 'aws-sdk-sqs', '~> 1'
