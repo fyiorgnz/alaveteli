@@ -34,7 +34,7 @@ do
 done
 
 # Different start up for rails instance
-if [ -z "$SIDEKIQ"]
+if [ -z "$SIDEKIQ" ]
 then
   # Rails instance, execute DB migration and assets
   bundle exec rake db:migrate
@@ -45,8 +45,8 @@ then
 
   chown -R $(whoami) /data
 
-  #bundle exec unicorn_rails -c ./config/unicorn.rb
-  /usr/bin/supervisord -c /etc/supervisor/supervisor-rails.conf
+  bundle exec unicorn_rails -c ./config/unicorn.rb
+  #/usr/bin/supervisord -c /etc/supervisor/supervisor-rails.conf
 else
   # Wait until any migrations are complete
   bundle exec rake db:wait_for_migration

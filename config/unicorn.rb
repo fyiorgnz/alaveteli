@@ -1,5 +1,6 @@
 app_dir = File.expand_path("../..", __FILE__)
-shared_dir = (ENV['UNICORN_SHARED'] || "#{app_dir}/shared")
+log_dir = (ENV['UNICORN_LOGDIR'] || "#{app_dir}/log")
+pid_dir = (ENV['UNICORN_PIDDIR'] || "#{app_dir}")
 working_directory app_dir
 
 # 8 workers and 1 master
@@ -14,11 +15,11 @@ timeout (ENV['UNICORN_TIMEOUT'] || 90).to_i
 listen ENV['UNICORN_SOCKET_PATH'], backlog: 2048
 
 # Logging
-stderr_path "#{shared_dir}/unicorn.stderr.log"
-stdout_path "#{shared_dir}/unicorn.stdout.log"
+stderr_path "#{log_dir}/unicorn.stderr.log"
+stdout_path "#{log_dir}/unicorn.stdout.log"
 
 # PID File
-pid "#{shared_dir}/unicorn.pid"
+pid "#{pid_dir}/unicorn.pid"
 
 before_fork do |server, worker|
 
