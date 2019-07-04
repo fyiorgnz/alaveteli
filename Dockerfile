@@ -28,6 +28,7 @@ COPY . /opt/alaveteli/
 # Add yaml configuration which take environment variables
 COPY script/docker/database.yml config/database.yml.erb
 COPY script/docker/general.yml config/general.yml.erb
+COPY script/docker/xapian.yml config/xapian.yml
 COPY script/docker/supervisor-*.conf /etc/supervisor/
 
 RUN mkdir -p cache

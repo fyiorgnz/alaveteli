@@ -1,15 +1,21 @@
 #!/bin/bash
 cd /opt/alaveteli
 
-rm -rf /opt/alaveteli/lib/acts_as_xapian/xapiandbs/production
+if [ -d /opt/alaveteli/lib/acts_as_xapian/xapiandbs ]
+then
+  rm -rf /opt/alaveteli/lib/acts_as_xapian/xapiandbs
+fi
 
 mkdir /opt/alaveteli/lib/acts_as_xapian/xapiandbs
 
-echo "making $XAPIAN_MOUNT_PATH/$RAILS_ENV"
-mkdir -p $XAPIAN_MOUNT_PATH/$RAILS_ENV
+if [ ! -d "$XAPIAN_MOUNT_PATH"/"$RAILS_ENV" ]
+then
+  echo "making $XAPIAN_MOUNT_PATH/$RAILS_ENV"
+  mkdir -p "$XAPIAN_MOUNT_PATH"/"$RAILS_ENV"
+fi
 
 echo "linking $XAPIAN_MOUNT_PATH/$RAILS_ENV/ to /opt/alaveteli/lib/acts_as_xapian/xapiandbs/$RAILS_ENV/"
-ln -s $XAPIAN_MOUNT_PATH/$RAILS_ENV/ /opt/alaveteli/lib/acts_as_xapian/xapiandbs/$RAILS_ENV
+ln -s "$XAPIAN_MOUNT_PATH"/"$RAILS_ENV"/ /opt/alaveteli/lib/acts_as_xapian/xapiandbs/"$RAILS_ENV"
 
 /opt/alaveteli/script/docker/buildconf.rb
 
