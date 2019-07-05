@@ -4,6 +4,7 @@ class ProcessS3MailWorker
   include Sidekiq::Worker
 
   def perform
+    AWS.config(:log_level => :warn)
     creds = Aws::Credentials.new(ENV['AWS_ACCESS_KEY'], ENV['AWS_SECRET_KEY'])
     s3_client = Aws::S3::Client.new(credentials: creds,
                                     region: ENV['AWS_REGION'])
