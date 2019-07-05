@@ -7,6 +7,7 @@ module Clockwork
   every(10.minutes, 'alert_tracks') { AlertTracksWorker.perform_async }
   every(10.minutes, 'send_batch_requests') { SendBatchRequestsWorker.perform_async }
   every(10.minutes, 'process_s3_mail') { ProcessS3MailWorker.perform_async }
+  every(10.minutes, 'get_sqs_mail_logs') { GetSQSMailLogs.perform_async }
 
   every(5.minutes, 'update_xapian_index') { UpdateXapianIndexWorker.perform_async }
   # every(25.minutes, 'rebuild_xapian_index') { RebuildXapianIndexWorker.perform_async }
