@@ -4,7 +4,7 @@ class GetSQSMailLogs
   include Sidekiq::Worker
 
   def perform
-    AWS.config(:log_level => :warn)
+    Aws.config.update({log_level: :warn})
     aws_log = MailServerLogDone.find_by(filename: 'aws-import.log')
     if aws_log == nil
       aws_log = MailServerLogDone.new(filename: 'aws-import.log')
