@@ -15,5 +15,10 @@ namespace :db do
       end
     end
   end
+
+  desc 'Trigger Holding Pen Creation'
+  task :holding_pen => :environment do
+    ir = InfoRequest.holding_pen_request
+  end
 end
 

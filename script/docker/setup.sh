@@ -44,6 +44,7 @@ if [ -z "$SIDEKIQ" ]
 then
   # Rails instance, execute DB migration and assets
   bundle exec rake db:migrate
+  bundle exec rake db:holding_pen
   bundle exec rake themes:install
   bundle exec rake assets:precompile
 
