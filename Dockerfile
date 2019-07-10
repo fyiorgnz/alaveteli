@@ -1,4 +1,4 @@
-FROM ruby:2.5
+FROM ruby:2.5-stretch
 
 # Set noninteractive mode for apt-get
 ENV DEBIAN_FRONTEND noninteractive
