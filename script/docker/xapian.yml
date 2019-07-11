@@ -1,0 +1,7 @@
+---
+production:
+  base_db_path: /data/alaveteli/xapiandbs
+development:
+  base_db_path: /data/alaveteli/xapiandbs
+test:
+  base_db_path: /data/alaveteli/xapiandbs

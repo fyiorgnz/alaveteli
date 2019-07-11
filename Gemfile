@@ -108,7 +108,6 @@ gem 'holidays', '~> 4.7.0', '< 5.0.0'
 gem 'iso_country_codes', '~> 0.7.8'
 gem 'mail', '~> 2.6.6'
 gem 'mahoro', '~> 0.4'
-gem 'newrelic_rpm'
 gem 'nokogiri', '~> 1.10.3'
 gem 'open4', '~> 1.3.0'
 gem 'rack', '~> 2.0.0'
@@ -200,4 +199,16 @@ group :development do
   gem 'listen', '~> 3.0.5'
   gem 'web-console', '>= 3.3.0'
   gem 'rubocop', '~> 0.63.1'
+end
+
+group :taskserver do
+  gem 'clockwork', '~> 1.1.0'
+  gem 'sidekiq', '< 4'
+  gem 'sinatra', '>= 1.3.0', require: false
+
+  # S3 Mail
+  gem 'aws-sdk-s3'
+
+  # SQS for Mail Status Processing
+  gem 'aws-sdk-sqs', '~> 1'
 end
