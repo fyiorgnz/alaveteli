@@ -203,7 +203,7 @@ end
 
 group :taskserver do
   gem 'clockwork', '~> 1.1.0'
-  gem 'sidekiq', '< 4'
+  gem 'sidekiq', '< 7'
   gem 'sinatra', '>= 1.3.0', require: false
 
   # S3 Mail
