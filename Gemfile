@@ -93,7 +93,7 @@ gem 'active_model_otp', :git => 'https://github.com/heapsource/active_model_otp.
 gem 'bcrypt', '~> 3.1.12'
 gem 'cancancan', '~> 1.17.0', '< 2.0.0'
 gem 'charlock_holmes', '~> 0.7.0'
-gem 'dalli', '~> 2.7.0'
+gem 'dalli', '~> 3.2.3'
 gem 'dynamic_form', '~> 1.1.0'
 gem 'exception_notification', ['~> 4.1.0', '< 4.1.2']
 gem 'fancybox-rails', '~> 0.3.0'

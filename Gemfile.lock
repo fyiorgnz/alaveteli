@@ -195,7 +195,7 @@ GEM
       safe_yaml (~> 1.0.0)
     crass (1.0.4)
     daemons (1.2.4)
-    dalli (2.7.8)
+    dalli (3.2.3)
     dante (0.2.0)
     delorean (2.1.0)
       chronic
@@ -515,7 +515,7 @@ DEPENDENCIES
   coffee-rails (~> 4.2.0)
   compass-rails (~> 3.1.0)
   coveralls (~> 0.8.0)
-  dalli (~> 2.7.0)
+  dalli (~> 3.2.3)
   delorean (~> 2.1.0)
   dynamic_form (~> 1.1.0)
   exception_notification (~> 4.1.0, < 4.1.2)
